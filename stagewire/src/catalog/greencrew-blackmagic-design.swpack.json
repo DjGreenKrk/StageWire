@@ -4,7 +4,7 @@
   "name": "Blackmagic Design — zestaw startowy GreenCrew",
   "version": "1.0.0",
   "author": "GreenCrew",
-  "license": "Opracowanie własne do użytku wewnętrznego GreenCrew; fakty techniczne na podstawie ogólnodostępnych specyfikacji.",
+  "license": "własne (projekt StageWire)",
   "description": "Osiem rzeczywistych modeli Blackmagic Design do StageWire. Dane wygenerowane automatycznie ze źródeł zewnętrznych i niezatwierdzone pomiarami. Nie jest to oficjalna biblioteka Blackmagic Design.",
   "registries": {
     "user/bmd-reference-video": {

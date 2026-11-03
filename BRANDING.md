@@ -26,4 +26,4 @@ Dark mode domyślnie; paleta GreenCrew (`#00C853` akcent, tło `#000000`, powier
 
 ## Logo i ikona
 
-Logo: `docs/media/StageWire_logo.svg` i `.png` (wersjonowana kopia). Ikona aplikacji w `stagewire/src-tauri/icons` jest tymczasowa i wymaga wygenerowania z logo (`npx tauri icon`).
+Logo: `docs/media/StageWire_logo.svg` i `.png` (wersjonowana kopia). Ikony aplikacji w `stagewire/src-tauri/icons` są wygenerowane z logo (`npx tauri icon app-icon.png`).
