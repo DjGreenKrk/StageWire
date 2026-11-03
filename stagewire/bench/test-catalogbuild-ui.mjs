@@ -12,6 +12,7 @@ const page = await (await browser.newContext({ viewport: { width: 1366, height: 
 page.on('pageerror', (e) => console.log('BŁĄD STRONY', String(e).slice(0, 200)));
 await page.goto('http://localhost:5236/editor.html?new=1'); await page.waitForFunction(() => window.__editor?.ready);
 const E = (fn, arg) => page.evaluate(fn, arg);
+const u = (f) => '/@fs/' + path.join(root, 'src', f).split(path.sep).join('/');
 const catUrl = '/@fs/' + path.join(root, 'src', 'catalog', 'index.ts').split(path.sep).join('/');
 const base = { manufacturer: 'Fikcyjny', category: 'test', source: { kind: 'custom' } };
 const pack = { format: 'stagewire-pack/1', id: 'cb-ui', name: 'Budowa UI', version: '1.0.0', license: 'własne', devices: [
@@ -46,12 +47,29 @@ await dnd('#cat-list [data-cat$="/sw"]', [rc.x + rp[0], rc.y + rp[1]]);
 st = await E(() => Object.values(window.__editor.store.state.equipment).filter((e) => e.mount).map((e) => e.mount));
 check('przeciągnięcie z katalogu na U7 montuje nowy switch na U7', st.length === 1 && st[0].uStart === 7, st);
 await page.click('#b-rack'); await page.waitForTimeout(100);
-check('po powrocie do schematu przełącznik filtra znika, a lista pokazuje wszystko', !(await page.isVisible('#cat-fit')) && (await listText()).includes('Kamera SDI'));
+t = await listText(); check('po powrocie do schematu filtr dotyczy schematu: aparaty DIN ukryte, urządzenia zwykłe widoczne', (await page.isVisible('#cat-fit')) && t.includes('Kamera SDI') && !t.includes('Wyłącznik DIN'), t.slice(0, 60));
+await page.click('#cat-fit-cb'); check('wyłączenie filtra na schemacie pokazuje też aparaty DIN, a stan w szafie zostaje osobny', (await listText()).includes('Wyłącznik DIN'));
+await page.click('#cat-fit-cb');
+// przeciąganie z listy na schemat: nowy węzeł w miejscu upuszczenia
+{ const before = await E(() => Object.keys(window.__editor.store.state.equipment).length); await dnd('#cat-list [data-cat="camera_sdi"]', [800, 450]); await page.waitForTimeout(200);
+  const n = await E(() => window.__editor.nodes()), ids = await E(() => Object.keys(window.__editor.store.state.equipment)), nid = ids[ids.length - 1], pos = n[nid];
+  const [sx, sy] = await E((q) => window.__editor.toScreen?.(q.x, q.y) ?? [0, 0], pos ?? { x: 0, y: 0 });
+  check('upuszczenie z listy na schemat dodaje urządzenie', ids.length === before + 1, [before, ids.length]);
+  check('węzeł leży w okolicy miejsca upuszczenia', !!pos && Math.abs(sx + 80 - 800) < 120 && Math.abs(sy + 20 - 450) < 120, [pos, sx, sy]); }
+// kreator urządzenia dostępny wprost w panelu katalogu i w menu
+await page.click('#b-newdev'); check('przycisk „+ Nowe urządzenie…” w panelu katalogu otwiera kreator', await page.isVisible('#builddialog')); await page.click('#bd-cancel');
+await page.click('#b-burger'); await page.click('#b-newdev2'); check('pozycja „Nowe urządzenie…” w menu otwiera kreator', await page.isVisible('#builddialog')); await page.click('#bd-cancel');
 await page.click('#b-cab'); await page.click('#b-cab');
 // --- aktualizacja projektu (menu) ---
 await page.click('#b-burger'); await page.click('#b-upgrade'); await page.waitForSelector('#upgdialog');
 const ut = await page.textContent('#upgdialog');
 check('okno „Aktualizacja projektu”: pokazuje wersję formatu i że nowy projekt jest aktualny', ut.includes('Format pliku: 1.0.0-draft') && ut.includes('Projekt jest aktualny'), ut.slice(0, 120));
 await page.click('#up-close'); check('okno zamyka się', !(await page.$('#upgdialog')));
+// upuszczenie z listy na plan sali
+await E(async (pu) => { const pl = await import(pu); window.__editor.store.dispatch('sala', pl.plan.addSpace('spc_t', 'Sala testowa', 12000, 8000)); }, u('plan.ts'));
+await page.click('#b-mode'); await page.waitForTimeout(300);
+{ const before = await E(() => Object.values(window.__editor.store.state.placements ?? {}).length); await dnd('#cat-list [data-cat="monitor_hdmi"]', [700, 400]); await page.waitForTimeout(250);
+  const pls = await E(() => Object.values(window.__editor.store.state.placements ?? {}));
+  check('upuszczenie z listy na plan sali stawia nowe urządzenie na planie', pls.length === before + 1, pls.at(-1)); }
 console.log(`\ncatalogbuild: ${checks.filter((c) => c.ok).length}/${checks.length} kontroli`);
 await browser.close(); await server.close(); process.exit(checks.every((c) => c.ok) ? 0 : 1);

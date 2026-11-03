@@ -762,7 +762,11 @@ export function createPlan(ctx: PlanCtx) {
     get active() { return active; },
     spaceId,
     /** Środek widoku, przyciągnięty do siatki: tu trafiają nowo dodane urządzenia. */
+    /** Element planu (do obsługi upuszczania z katalogu). */
+    host,
     center: () => ({ x: snap(cam.x), y: snap(cam.y) }),
+    /** Punkt planu (mm, układ aktywnej sali) pod punktem ekranu; do upuszczania pozycji z katalogu. */
+    pointAt: (sx: number, sy: number) => { const [wx, wy] = toWorld(sx, sy); return { x: snap(wx), y: snap(wy) }; },
     show() { active = true; host.style.display = 'block'; bar.style.display = 'flex'; document.body.classList.add('plan-on'); if (spaceId() && cam.zoom === 0.05) fit(); rebuild(); draw(); updateBar(); },
     suspend(on: boolean) { suspended = on; },
     hide() { unplUi.close(); if (drawing) setDrawing(false); if (shapeDraw) cancelShape(); selRoute = undefined; selRack = undefined; active = false; host.style.display = 'none'; bar.style.display = 'none'; document.body.classList.remove('plan-on'); },

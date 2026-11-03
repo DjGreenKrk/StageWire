@@ -3,6 +3,7 @@ import { openAbout } from './about.ts';
 import { createLibBrowser } from './libBrowser.ts';
 import { settings, openSettings } from './settings.ts';
 import { openUpgradeDialog } from './upgradeUi.ts';
+import { openDeviceBuilder } from './deviceBuilder.ts';
 import { UPGRADES, pendingUpgrades } from '../src/migrations.ts';
 import { setHideMountedDin } from '../src/cabinets.ts';
 import { exportName } from './exportName.ts';
@@ -565,17 +566,19 @@ setTitle();
   const onPlan = (id: string) => { const sid = planApi?.active ? planApi.spaceId() : undefined; if (!sid) return () => {}; const c = planApi!.center(); return planCmd.place(id, sid, c.x, c.y); };
   const spot = () => ({ x: Math.round(cam.x - NODE_W / 2), y: Math.round(cam.y - 40) });
   const place = () => { rebuild(); revalidate(); draw(); };
-  const addCatalog = (key: string, model: string, mountAt?: (id: string) => (d: any) => void) => {
+  const addCatalog = (key: string, model: string, mountAt?: (id: string) => (d: any) => void, at?: { node?: { x: number; y: number }; plan?: { x: number; y: number } }) => {
     const name = uniqueName(model, Object.values(store.state.equipment).map((e) => e.name)), id = newId('eqi');
-    { const a = addFromCatalog(key, name, id), b = setNodePositions({ [id]: spot() }), c = onPlan(id), r = mountAt ? mountAt(id) : rackApi?.active ? rackApi.mountOnAdd(id) : cabApi?.active ? cabApi.mountOnAdd(id) : () => {}; store.dispatch(`Dodaj ${name}`, (d) => { a(d); b(d); c(d); r(d); }); } place(); say(`Dodano ${name}`);
+    { const a = addFromCatalog(key, name, id), b = setNodePositions({ [id]: at?.node ?? spot() }), c = at?.plan && planApi?.active && planApi.spaceId() ? planCmd.place(id, planApi.spaceId()!, at.plan.x, at.plan.y) : onPlan(id), r = mountAt ? mountAt(id) : rackApi?.active ? rackApi.mountOnAdd(id) : cabApi?.active ? cabApi.mountOnAdd(id) : () => {}; store.dispatch(`Dodaj ${name}`, (d) => { a(d); b(d); c(d); r(d); }); } place(); say(`Dodano ${name}`);
   };
   const addProjectDef = (defId: string, model: string) => {
     const name = uniqueName(model, Object.values(store.state.equipment).map((e) => e.name)), id = newId('eqi');
     { const a = cmd.addInstance(defId, name, id), b = setNodePositions({ [id]: spot() }), c = onPlan(id); store.dispatch(`Dodaj ${name}`, (d) => { a(d); b(d); c(d); }); } place(); say(`Dodano ${name}`);
   };
   /** Widok, w którym buduje się z katalogu: rack albo szafa. Filtr „tylko pasujące” (domyślnie włączony) ukrywa pozycje, które się tam nie zamontują. */
-  const viewKind = (): 'rack' | 'cab' | undefined => (rackApi?.active ? 'rack' : cabApi?.active ? 'cab' : undefined);
-  const fitsView = (dev: { rackUnits?: unknown; dinModules?: unknown }) => { const k = viewKind(); if (!k || !(document.getElementById('cat-fit-cb') as HTMLInputElement | null)?.checked) return true; return k === 'rack' ? !!dev.rackUnits : dev.dinModules !== undefined; };
+  const viewKind = (): 'rack' | 'cab' | 'diagram' | undefined => (rackApi?.active ? 'rack' : cabApi?.active ? 'cab' : planApi?.active ? undefined : 'diagram');
+  /** Stan przełącznika „tylko pasujące” osobno dla każdego widoku. */
+  const fitOn: Record<string, boolean> = { rack: true, cab: true, diagram: true };
+  const fitsView = (dev: { rackUnits?: unknown; dinModules?: unknown }) => { const k = viewKind(); if (!k || !fitOn[k]) return true; return k === 'rack' ? !!dev.rackUnits : k === 'cab' ? dev.dinModules !== undefined : dev.dinModules === undefined; };
   const row = (label: string, sub: string, attr: [string, string], onClick: () => void) => {
     const b = document.createElement('button'); b.dataset[attr[0]] = attr[1];
     if (attr[0] === 'cat') { b.draggable = true; b.addEventListener('dragstart', (ev) => { ev.dataTransfer?.setData('application/x-sw-cat', attr[1] + '	' + label); ev.dataTransfer!.effectAllowed = 'copy'; }); }
@@ -584,7 +587,7 @@ setTitle();
   const render = () => {
     list.innerHTML = '';
     const found = searchCatalog(input.value).filter((e) => fitsView(e.device));
-    const bf = document.getElementById('cat-fit'); if (bf) { bf.style.display = viewKind() ? 'block' : 'none'; (bf.querySelector('label') as HTMLElement).lastChild!.textContent = viewKind() === 'rack' ? ' Tylko do racka 19″' : ' Tylko na szynę DIN'; }
+    const bf = document.getElementById('cat-fit'), vk = viewKind(); if (bf) { bf.style.display = vk ? 'block' : 'none'; if (vk) { (bf.querySelector('label') as HTMLElement).lastChild!.textContent = vk === 'rack' ? ' Tylko do racka 19″' : vk === 'cab' ? ' Tylko na szynę DIN' : ' Bez osprzętu DIN (aparaty do szaf)'; (document.getElementById('cat-fit-cb') as HTMLInputElement).checked = fitOn[vk]; } }
     const cats = [...new Set(found.map((e) => e.category))];
     for (const c of cats) {
       const h = document.createElement('h3'); h.textContent = c; list.appendChild(h);
@@ -600,7 +603,20 @@ setTitle();
     }
   };
   input.addEventListener('input', render); render();
-  document.getElementById('cat-fit-cb')!.addEventListener('change', () => { renderCatalog(); if (cabApi?.active) cabApi.refresh(); });
+  document.getElementById('cat-fit-cb')!.addEventListener('change', (ev) => { const vk = viewKind(); if (vk) fitOn[vk] = (ev.target as HTMLInputElement).checked; renderCatalog(); if (cabApi?.active) cabApi.refresh(); });
+  // kreator własnego urządzenia: wprost z panelu katalogu i z menu
+  const openBuilder = () => openDeviceBuilder({ library: library as any, say, addToProject: (key, model) => addCatalog(key, model) });
+  document.getElementById('b-newdev')!.onclick = openBuilder; document.getElementById('b-newdev2')!.onclick = () => { document.getElementById('filemenu')?.setAttribute('hidden', ''); openBuilder(); };
+  // upuszczenie pozycji z katalogu na schemat blokowy albo na plan sali: nowa instancja w miejscu upuszczenia
+  { const stage = document.getElementById('stage')!;
+    const over = (ev: DragEvent) => { if (ev.dataTransfer?.types.includes('application/x-sw-cat') && (viewKind() === 'diagram' || planApi?.active)) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'copy'; } };
+    const drop = (ev: DragEvent, el: HTMLElement) => {
+      const raw = ev.dataTransfer?.getData('application/x-sw-cat'); if (!raw) return; const r = el.getBoundingClientRect(), sx = ev.clientX - r.left, sy = ev.clientY - r.top, [key, model] = raw.split('\t');
+      if (planApi?.active) { ev.preventDefault(); addCatalog(key, model, undefined, { plan: planApi.pointAt(sx, sy) }); }
+      else if (viewKind() === 'diagram') { ev.preventDefault(); const [wx, wy] = toWorld(sx, sy); addCatalog(key, model, undefined, { node: { x: Math.round(wx - NODE_W / 2), y: Math.round(wy - 20) } }); }
+    };
+    stage.addEventListener('dragover', over); stage.addEventListener('drop', (ev) => drop(ev, stage));
+    setTimeout(function wirePlan() { const h = planApi?.host as HTMLElement | undefined; if (!h) { setTimeout(wirePlan, 100); return; } h.addEventListener('dragover', over); h.addEventListener('drop', (ev) => drop(ev, h)); }, 0); }
   // upuszczenie pozycji z katalogu na rack albo szynę: nowa instancja od razu w wybranym miejscu
   for (const api of [() => rackApi, () => cabApi]) { setTimeout(function wire() { const c = api()?.canvas as HTMLCanvasElement | undefined; if (!c) { setTimeout(wire, 100); return; }
     c.addEventListener('dragover', (ev) => { if (ev.dataTransfer?.types.includes('application/x-sw-cat')) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'copy'; } });
@@ -869,6 +885,7 @@ function openDefEditor(defId: string) {
   redraw();
 }
 (window as any).__editor.selectNode = selectNode;
+(window as any).__editor.toScreen = toScreen;
 (window as any).__editor.revisionOf = (id: string) => store.state.equipment[id]?.definitionRevision;
 
 const pdfFonts = async () => { const get = async (u: string) => new Uint8Array(await (await fetch(u)).arrayBuffer()); return { latin: await get(latinFontUrl), latinExt: await get(latinExtFontUrl) }; };
