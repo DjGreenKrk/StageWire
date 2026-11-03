@@ -1,0 +1,90 @@
+{
+  "format": "stagewire-pack/1",
+  "id": "przyklad-fikcyjny",
+  "name": "Przykład (dane fikcyjne)",
+  "version": "1.1.0",
+  "author": "",
+  "license": "własne (do użytku wewnętrznego)",
+  "description": "Przykładowy pakiet pokazujący format. Producent i modele są zmyślone; nie opisują żadnego prawdziwego urządzenia.",
+  "registries": {
+    "user/demo-link": { "kind": "connector", "name": "Demo link" },
+    "user/demo-sig": { "kind": "signal", "name": "Demo sygnał", "domain": "control", "color": "#9a6fd1", "prefix": "C" }
+  },
+  "devices": [
+    {
+      "key": "konwerter-demo",
+      "manufacturer": "Acme (fikcyjny)",
+      "model": "KD-1",
+      "category": "wideo / konwertery",
+      "tags": ["konwerter", "przyklad"],
+      "description": "Fikcyjny konwerter SDI na HDMI zasilany z zasilacza DC.",
+      "dimensionsMm": { "width": 100, "depth": 80, "height": 25 },
+      "weightKg": 0.4,
+      "powerW": 5,
+      "powerMaxW": 8,
+      "ports": [
+        { "key": "sdi-in", "label": "SDI IN", "connector": "std/bnc-75", "signals": ["std/sdi-3g"], "direction": "in" },
+        { "key": "hdmi-out", "label": "HDMI OUT", "connector": "std/hdmi-a", "signals": ["std/hdmi"], "direction": "out" },
+        { "key": "dc-in", "label": "DC IN", "connector": "std/dc-barrel", "signals": ["std/power-dc"], "direction": "in", "group": "Zasilanie", "electrical": { "voltageMinV": 9, "voltageMaxV": 15, "maxW": 8 } }
+      ],
+      "source": { "kind": "custom", "note": "Dane fikcyjne do dokumentacji formatu." }
+    },
+    {
+      "key": "panel-demo",
+      "manufacturer": "Acme (fikcyjny)",
+      "model": "PD-4",
+      "category": "sieć",
+      "description": "Fikcyjny panel z gniazdami LAN i własnym złączem zdefiniowanym w pakiecie.",
+      "dimensionsMm": { "width": 483, "depth": 60, "height": 44 },
+      "rackUnits": { "heightU": 1, "widthFraction": 1 },
+      "ports": [
+        { "key": "lan-1", "label": "LAN 1", "connector": "std/rj45", "signals": ["std/ethernet"], "direction": "io", "group": "LAN" },
+        { "key": "lan-2", "label": "LAN 2", "connector": "std/rj45", "signals": ["std/ethernet"], "direction": "io", "group": "LAN" },
+        { "key": "demo-1", "label": "DEMO 1", "connector": "user/demo-link", "signals": ["user/demo-sig"], "direction": "io", "capacity": 2 }
+      ],
+      "source": { "kind": "custom", "note": "Dane fikcyjne do dokumentacji formatu." }
+    },
+    {
+      "key": "switch-poe-demo",
+      "manufacturer": "Acme (fikcyjny)",
+      "model": "SW-8P",
+      "category": "sieć",
+      "tags": ["switch", "poe"],
+      "description": "Fikcyjny przełącznik z dwoma wejściami zasilania (redundancja), portami PoE i uplinkiem SFP.",
+      "dimensionsMm": { "width": 440, "depth": 200, "height": 44 },
+      "weightKg": 2.5,
+      "powerW": 40,
+      "powerMaxW": 150,
+      "rackUnits": { "heightU": 1, "widthFraction": 1 },
+      "ports": [
+        { "key": "psu-a", "label": "AC A", "connector": "std/iec-c14", "signals": ["std/power-ac"], "direction": "in", "group": "Zasilanie", "electrical": { "voltageMinV": 100, "voltageMaxV": 240, "maxW": 150 } },
+        { "key": "psu-b", "label": "AC B", "connector": "std/iec-c14", "signals": ["std/power-ac"], "direction": "in", "group": "Zasilanie", "electrical": { "voltageMinV": 100, "voltageMaxV": 240, "maxW": 150 }, "note": "Wejście redundantne" },
+        { "key": "poe-1", "label": "PoE 1", "connector": "std/rj45", "signals": ["std/ethernet", "std/poe"], "direction": "io", "group": "PoE", "electrical": { "maxW": 30 } },
+        { "key": "poe-2", "label": "PoE 2", "connector": "std/rj45", "signals": ["std/ethernet", "std/poe"], "direction": "io", "group": "PoE", "electrical": { "maxW": 30 } },
+        { "key": "sfp-1", "label": "SFP 1", "connector": "std/sfp", "signals": ["std/ethernet", "std/fiber"], "direction": "io", "group": "Uplink" }
+      ],
+      "source": { "kind": "manual", "ref": "Instrukcja fikcyjna SW-8P v1", "url": "https://example.invalid/sw-8p-manual.pdf", "hardwareRevision": "rev B", "verified": "2026-11-02" }
+    },
+    {
+      "key": "mikser-demo",
+      "manufacturer": "Acme (fikcyjny)",
+      "model": "MX-2",
+      "category": "wideo / miksery",
+      "tags": ["mikser", "przyklad"],
+      "description": "Fikcyjny mikser z wejściami SDI i HDMI, wyjściem PGM, USB oraz portem sterowania.",
+      "dimensionsMm": { "width": 480, "depth": 250, "height": 90 },
+      "powerW": 60,
+      "powerMaxW": 90,
+      "ports": [
+        { "key": "in-1", "label": "IN 1", "connector": "std/bnc-75", "signals": ["std/sdi-3g"], "direction": "in", "group": "Wejścia SDI" },
+        { "key": "in-2", "label": "IN 2", "connector": "std/bnc-75", "signals": ["std/sdi-3g"], "direction": "in", "group": "Wejścia SDI" },
+        { "key": "in-3", "label": "IN 3", "connector": "std/hdmi-a", "signals": ["std/hdmi"], "direction": "in", "group": "Wejścia HDMI" },
+        { "key": "pgm", "label": "PGM", "connector": "std/bnc-75", "signals": ["std/sdi-3g"], "direction": "out", "capacity": 2 },
+        { "key": "usb", "label": "USB", "connector": "std/usb-b", "signals": ["std/usb"], "direction": "io" },
+        { "key": "ctl", "label": "CTL", "connector": "std/rj45", "signals": ["std/ethernet"], "direction": "io" },
+        { "key": "ac", "label": "AC IN", "connector": "std/iec-c14", "signals": ["std/power-ac"], "direction": "in", "group": "Zasilanie", "electrical": { "voltageMinV": 100, "voltageMaxV": 240, "maxW": 90 } }
+      ],
+      "source": { "kind": "estimated", "note": "Dane fikcyjne; szacunek tylko do celów dokumentacji." }
+    }
+  ]
+}

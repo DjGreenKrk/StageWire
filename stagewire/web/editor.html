@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <title>StageWire — prototyp gestu port → port</title>
+  <style>
+    html,body{margin:0;background:#000;overflow:hidden;font-family:Roboto,Segoe UI,sans-serif;color:#fff}
+    #stage,#overlay{position:absolute;left:0;top:0}
+    #overlay{pointer-events:none}
+    #bar{position:absolute;left:0;right:0;bottom:0;height:28px;background:#121212;border-top:1px solid #2A2A2A;display:flex;align-items:center;gap:16px;padding:0 12px;font-size:13px}
+    #bar b{color:#00C853;font-weight:500} #msg{color:#B0B0B0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    :root{--top:68px}
+    #menu,#planbar{position:absolute;left:0;right:0;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;gap:6px 4px;padding:8px 10px;background:#0B0B0B;border-bottom:1px solid #2A2A2A}
+    #menu{top:0}
+    #menu button,#planbar button{min-height:44px;padding:0 10px;border-radius:6px;border:1px solid #2A2A2A;background:#121212;color:#fff;font-size:14px;cursor:pointer;white-space:nowrap}
+    #menu button:hover,#planbar button:hover{border-color:#00C853}
+    .grp{display:flex;align-items:center;gap:6px;padding:0 12px 0 0;margin-right:8px;border-right:1px solid #2A2A2A}.grp:last-child{border-right:0;margin-right:0;padding-right:0}
+    .plan-only{display:none}body.plan-on .plan-only{display:flex}
+    .gl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:#7C7C7C;margin-right:2px}
+    #catalog{position:absolute;left:8px;top:var(--top);bottom:36px;width:230px;background:rgba(18,18,18,.94);border:1px solid #2A2A2A;border-radius:8px;display:flex;flex-direction:column;overflow:hidden}
+    #catalog input{margin:8px;min-height:44px;padding:0 10px;border-radius:6px;border:1px solid #2A2A2A;background:#1E1E1E;color:#fff;font-size:14px}
+    #b-browse,#b-library{margin:0 8px 8px;min-height:44px;border-radius:6px;border:1px solid #2A2A2A;background:#121212;color:#fff;font-size:14px;cursor:pointer}#b-library:hover,#b-browse:hover{border-color:#00C853}#b-browse{background:#00C853!important;color:#000!important;font-weight:500;margin-bottom:6px!important}
+    #cat-list{overflow:auto;padding:0 8px 8px}#cat-list h3{margin:12px 0 4px;font-size:11px;font-weight:500;color:#00C853;text-transform:uppercase;letter-spacing:.04em}
+    #cat-list button{display:flex;flex-direction:column;align-items:flex-start;width:100%;min-height:44px;padding:4px 10px;margin-bottom:4px;border-radius:6px;border:1px solid #2A2A2A;background:#1E1E1E;color:#fff;font-size:14px;cursor:pointer;text-align:left}
+    #cat-list button:hover{border-color:#00C853}#cat-list small{color:#B0B0B0;font-size:11px}.none{color:#B0B0B0;padding:12px 4px}
+    #props{display:none;position:absolute;right:8px;top:calc(var(--top) + 8px);width:250px;background:rgba(18,18,18,.94);border:1px solid #2A2A2A;border-radius:8px;padding:12px;box-sizing:border-box;max-height:calc(100vh - var(--top) - 48px);overflow-y:auto}
+    #props h3{margin:0 0 8px;font-size:11px;font-weight:500;color:#00C853;text-transform:uppercase;letter-spacing:.04em}
+    #props label{display:block;font-size:12px;color:#B0B0B0}#props input{display:block;width:100%;box-sizing:border-box;min-height:44px;margin:4px 0 8px;padding:0 10px;border-radius:6px;border:1px solid #2A2A2A;background:#1E1E1E;color:#fff;font-size:14px}
+    #props .meta{font-size:12px;color:#B0B0B0;margin-bottom:8px}.warn{color:#FFD54F}
+    #props button,.dlg button{min-height:44px;padding:0 14px;margin:0 6px 6px 0;border-radius:6px;border:1px solid #2A2A2A;background:#121212;color:#fff;font-size:14px;cursor:pointer}
+    #props button:hover,.dlg button:hover{border-color:#00C853}.danger{color:#E53935!important}.primary{background:#00C853!important;color:#000!important;border-color:#00C853!important}
+    .dlg{background:#1E1E1E;border:1px solid #2A2A2A;border-radius:8px;padding:20px;width:760px;max-height:86vh;overflow:auto}.dlg h2{margin:0 0 10px;font-size:18px;font-weight:500}
+    .dlg label{display:block;font-size:12px;color:#B0B0B0}.dlg input,.dlg select{min-height:44px;box-sizing:border-box;padding:0 8px;border-radius:6px;border:1px solid #2A2A2A;background:#121212;color:#fff;font-size:14px}
+    .dlg label input#d-model{display:block;width:100%;margin:4px 0 10px}.prow{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1.3fr) minmax(0,1.3fr) minmax(0,1fr) 70px 44px;gap:6px;margin-bottom:8px}.prow .f-extra{min-width:0;grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.prow .f-extra input,.prow .f-extra select,.prow .f-extra button{font-size:12px;min-height:34px}.prow .xl{display:flex;flex-direction:column;font-size:11px;color:#B0B0B0;gap:2px}.prow .f-grp{width:170px}.prow .f-umin,.prow .f-umax,.prow .f-pmax{width:92px}
+    .dlg .imp{color:#B0B0B0;font-size:13px}.dlg .chk{display:flex;gap:8px;align-items:center;font-size:14px;color:#fff;margin:8px 0}.dlg .chk input{min-height:auto}.btns{display:flex;gap:8px;justify-content:flex-end}
+    .rt{width:100%;border-collapse:collapse;font-size:13px}.rt th{position:sticky;top:0;background:#1E1E1E;text-align:left;color:#00C853;font-weight:500;padding:6px 8px;border-bottom:1px solid #2A2A2A}.rt td{padding:4px 8px;border-bottom:1px solid #2A2A2A}.rt input{width:80px;min-height:36px}.rwrap{max-height:56vh;overflow:auto;margin:10px 0}
+    #planbar{display:none;top:61px}#planbar button.on{border-color:#00C853;color:#00C853}#planbar button:disabled{opacity:.45;cursor:default}
+    #planbar select{min-height:44px;border-radius:6px;border:1px solid #2A2A2A;background:#121212;color:#fff;padding:0 8px;font-size:14px;max-width:200px}
+    #unpl{position:absolute;left:246px;top:var(--top);bottom:36px;width:290px;background:rgba(18,18,18,.96);border:1px solid #2A2A2A;border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px;z-index:5}
+    #unpl h3{margin:0}#unpl .meta{font-size:12px;color:#8A8A8A}#unpl input[type=search]{min-height:36px;padding:0 10px;border-radius:6px;border:1px solid #2A2A2A;background:#1E1E1E;color:#fff}
+    #up-list{flex:1;overflow:auto}.up-h{margin:8px 0 4px;font-size:12px;color:#8A8A8A;text-transform:uppercase}
+    .up-i{display:flex;align-items:center;gap:8px;padding:2px 0}.up-i .up-c{width:18px;height:18px}.up-n{flex:1;min-height:34px;display:flex;flex-direction:column;justify-content:center;padding:0 8px;background:#1E1E1E;border:1px solid #2A2A2A;border-radius:6px;cursor:grab;touch-action:none;user-select:none}.up-n small{color:#8A8A8A;font-size:11px}
+    .up-ghost{position:fixed;z-index:50;pointer-events:none;padding:6px 10px;background:#333;border:1px solid #888;border-radius:6px;color:#fff}.up-ghost.ok{background:#1B5E20;border-color:#66BB6A}
+    #unpl .btns{display:flex;gap:6px;flex-wrap:wrap}
+    body.plan-on .diag-only{display:none}
+    #filemenu{position:absolute;left:0;top:calc(100% + 6px);z-index:30;display:flex;flex-direction:column;gap:4px;min-width:190px;padding:8px;background:#141414;border:1px solid #2A2A2A;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.6)}#filemenu[hidden]{display:none}#filemenu button{text-align:left;width:100%}#filemenu hr{border:0;border-top:1px solid #2A2A2A;margin:2px 0;width:100%}
+    #siglegend{position:absolute;left:246px;bottom:36px;display:flex;flex-wrap:wrap;gap:4px 14px;max-width:calc(100vw - 520px);padding:6px 10px;background:rgba(18,18,18,.9);border:1px solid #2A2A2A;border-radius:8px;font-size:12px;color:#B0B0B0;pointer-events:none}#siglegend[hidden]{display:none}#siglegend b{color:#fff;font-weight:500}#siglegend span{display:inline-flex;align-items:center;gap:6px}#siglegend i{display:inline-block;width:18px;height:4px;border-radius:2px}
+    #help{position:absolute;right:12px;bottom:36px;font-size:12px;color:#8A8A8A;text-align:right;line-height:1.5;pointer-events:none}
+  </style>
+</head>
+<body>
+  <div id="stage"></div>
+  <canvas id="overlay"></canvas>
+  <div id="menu"><span class="grp" style="position:relative"><button id="b-burger" aria-label="Menu plików" aria-expanded="false" title="Plik, dokumenty i informacje o programie">☰ Menu</button><div id="filemenu" hidden><button id="b-new">Nowy projekt</button><button id="b-open">Otwórz…</button><button id="b-save">Zapisz</button><button id="b-saveas">Zapisz jako…</button><hr><button id="b-report">Lista kabli</button><button id="b-diagpdf">Schemat PDF…</button><hr><button id="b-settings">Ustawienia…</button><button id="b-about">O programie</button></div></span><span class="grp"><span class="gl">Tryb</span><button id="b-mode">Plan sali</button><button id="b-rack">Rack</button><button id="b-cab">Szafa</button></span><span class="grp diag-only"><span class="gl">Schemat</span><button id="b-layout" title="Ułóż urządzenia od źródeł do odbiorników według połączeń; grupy dostają osobne pasy">Uporządkuj</button><button id="b-groups" title="Ramki z nazwą wokół urządzeń (np. FOH, Scena)">Grupy…</button></span><span class="grp plan-only"><span class="gl">Kable</span><button id="b-cables">Pokaż kable</button><button id="b-route">Rysuj trasę</button><span id="rt-hbox" style="display:none;align-items:center;gap:6px;background:#121212;border:1px solid #00C853;border-radius:6px;padding:0 8px"><label style="font-size:12px;color:#B0B0B0">Wysokość [m]</label><input id="rt-h" style="width:64px;min-height:36px;border-radius:6px;border:1px solid #2A2A2A;background:#1E1E1E;color:#fff;padding:0 6px"><button id="b-riser" title="Dodaj odcinek pionowy do wybranej wysokości" style="min-height:36px">Pion ↕</button><button id="b-onsolid" style="min-height:36px" title="Trasa idzie po bryłach (stopnie, podesty, kostki, racki): na ich krawędziach pojawiają się piony. Wysokość obok to wtedy najniższa wysokość trasy.">Po bryle</button></span><button id="b-lengths">Długości kabli…</button></span><span class="grp plan-only" style="margin-left:auto"><span class="gl">Widok</span><button id="b-fit" title="Dopasuj widok do sali">Dopasuj</button><button id="b-fitall" title="Pokaż wszystkie sale naraz">Cały budynek</button><button id="b-3d">Widok 3D</button><button id="b-pdf">Eksport PDF…</button></span></div>
+  <div id="planbar">
+    <span class="grp"><span class="gl">Sala</span><select id="b-room" title="Aktywna sala"></select><button id="b-space">Sala…</button><button id="b-addroom" title="Dodaj kolejne pomieszczenie (np. FOH i sala widowiskowa)">+ Sala</button><button id="b-under" title="Podkład: rzut budynku z PDF, SVG, DXF lub obrazu">Podkład…</button><button id="b-lock" title="Zablokuj wszystkie bryły sceniczne (scena, podesty, widownia) w tej sali, żeby nie przesunąć ich przypadkiem; kliknij ponownie, aby odblokować">Zablokuj</button><button id="b-pass" title="Przejścia kablowe między salami (multicore, kanał, przepust): potrzebne do liczenia kabli między salami">Przejścia…</button></span>
+    <span class="grp"><span class="gl">Wstaw</span><button id="b-placeall">Rozmieść brakujące</button><button id="b-rackput">Postaw rack/szafę</button><button id="b-pick" title="Lista rzeczy, których nie ma jeszcze na planie: przeciągnij wybrane urządzenie, rack lub szafę w dowolne miejsce aktywnej sali">Przeciągnij…</button><button id="b-obj">Obiekt…</button></span>
+  </div>
+  <div id="siglegend" hidden></div>
+  <div id="catalog"><input type="search" placeholder="Szukaj urządzenia…" aria-label="Szukaj urządzenia"><div id="cat-list"></div><button id="b-browse" title="Wyszukiwarka z filtrami (skrót: G), nowe urządzenie, import jednego urządzenia z pliku">Przeglądaj i filtruj…</button><button id="b-library">Pakiety urządzeń…</button></div>
+  <div id="props"></div>
+  <div id="help">przeciągnij z portu na port = połączenie · klik portu, potem klik drugiego = to samo<br>przeciągnij nagłówek = przesuń · tło = przesuwanie widoku · kółko = zoom<br>klik kabla + Delete = usuń · Ctrl+Z / Ctrl+Y · Esc = anuluj</div>
+  <div id="bar"><span id="stat"></span><span id="msg"></span></div>
+  <script type="module" src="/editor.ts"></script>
+</body>
+</html>

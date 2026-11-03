@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "StageWire",
+  "version": "0.0.1",
+  "identifier": "pl.greencrew.tools.stagewire",
+  "build": {
+    "frontendDist": "../dist-web",
+    "beforeBuildCommand": "npm run build:web"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "StageWire",
+        "width": 1366,
+        "height": 768,
+        "url": "editor.html"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "publisher": "GreenCrew",
+    "copyright": "© 2026 GreenCrew. Licencja PolyForm Shield 1.0.0",
+    "category": "Productivity",
+    "licenseFile": "../../LICENSE",
+    "shortDescription": "StageWire: schematy blokowe, plan sali, racki i szafy do projektowania technicznego eventów (offline)",
+    "longDescription": "StageWire to darmowe, działające offline narzędzie do technicznego projektowania eventów: schematy blokowe urządzeń z prawdziwymi portami, plan sali w skali, widok 3D, racki, szafy DIN, listy kabli i raporty PDF.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      },
+      "nsis": {
+        "installMode": "currentUser",
+        "languages": [
+          "Polish"
+        ],
+        "displayLanguageSelector": false
+      }
+    },
+    "linux": {
+      "deb": {
+        "section": "graphics"
+      }
+    }
+  }
+}

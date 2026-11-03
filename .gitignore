@@ -1,0 +1,33 @@
+# zależności i artefakty budowy
+node_modules/
+stagewire/dist-web/
+stagewire/installer/
+stagewire/src-tauri/target/
+stagewire/src-tauri/target-v2/
+stagewire/src-tauri/gen/
+
+# wyniki pomiarów z lokalnych maszyn (zawierają ścieżki użytkownika)
+stagewire/bench/results/
+
+# materiały robocze, nie do publikacji
+/research/
+/testy/
+/screens/
+/brag-output/
+/tmp/
+
+# projekty użytkownika i kopie robocze
+*.sw
+*.sw.backups/
+*.autosave
+
+# lokalne
+.vscode/
+.idea/
+.claude/
+__pycache__/
+*.log
+
+# wewnętrzne analizy konkurencji i audyty robocze (zob. docs/mvp/README.md)
+/docs/mvp/RESEARCH-SYNTHESIS.md
+/docs/mvp/STAGEWIRE-MVP-*.md

@@ -1,0 +1,988 @@
+{
+  "format": "stagewire-pack/1",
+  "id": "stagewire-starter",
+  "name": "Urządzenia ogólne (startowe)",
+  "version": "1.0.0",
+  "author": "StageWire",
+  "license": "własne (projekt StageWire)",
+  "description": "Ogólne urządzenia bez marek i modeli — punkt wyjścia do edycji. Nie zawiera danych skopiowanych z żadnej innej bazy.",
+  "registries": {
+    "std/bnc-75": {
+      "kind": "connector",
+      "name": "BNC 75 Ω"
+    },
+    "std/hdmi-a": {
+      "kind": "connector",
+      "name": "HDMI typ A"
+    },
+    "std/dp": {
+      "kind": "connector",
+      "name": "DisplayPort"
+    },
+    "std/rj45": {
+      "kind": "connector",
+      "name": "RJ45"
+    },
+    "std/xlr-3": {
+      "kind": "connector",
+      "name": "XLR 3-pin"
+    },
+    "std/xlr-5": {
+      "kind": "connector",
+      "name": "XLR 5-pin"
+    },
+    "std/sdi-3g": {
+      "kind": "signal",
+      "name": "SDI 3G",
+      "domain": "video",
+      "color": "#2f7fd1",
+      "prefix": "V"
+    },
+    "std/hdmi": {
+      "kind": "signal",
+      "name": "HDMI",
+      "domain": "video",
+      "color": "#6b6b6b",
+      "prefix": "V"
+    },
+    "std/displayport": {
+      "kind": "signal",
+      "name": "DisplayPort",
+      "domain": "video",
+      "color": "#8b5fbf",
+      "prefix": "V"
+    },
+    "std/ethernet": {
+      "kind": "signal",
+      "name": "Ethernet",
+      "domain": "network",
+      "color": "#2fa84f",
+      "prefix": "N"
+    },
+    "std/dmx": {
+      "kind": "signal",
+      "name": "DMX512",
+      "domain": "lighting",
+      "color": "#d1a12f",
+      "prefix": "D"
+    },
+    "std/audio-analog": {
+      "kind": "signal",
+      "name": "Audio analogowe (symetryczne)",
+      "domain": "audio",
+      "color": "#d1572f",
+      "prefix": "A"
+    },
+    "std/cable-sdi": {
+      "kind": "cable",
+      "name": "Koncentryk SDI",
+      "endPairs": [
+        [
+          "std/bnc-75",
+          "std/bnc-75"
+        ]
+      ],
+      "carriesSignals": [
+        "std/sdi-3g"
+      ]
+    },
+    "std/cable-hdmi": {
+      "kind": "cable",
+      "name": "Kabel HDMI",
+      "endPairs": [
+        [
+          "std/hdmi-a",
+          "std/hdmi-a"
+        ]
+      ],
+      "carriesSignals": [
+        "std/hdmi"
+      ]
+    },
+    "std/cable-dp": {
+      "kind": "cable",
+      "name": "Kabel DisplayPort",
+      "endPairs": [
+        [
+          "std/dp",
+          "std/dp"
+        ]
+      ],
+      "carriesSignals": [
+        "std/displayport"
+      ]
+    },
+    "std/cable-cat6": {
+      "kind": "cable",
+      "name": "Kabel Cat6",
+      "endPairs": [
+        [
+          "std/rj45",
+          "std/rj45"
+        ]
+      ],
+      "carriesSignals": [
+        "std/ethernet"
+      ]
+    },
+    "std/cable-dmx": {
+      "kind": "cable",
+      "name": "Kabel DMX",
+      "endPairs": [
+        [
+          "std/xlr-5",
+          "std/xlr-5"
+        ]
+      ],
+      "carriesSignals": [
+        "std/dmx"
+      ]
+    },
+    "std/cable-xlr-audio": {
+      "kind": "cable",
+      "name": "Kabel audio XLR",
+      "endPairs": [
+        [
+          "std/xlr-3",
+          "std/xlr-3"
+        ]
+      ],
+      "carriesSignals": [
+        "std/audio-analog"
+      ]
+    }
+  },
+  "devices": [
+    {
+      "key": "camera_sdi",
+      "manufacturer": "Generic",
+      "model": "Kamera SDI",
+      "category": "wideo / kamery",
+      "description": "Kamera z wyjściem SDI",
+      "dimensionsMm": {
+        "width": 300,
+        "depth": 500,
+        "height": 300
+      },
+      "ports": [
+        {
+          "key": "sdi-out",
+          "label": "SDI OUT",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "out"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "camera_ptz",
+      "manufacturer": "Generic",
+      "model": "Kamera PTZ",
+      "category": "wideo / kamery",
+      "description": "Kamera obrotowa: wyjście SDI i sterowanie siecią",
+      "dimensionsMm": {
+        "width": 200,
+        "depth": 200,
+        "height": 250
+      },
+      "ports": [
+        {
+          "key": "sdi-out",
+          "label": "SDI OUT",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "lan",
+          "label": "LAN",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "laptop",
+      "manufacturer": "Generic",
+      "model": "Laptop prezentera",
+      "category": "wideo / źródła",
+      "description": "Źródło HDMI i sieć",
+      "dimensionsMm": {
+        "width": 350,
+        "depth": 250,
+        "height": 25
+      },
+      "ports": [
+        {
+          "key": "hdmi-out",
+          "label": "HDMI OUT",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "lan",
+          "label": "LAN",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "media_server",
+      "manufacturer": "Generic",
+      "model": "Serwer mediów",
+      "category": "wideo / źródła",
+      "description": "Dwa wyjścia DisplayPort i sieć",
+      "dimensionsMm": {
+        "width": 483,
+        "depth": 500,
+        "height": 88
+      },
+      "rackUnits": {
+        "heightU": 2,
+        "widthFraction": 1
+      },
+      "ports": [
+        {
+          "key": "dp-out-1",
+          "label": "DP OUT 1",
+          "connector": "std/dp",
+          "signals": [
+            "std/displayport"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "dp-out-2",
+          "label": "DP OUT 2",
+          "connector": "std/dp",
+          "signals": [
+            "std/displayport"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "lan",
+          "label": "LAN",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "video_switcher",
+      "manufacturer": "Generic",
+      "model": "Mikser wizji",
+      "category": "wideo / przełączanie",
+      "description": "8 wejść SDI, 4 wyjścia SDI, sieć",
+      "dimensionsMm": {
+        "width": 483,
+        "depth": 350,
+        "height": 88
+      },
+      "rackUnits": {
+        "heightU": 2,
+        "widthFraction": 1
+      },
+      "ports": [
+        {
+          "key": "sdi-in-1",
+          "label": "SDI IN 1",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "sdi-in-2",
+          "label": "SDI IN 2",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "sdi-in-3",
+          "label": "SDI IN 3",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "sdi-in-4",
+          "label": "SDI IN 4",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "sdi-in-5",
+          "label": "SDI IN 5",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "sdi-in-6",
+          "label": "SDI IN 6",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "sdi-in-7",
+          "label": "SDI IN 7",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "sdi-in-8",
+          "label": "SDI IN 8",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "sdi-out-1",
+          "label": "SDI OUT 1",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "sdi-out-2",
+          "label": "SDI OUT 2",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "sdi-out-3",
+          "label": "SDI OUT 3",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "sdi-out-4",
+          "label": "SDI OUT 4",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "lan",
+          "label": "LAN",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "conv_hdmi_sdi",
+      "manufacturer": "Generic",
+      "model": "Konwerter HDMI → SDI",
+      "category": "wideo / konwertery",
+      "dimensionsMm": {
+        "width": 100,
+        "depth": 80,
+        "height": 25
+      },
+      "ports": [
+        {
+          "key": "hdmi-in",
+          "label": "HDMI IN",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "sdi-out",
+          "label": "SDI OUT",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "out"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "conv_sdi_hdmi",
+      "manufacturer": "Generic",
+      "model": "Konwerter SDI → HDMI",
+      "category": "wideo / konwertery",
+      "dimensionsMm": {
+        "width": 100,
+        "depth": 80,
+        "height": 25
+      },
+      "ports": [
+        {
+          "key": "sdi-in",
+          "label": "SDI IN",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "hdmi-out",
+          "label": "HDMI OUT",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "out"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "monitor_hdmi",
+      "manufacturer": "Generic",
+      "model": "Monitor HDMI",
+      "category": "wideo / wyświetlacze",
+      "dimensionsMm": {
+        "width": 600,
+        "depth": 80,
+        "height": 350
+      },
+      "ports": [
+        {
+          "key": "hdmi-in",
+          "label": "HDMI IN",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "projector",
+      "manufacturer": "Generic",
+      "model": "Projektor",
+      "category": "wideo / wyświetlacze",
+      "description": "Wejścia HDMI i SDI, sterowanie siecią",
+      "dimensionsMm": {
+        "width": 500,
+        "depth": 600,
+        "height": 200
+      },
+      "ports": [
+        {
+          "key": "hdmi-in",
+          "label": "HDMI IN",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "sdi-in",
+          "label": "SDI IN",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "lan",
+          "label": "LAN",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "led_processor",
+      "manufacturer": "Generic",
+      "model": "Procesor ekranu LED",
+      "category": "wideo / LED",
+      "description": "2 wejścia HDMI, 1 DisplayPort, 4 wyjścia sieciowe do ekranu, sterowanie",
+      "dimensionsMm": {
+        "width": 483,
+        "depth": 300,
+        "height": 44
+      },
+      "rackUnits": {
+        "heightU": 1,
+        "widthFraction": 1
+      },
+      "ports": [
+        {
+          "key": "hdmi-in-1",
+          "label": "HDMI IN 1",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "hdmi-in-2",
+          "label": "HDMI IN 2",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "dp-in-1",
+          "label": "DP IN 1",
+          "connector": "std/dp",
+          "signals": [
+            "std/displayport"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "led-out-1",
+          "label": "LED OUT 1",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "led-out-2",
+          "label": "LED OUT 2",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "led-out-3",
+          "label": "LED OUT 3",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "led-out-4",
+          "label": "LED OUT 4",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "lan",
+          "label": "LAN",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "network_switch_8",
+      "manufacturer": "Generic",
+      "model": "Switch sieciowy 8-portowy",
+      "category": "sieć",
+      "dimensionsMm": {
+        "width": 483,
+        "depth": 250,
+        "height": 44
+      },
+      "rackUnits": {
+        "heightU": 1,
+        "widthFraction": 1
+      },
+      "ports": [
+        {
+          "key": "lan-1",
+          "label": "LAN 1",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        },
+        {
+          "key": "lan-2",
+          "label": "LAN 2",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        },
+        {
+          "key": "lan-3",
+          "label": "LAN 3",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        },
+        {
+          "key": "lan-4",
+          "label": "LAN 4",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        },
+        {
+          "key": "lan-5",
+          "label": "LAN 5",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        },
+        {
+          "key": "lan-6",
+          "label": "LAN 6",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        },
+        {
+          "key": "lan-7",
+          "label": "LAN 7",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        },
+        {
+          "key": "lan-8",
+          "label": "LAN 8",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "light_console",
+      "manufacturer": "Generic",
+      "model": "Pulpit oświetleniowy",
+      "category": "oświetlenie",
+      "description": "Dwa uniwersa DMX i sieć",
+      "dimensionsMm": {
+        "width": 800,
+        "depth": 500,
+        "height": 120
+      },
+      "ports": [
+        {
+          "key": "dmx-out-1",
+          "label": "DMX OUT 1",
+          "connector": "std/xlr-5",
+          "signals": [
+            "std/dmx"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "dmx-out-2",
+          "label": "DMX OUT 2",
+          "connector": "std/xlr-5",
+          "signals": [
+            "std/dmx"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "lan",
+          "label": "LAN",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "dmx_fixture",
+      "manufacturer": "Generic",
+      "model": "Oprawa DMX",
+      "category": "oświetlenie",
+      "description": "Wejście i przelot DMX",
+      "dimensionsMm": {
+        "width": 300,
+        "depth": 300,
+        "height": 400
+      },
+      "ports": [
+        {
+          "key": "dmx-in",
+          "label": "DMX IN",
+          "connector": "std/xlr-5",
+          "signals": [
+            "std/dmx"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "dmx-thru",
+          "label": "DMX THRU",
+          "connector": "std/xlr-5",
+          "signals": [
+            "std/dmx"
+          ],
+          "direction": "loop"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    },
+    {
+      "key": "audio_mixer",
+      "manufacturer": "Generic",
+      "model": "Mikser audio",
+      "category": "audio",
+      "description": "8 wejść i 4 wyjścia XLR, sieć",
+      "dimensionsMm": {
+        "width": 500,
+        "depth": 500,
+        "height": 130
+      },
+      "ports": [
+        {
+          "key": "in-1",
+          "label": "IN 1",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "in-2",
+          "label": "IN 2",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "in-3",
+          "label": "IN 3",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "in-4",
+          "label": "IN 4",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "in-5",
+          "label": "IN 5",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "in-6",
+          "label": "IN 6",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "in-7",
+          "label": "IN 7",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "in-8",
+          "label": "IN 8",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "in"
+        },
+        {
+          "key": "out-1",
+          "label": "OUT 1",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "out-2",
+          "label": "OUT 2",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "out-3",
+          "label": "OUT 3",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "out-4",
+          "label": "OUT 4",
+          "connector": "std/xlr-3",
+          "signals": [
+            "std/audio-analog"
+          ],
+          "direction": "out"
+        },
+        {
+          "key": "lan",
+          "label": "LAN",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io"
+        }
+      ],
+      "source": {
+        "kind": "generic",
+        "note": "Urządzenie ogólne napisane na potrzeby projektu; wartości przykładowe, nie dokumentacja żadnego produktu."
+      }
+    }
+  ]
+}

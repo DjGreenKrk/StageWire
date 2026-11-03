@@ -1,0 +1,495 @@
+{
+  "format": "stagewire-pack/1",
+  "id": "stagewire-registries",
+  "name": "Standardowe złącza, sygnały i kable",
+  "version": "1.1.0",
+  "author": "StageWire",
+  "license": "własne (projekt StageWire)",
+  "description": "Wspólny słownik złączy, sygnałów i typów kabli dla pakietów urządzeń. Nazwy standardów i złączy są pojęciami technicznymi, nie treścią cudzej bazy danych.",
+  "registries": {
+    "std/iec-c14": {
+      "kind": "connector",
+      "name": "IEC C14 (wejście zasilania)"
+    },
+    "std/iec-c13": {
+      "kind": "connector",
+      "name": "IEC C13 (wyjście zasilania)"
+    },
+    "std/schuko": {
+      "kind": "connector",
+      "name": "Schuko (CEE 7/4)"
+    },
+    "std/dc-barrel": {
+      "kind": "connector",
+      "name": "Gniazdo DC (beczkowe)"
+    },
+    "std/xlr-4": {
+      "kind": "connector",
+      "name": "XLR 4-pin"
+    },
+    "std/speakon": {
+      "kind": "connector",
+      "name": "Speakon"
+    },
+    "std/powercon": {
+      "kind": "connector",
+      "name": "powerCON"
+    },
+    "std/jack-6-35": {
+      "kind": "connector",
+      "name": "Jack 6,3 mm (TS/TRS)"
+    },
+    "std/jack-3-5": {
+      "kind": "connector",
+      "name": "Jack 3,5 mm"
+    },
+    "std/rca": {
+      "kind": "connector",
+      "name": "RCA (cinch)"
+    },
+    "std/din-5": {
+      "kind": "connector",
+      "name": "DIN 5-pin (MIDI)"
+    },
+    "std/usb-a": {
+      "kind": "connector",
+      "name": "USB-A"
+    },
+    "std/usb-b": {
+      "kind": "connector",
+      "name": "USB-B"
+    },
+    "std/usb-c": {
+      "kind": "connector",
+      "name": "USB-C"
+    },
+    "std/sfp": {
+      "kind": "connector",
+      "name": "SFP / SFP+"
+    },
+    "std/lc-duplex": {
+      "kind": "connector",
+      "name": "LC duplex (światłowód)"
+    },
+    "std/hdmi-mini": {
+      "kind": "connector",
+      "name": "HDMI Mini (typ C)"
+    },
+    "std/hdmi-micro": {
+      "kind": "connector",
+      "name": "HDMI Micro (typ D)"
+    },
+    "std/dp-mini": {
+      "kind": "connector",
+      "name": "Mini DisplayPort"
+    },
+    "std/dvi-d": {
+      "kind": "connector",
+      "name": "DVI-D"
+    },
+    "std/vga-dsub": {
+      "kind": "connector",
+      "name": "VGA (D-sub 15)"
+    },
+    "std/db9": {
+      "kind": "connector",
+      "name": "D-sub 9 (DE-9)"
+    },
+    "std/db25": {
+      "kind": "connector",
+      "name": "D-sub 25 (DB25)"
+    },
+    "std/bnc-50": {
+      "kind": "connector",
+      "name": "BNC 50 Ω"
+    },
+    "std/sdi-hd": {
+      "kind": "signal",
+      "name": "SDI HD (1,5G)",
+      "domain": "video",
+      "color": "#4f9fe0",
+      "prefix": "V"
+    },
+    "std/sdi-6g": {
+      "kind": "signal",
+      "name": "SDI 6G",
+      "domain": "video",
+      "color": "#1f5fa8",
+      "prefix": "V"
+    },
+    "std/sdi-12g": {
+      "kind": "signal",
+      "name": "SDI 12G",
+      "domain": "video",
+      "color": "#164a85",
+      "prefix": "V"
+    },
+    "std/dvi": {
+      "kind": "signal",
+      "name": "DVI",
+      "domain": "video",
+      "color": "#7a7a7a",
+      "prefix": "V"
+    },
+    "std/vga": {
+      "kind": "signal",
+      "name": "VGA",
+      "domain": "video",
+      "color": "#5c5c8a",
+      "prefix": "V"
+    },
+    "std/ndi": {
+      "kind": "signal",
+      "name": "NDI",
+      "domain": "video",
+      "color": "#c0407a",
+      "prefix": "V"
+    },
+    "std/st2110": {
+      "kind": "signal",
+      "name": "SMPTE ST 2110",
+      "domain": "video",
+      "color": "#b03030",
+      "prefix": "V"
+    },
+    "std/dante": {
+      "kind": "signal",
+      "name": "Dante",
+      "domain": "audio",
+      "color": "#e0762f",
+      "prefix": "A"
+    },
+    "std/aes67": {
+      "kind": "signal",
+      "name": "AES67",
+      "domain": "audio",
+      "color": "#e09a2f",
+      "prefix": "A"
+    },
+    "std/aes3": {
+      "kind": "signal",
+      "name": "AES3 (cyfrowe)",
+      "domain": "audio",
+      "color": "#d1572f",
+      "prefix": "A"
+    },
+    "std/audio-unbalanced": {
+      "kind": "signal",
+      "name": "Audio niesymetryczne",
+      "domain": "audio",
+      "color": "#b8452a",
+      "prefix": "A"
+    },
+    "std/audio-speaker": {
+      "kind": "signal",
+      "name": "Sygnał głośnikowy",
+      "domain": "audio",
+      "color": "#8f3a22",
+      "prefix": "A"
+    },
+    "std/midi": {
+      "kind": "signal",
+      "name": "MIDI",
+      "domain": "control",
+      "color": "#9a6fd1",
+      "prefix": "C"
+    },
+    "std/rs232": {
+      "kind": "signal",
+      "name": "RS-232",
+      "domain": "control",
+      "color": "#7e57c2",
+      "prefix": "C"
+    },
+    "std/rs422": {
+      "kind": "signal",
+      "name": "RS-422",
+      "domain": "control",
+      "color": "#6a4bb0",
+      "prefix": "C"
+    },
+    "std/usb": {
+      "kind": "signal",
+      "name": "USB",
+      "domain": "control",
+      "color": "#8d8d8d",
+      "prefix": "U"
+    },
+    "std/artnet": {
+      "kind": "signal",
+      "name": "Art-Net",
+      "domain": "lighting",
+      "color": "#e0b12f",
+      "prefix": "D"
+    },
+    "std/sacn": {
+      "kind": "signal",
+      "name": "sACN (E1.31)",
+      "domain": "lighting",
+      "color": "#c9a227",
+      "prefix": "D"
+    },
+    "std/wordclock": {
+      "kind": "signal",
+      "name": "Word Clock",
+      "domain": "sync",
+      "color": "#26a69a",
+      "prefix": "S"
+    },
+    "std/timecode-ltc": {
+      "kind": "signal",
+      "name": "Timecode LTC",
+      "domain": "sync",
+      "color": "#00897b",
+      "prefix": "S"
+    },
+    "std/fiber": {
+      "kind": "signal",
+      "name": "Światłowód (transport)",
+      "domain": "network",
+      "color": "#2fa8a0",
+      "prefix": "N"
+    },
+    "std/power-ac": {
+      "kind": "signal",
+      "name": "Zasilanie AC",
+      "domain": "power",
+      "color": "#d94b4b",
+      "prefix": "P"
+    },
+    "std/power-dc": {
+      "kind": "signal",
+      "name": "Zasilanie DC",
+      "domain": "power",
+      "color": "#b03a8a",
+      "prefix": "P"
+    },
+    "std/poe": {
+      "kind": "signal",
+      "name": "PoE (zasilanie przez Ethernet)",
+      "domain": "power",
+      "color": "#c97b2e",
+      "prefix": "P"
+    },
+    "std/cable-speakon": {
+      "kind": "cable",
+      "name": "Kabel głośnikowy Speakon",
+      "endPairs": [
+        [
+          "std/speakon",
+          "std/speakon"
+        ]
+      ],
+      "carriesSignals": [
+        "std/audio-speaker"
+      ]
+    },
+    "std/cable-jack": {
+      "kind": "cable",
+      "name": "Kabel jack 6,3 mm",
+      "endPairs": [
+        [
+          "std/jack-6-35",
+          "std/jack-6-35"
+        ]
+      ],
+      "carriesSignals": [
+        "std/audio-unbalanced",
+        "std/audio-analog"
+      ]
+    },
+    "std/cable-usb-a-b": {
+      "kind": "cable",
+      "name": "Kabel USB A–B",
+      "endPairs": [
+        [
+          "std/usb-a",
+          "std/usb-b"
+        ]
+      ],
+      "carriesSignals": [
+        "std/usb"
+      ]
+    },
+    "std/cable-usb-c": {
+      "kind": "cable",
+      "name": "Kabel USB-C",
+      "endPairs": [
+        [
+          "std/usb-c",
+          "std/usb-c"
+        ]
+      ],
+      "carriesSignals": [
+        "std/usb"
+      ]
+    },
+    "std/cable-fiber-lc": {
+      "kind": "cable",
+      "name": "Patchcord światłowodowy LC",
+      "endPairs": [
+        [
+          "std/lc-duplex",
+          "std/lc-duplex"
+        ]
+      ],
+      "carriesSignals": [
+        "std/fiber"
+      ]
+    },
+    "std/cable-dvi": {
+      "kind": "cable",
+      "name": "Kabel DVI",
+      "endPairs": [
+        [
+          "std/dvi-d",
+          "std/dvi-d"
+        ]
+      ],
+      "carriesSignals": [
+        "std/dvi"
+      ]
+    },
+    "std/cable-vga": {
+      "kind": "cable",
+      "name": "Kabel VGA",
+      "endPairs": [
+        [
+          "std/vga-dsub",
+          "std/vga-dsub"
+        ]
+      ],
+      "carriesSignals": [
+        "std/vga"
+      ]
+    },
+    "std/cable-midi": {
+      "kind": "cable",
+      "name": "Kabel MIDI (DIN 5)",
+      "endPairs": [
+        [
+          "std/din-5",
+          "std/din-5"
+        ]
+      ],
+      "carriesSignals": [
+        "std/midi"
+      ]
+    },
+    "std/cable-rs232": {
+      "kind": "cable",
+      "name": "Kabel RS-232 (DE-9)",
+      "endPairs": [
+        [
+          "std/db9",
+          "std/db9"
+        ]
+      ],
+      "carriesSignals": [
+        "std/rs232"
+      ]
+    },
+    "std/cable-iec": {
+      "kind": "cable",
+      "name": "Kabel zasilający IEC (C13–C14)",
+      "endPairs": [
+        [
+          "std/iec-c14",
+          "std/iec-c13"
+        ]
+      ],
+      "carriesSignals": [
+        "std/power-ac"
+      ]
+    },
+    "std/cable-schuko-iec": {
+      "kind": "cable",
+      "name": "Kabel zasilający Schuko–IEC C13",
+      "endPairs": [
+        [
+          "std/schuko",
+          "std/iec-c14"
+        ]
+      ],
+      "carriesSignals": [
+        "std/power-ac"
+      ]
+    },
+    "std/cable-powercon": {
+      "kind": "cable",
+      "name": "Kabel powerCON",
+      "endPairs": [
+        [
+          "std/powercon",
+          "std/powercon"
+        ]
+      ],
+      "carriesSignals": [
+        "std/power-ac"
+      ]
+    },
+    "std/cable-dc": {
+      "kind": "cable",
+      "name": "Kabel zasilający DC",
+      "endPairs": [
+        [
+          "std/dc-barrel",
+          "std/dc-barrel"
+        ]
+      ],
+      "carriesSignals": [
+        "std/power-dc"
+      ]
+    },
+    "std/cable-bnc-50": {
+      "kind": "cable",
+      "name": "Koncentryk BNC 50 Ω",
+      "endPairs": [
+        [
+          "std/bnc-50",
+          "std/bnc-50"
+        ]
+      ],
+      "carriesSignals": [
+        "std/wordclock",
+        "std/timecode-ltc"
+      ]
+    },
+    "std/din-terminal": {
+      "kind": "connector",
+      "name": "Zacisk na szynę DIN (śrubowy/sprężynowy)"
+    },
+    "std/ctrl-0-10v": {
+      "kind": "signal",
+      "name": "Sterowanie 0–10 V",
+      "domain": "control",
+      "color": "#7a8a2b",
+      "prefix": "C"
+    },
+    "std/relay": {
+      "kind": "signal",
+      "name": "Styk beznapięciowy",
+      "domain": "control",
+      "color": "#8a2b7a",
+      "prefix": "R"
+    },
+    "std/cable-wire": {
+      "kind": "cable",
+      "name": "Przewód w szafie (zacisk–zacisk)",
+      "endPairs": [
+        [
+          "std/din-terminal",
+          "std/din-terminal"
+        ]
+      ],
+      "carriesSignals": [
+        "std/power-ac",
+        "std/power-dc",
+        "std/dmx",
+        "std/ctrl-0-10v",
+        "std/relay"
+      ]
+    }
+  },
+  "devices": []
+}

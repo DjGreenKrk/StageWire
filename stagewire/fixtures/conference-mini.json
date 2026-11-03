@@ -1,0 +1,727 @@
+{
+  "formatVersion": "1.0.0-draft",
+  "id": "prj_demo1",
+  "name": "Konferencja — przykład minimalny",
+  "meta": {
+    "client": "Klient Demo",
+    "venue": "Hala A",
+    "eventDates": [
+      "2026-11-20"
+    ],
+    "author": "A. Technik",
+    "notes": "",
+    "createdAt": "2026-10-31T10:00:00Z",
+    "modifiedAt": "2026-10-31T10:30:00Z"
+  },
+  "settings": {
+    "defaultCableSlackMm": 1000,
+    "stockCableLengthsMm": [
+      1000,
+      2000,
+      3000,
+      5000,
+      10000,
+      15000,
+      20000,
+      30000
+    ],
+    "cableNumbering": {
+      "pattern": "{prefix}{seq:3}"
+    },
+    "validationOverrides": {},
+    "units": "mm",
+    "locale": "pl"
+  },
+  "registries": {
+    "std/bnc-75": {
+      "kind": "connector",
+      "name": "BNC 75 Ω"
+    },
+    "std/hdmi-a": {
+      "kind": "connector",
+      "name": "HDMI typ A"
+    },
+    "std/rj45": {
+      "kind": "connector",
+      "name": "RJ45"
+    },
+    "std/sdi-3g": {
+      "kind": "signal",
+      "name": "SDI 3G",
+      "domain": "video",
+      "color": "#2f7fd1",
+      "prefix": "V"
+    },
+    "std/hdmi": {
+      "kind": "signal",
+      "name": "HDMI",
+      "domain": "video",
+      "color": "#6b6b6b",
+      "prefix": "V"
+    },
+    "std/ethernet": {
+      "kind": "signal",
+      "name": "Ethernet",
+      "domain": "network",
+      "color": "#2fa84f",
+      "prefix": "N"
+    },
+    "std/cable-sdi": {
+      "kind": "cable",
+      "name": "Koncentryk SDI",
+      "endPairs": [
+        [
+          "std/bnc-75",
+          "std/bnc-75"
+        ]
+      ],
+      "carriesSignals": [
+        "std/sdi-3g"
+      ]
+    },
+    "std/cable-hdmi": {
+      "kind": "cable",
+      "name": "Kabel HDMI",
+      "endPairs": [
+        [
+          "std/hdmi-a",
+          "std/hdmi-a"
+        ]
+      ],
+      "carriesSignals": [
+        "std/hdmi"
+      ]
+    },
+    "std/cable-cat6": {
+      "kind": "cable",
+      "name": "Kabel Cat6",
+      "endPairs": [
+        [
+          "std/rj45",
+          "std/rj45"
+        ]
+      ],
+      "carriesSignals": [
+        "std/ethernet"
+      ]
+    }
+  },
+  "definitions": {
+    "eqd_cam": {
+      "latestRevision": 1,
+      "revisions": {
+        "1": {
+          "manufacturer": "Generic",
+          "model": "Camera SDI",
+          "category": "camera",
+          "kind": "physical",
+          "dimensionsMm": {
+            "width": 300,
+            "depth": 500,
+            "height": 300
+          },
+          "symbol": {
+            "icon": "camera",
+            "color": "#444444"
+          },
+          "origin": {
+            "custom": true
+          },
+          "ports": {
+            "prt_sdiout": {
+              "label": "SDI OUT",
+              "order": 1,
+              "connectorKey": "std/bnc-75",
+              "signalKeys": [
+                "std/sdi-3g"
+              ],
+              "direction": "out",
+              "side": "auto",
+              "capacity": 1
+            }
+          }
+        }
+      }
+    },
+    "eqd_mixer": {
+      "latestRevision": 1,
+      "revisions": {
+        "1": {
+          "manufacturer": "Generic",
+          "model": "Video Mixer 4-in",
+          "category": "switcher",
+          "kind": "physical",
+          "dimensionsMm": {
+            "width": 450,
+            "depth": 300,
+            "height": 90
+          },
+          "symbol": {
+            "icon": "switcher",
+            "color": "#444444"
+          },
+          "origin": {
+            "custom": true
+          },
+          "ports": {
+            "prt_in1": {
+              "label": "SDI IN 1",
+              "group": "SDI IN",
+              "order": 1,
+              "connectorKey": "std/bnc-75",
+              "signalKeys": [
+                "std/sdi-3g"
+              ],
+              "direction": "in",
+              "side": "auto",
+              "capacity": 1
+            },
+            "prt_in2": {
+              "label": "SDI IN 2",
+              "group": "SDI IN",
+              "order": 2,
+              "connectorKey": "std/bnc-75",
+              "signalKeys": [
+                "std/sdi-3g"
+              ],
+              "direction": "in",
+              "side": "auto",
+              "capacity": 1
+            },
+            "prt_hdmiout": {
+              "label": "HDMI PGM",
+              "order": 3,
+              "connectorKey": "std/hdmi-a",
+              "signalKeys": [
+                "std/hdmi"
+              ],
+              "direction": "out",
+              "side": "auto",
+              "capacity": 1
+            },
+            "prt_eth": {
+              "label": "LAN",
+              "order": 4,
+              "connectorKey": "std/rj45",
+              "signalKeys": [
+                "std/ethernet"
+              ],
+              "direction": "io",
+              "side": "auto",
+              "capacity": 1
+            }
+          }
+        }
+      }
+    },
+    "eqd_led": {
+      "latestRevision": 1,
+      "revisions": {
+        "1": {
+          "manufacturer": "Generic",
+          "model": "LED Wall 4x2.25",
+          "category": "display",
+          "kind": "physical",
+          "dimensionsMm": {
+            "width": 4000,
+            "depth": 150,
+            "height": 2250
+          },
+          "symbol": {
+            "icon": "screen",
+            "color": "#444444"
+          },
+          "origin": {
+            "custom": true
+          },
+          "ports": {
+            "prt_hdmiin": {
+              "label": "HDMI IN",
+              "order": 1,
+              "connectorKey": "std/hdmi-a",
+              "signalKeys": [
+                "std/hdmi"
+              ],
+              "direction": "in",
+              "side": "auto",
+              "capacity": 1
+            },
+            "prt_eth": {
+              "label": "LAN",
+              "order": 2,
+              "connectorKey": "std/rj45",
+              "signalKeys": [
+                "std/ethernet"
+              ],
+              "direction": "io",
+              "side": "auto",
+              "capacity": 1
+            }
+          }
+        }
+      }
+    },
+    "eqd_net4": {
+      "latestRevision": 1,
+      "revisions": {
+        "1": {
+          "manufacturer": "Generic",
+          "model": "Switch 4-port",
+          "category": "network-switch",
+          "kind": "physical",
+          "dimensionsMm": {
+            "width": 250,
+            "depth": 160,
+            "height": 44
+          },
+          "symbol": {
+            "icon": "network",
+            "color": "#444444"
+          },
+          "origin": {
+            "custom": true
+          },
+          "ports": {
+            "prt_p1": {
+              "label": "P1",
+              "order": 1,
+              "connectorKey": "std/rj45",
+              "signalKeys": [
+                "std/ethernet"
+              ],
+              "direction": "io",
+              "side": "auto",
+              "capacity": 1
+            },
+            "prt_p2": {
+              "label": "P2",
+              "order": 2,
+              "connectorKey": "std/rj45",
+              "signalKeys": [
+                "std/ethernet"
+              ],
+              "direction": "io",
+              "side": "auto",
+              "capacity": 1
+            },
+            "prt_p3": {
+              "label": "P3",
+              "order": 3,
+              "connectorKey": "std/rj45",
+              "signalKeys": [
+                "std/ethernet"
+              ],
+              "direction": "io",
+              "side": "auto",
+              "capacity": 1
+            },
+            "prt_p4": {
+              "label": "P4",
+              "order": 4,
+              "connectorKey": "std/rj45",
+              "signalKeys": [
+                "std/ethernet"
+              ],
+              "direction": "io",
+              "side": "auto",
+              "capacity": 1
+            }
+          }
+        }
+      }
+    }
+  },
+  "spaces": {
+    "spc_hall": {
+      "name": "Hala A",
+      "boundary": [
+        [
+          0,
+          0
+        ],
+        [
+          20000,
+          0
+        ],
+        [
+          20000,
+          15000
+        ],
+        [
+          0,
+          15000
+        ]
+      ],
+      "floorElevationMm": 0,
+      "ceilingHeightMm": 6000
+    }
+  },
+  "zones": {
+    "zon_stage": {
+      "name": "SCENA",
+      "color": "#d1812f",
+      "spaceId": "spc_hall",
+      "polygon": [
+        [
+          6000,
+          11000
+        ],
+        [
+          14000,
+          11000
+        ],
+        [
+          14000,
+          15000
+        ],
+        [
+          6000,
+          15000
+        ]
+      ]
+    },
+    "zon_foh": {
+      "name": "FOH",
+      "color": "#2f7fd1",
+      "spaceId": "spc_hall",
+      "polygon": [
+        [
+          8000,
+          1500
+        ],
+        [
+          12000,
+          1500
+        ],
+        [
+          12000,
+          4000
+        ],
+        [
+          8000,
+          4000
+        ]
+      ]
+    }
+  },
+  "stageObjects": {
+    "stg_stage": {
+      "name": "Scena 8x4",
+      "kind": "platform",
+      "footprint": {
+        "shape": "rect",
+        "widthMm": 8000,
+        "depthMm": 4000
+      },
+      "heightMm": 600,
+      "zoneId": "zon_stage"
+    }
+  },
+  "equipment": {
+    "eqi_cam1": {
+      "definitionId": "eqd_cam",
+      "definitionRevision": 1,
+      "name": "CAM1",
+      "zoneId": "zon_foh",
+      "supply": "rental",
+      "portOverrides": {}
+    },
+    "eqi_cam2": {
+      "definitionId": "eqd_cam",
+      "definitionRevision": 1,
+      "name": "CAM2",
+      "zoneId": "zon_foh",
+      "supply": "rental",
+      "portOverrides": {}
+    },
+    "eqi_mix1": {
+      "definitionId": "eqd_mixer",
+      "definitionRevision": 1,
+      "name": "MIX1",
+      "zoneId": "zon_foh",
+      "supply": "owned",
+      "portOverrides": {
+        "prt_eth": {
+          "attrs": {
+            "ip": "192.168.10.10"
+          }
+        }
+      }
+    },
+    "eqi_led1": {
+      "definitionId": "eqd_led",
+      "definitionRevision": 1,
+      "name": "LED1",
+      "zoneId": "zon_stage",
+      "supply": "rental",
+      "portOverrides": {}
+    },
+    "eqi_net1": {
+      "definitionId": "eqd_net4",
+      "definitionRevision": 1,
+      "name": "NET1",
+      "zoneId": "zon_foh",
+      "supply": "owned",
+      "portOverrides": {}
+    }
+  },
+  "placements": {
+    "plc_stage": {
+      "spaceId": "spc_hall",
+      "targetKind": "stageObject",
+      "targetId": "stg_stage",
+      "position": {
+        "x": 10000,
+        "y": 13000,
+        "z": 0
+      },
+      "rotationDeg": 0
+    },
+    "plc_cam1": {
+      "spaceId": "spc_hall",
+      "targetKind": "equipment",
+      "targetId": "eqi_cam1",
+      "position": {
+        "x": 8500,
+        "y": 3000,
+        "z": 0
+      },
+      "rotationDeg": 0
+    },
+    "plc_cam2": {
+      "spaceId": "spc_hall",
+      "targetKind": "equipment",
+      "targetId": "eqi_cam2",
+      "position": {
+        "x": 11500,
+        "y": 3000,
+        "z": 0
+      },
+      "rotationDeg": 0
+    },
+    "plc_mix1": {
+      "spaceId": "spc_hall",
+      "targetKind": "equipment",
+      "targetId": "eqi_mix1",
+      "position": {
+        "x": 10000,
+        "y": 2500,
+        "z": 750
+      },
+      "rotationDeg": 0
+    },
+    "plc_net1": {
+      "spaceId": "spc_hall",
+      "targetKind": "equipment",
+      "targetId": "eqi_net1",
+      "position": {
+        "x": 10900,
+        "y": 2500,
+        "z": 750
+      },
+      "rotationDeg": 0
+    },
+    "plc_led1": {
+      "spaceId": "spc_hall",
+      "targetKind": "equipment",
+      "targetId": "eqi_led1",
+      "position": {
+        "x": 10000,
+        "y": 14500,
+        "z": 600
+      },
+      "rotationDeg": 180
+    }
+  },
+  "connections": {
+    "cnx_1": {
+      "from": {
+        "instanceId": "eqi_cam1",
+        "portId": "prt_sdiout"
+      },
+      "to": {
+        "instanceId": "eqi_mix1",
+        "portId": "prt_in1"
+      },
+      "signalKey": "std/sdi-3g",
+      "medium": "physical",
+      "cableId": "cbl_1"
+    },
+    "cnx_2": {
+      "from": {
+        "instanceId": "eqi_cam2",
+        "portId": "prt_sdiout"
+      },
+      "to": {
+        "instanceId": "eqi_mix1",
+        "portId": "prt_in2"
+      },
+      "signalKey": "std/sdi-3g",
+      "medium": "physical",
+      "cableId": "cbl_2"
+    },
+    "cnx_3": {
+      "from": {
+        "instanceId": "eqi_mix1",
+        "portId": "prt_hdmiout"
+      },
+      "to": {
+        "instanceId": "eqi_led1",
+        "portId": "prt_hdmiin"
+      },
+      "signalKey": "std/hdmi",
+      "medium": "physical",
+      "cableId": "cbl_3"
+    },
+    "cnx_4": {
+      "from": {
+        "instanceId": "eqi_mix1",
+        "portId": "prt_eth"
+      },
+      "to": {
+        "instanceId": "eqi_net1",
+        "portId": "prt_p1"
+      },
+      "signalKey": "std/ethernet",
+      "medium": "physical",
+      "cableId": "cbl_4"
+    },
+    "cnx_5": {
+      "from": {
+        "instanceId": "eqi_led1",
+        "portId": "prt_eth"
+      },
+      "to": {
+        "instanceId": "eqi_net1",
+        "portId": "prt_p2"
+      },
+      "signalKey": "std/ethernet",
+      "medium": "physical",
+      "cableId": "cbl_5"
+    }
+  },
+  "cables": {
+    "cbl_1": {
+      "cableTypeKey": "std/cable-sdi",
+      "number": "V001",
+      "lengthMm": 15000,
+      "lengthSource": "manual"
+    },
+    "cbl_2": {
+      "cableTypeKey": "std/cable-sdi",
+      "number": "V002",
+      "lengthMm": 15000,
+      "lengthSource": "manual"
+    },
+    "cbl_3": {
+      "cableTypeKey": "std/cable-hdmi",
+      "number": "V003",
+      "lengthSource": "unknown"
+    },
+    "cbl_4": {
+      "cableTypeKey": "std/cable-cat6",
+      "number": "N001",
+      "lengthMm": 1000,
+      "lengthSource": "manual"
+    },
+    "cbl_5": {
+      "cableTypeKey": "std/cable-cat6",
+      "number": "N002",
+      "lengthSource": "unknown"
+    }
+  },
+  "views": {
+    "viw_plan": {
+      "kind": "plan",
+      "name": "Plan sali",
+      "spaceId": "spc_hall",
+      "viewport": {
+        "x": 10000,
+        "y": 7500,
+        "zoom": 0.05
+      },
+      "grid": {
+        "sizeMm": 500,
+        "snap": true,
+        "style": "dots"
+      },
+      "print": {
+        "paper": "A3",
+        "orientation": "landscape",
+        "scale": "1:100"
+      },
+      "drawing": {
+        "drw_dim1": {
+          "kind": "dimension",
+          "from": [
+            6000,
+            10500
+          ],
+          "to": [
+            14000,
+            10500
+          ],
+          "label": "auto"
+        },
+        "drw_t1": {
+          "kind": "text",
+          "at": [
+            10000,
+            9800
+          ],
+          "text": "Widownia",
+          "size": 300
+        }
+      }
+    },
+    "viw_diag": {
+      "kind": "diagram",
+      "name": "Schemat sygnałowy",
+      "nodes": {
+        "dgn_cam1": {
+          "instanceId": "eqi_cam1",
+          "x": 0,
+          "y": 0
+        },
+        "dgn_cam2": {
+          "instanceId": "eqi_cam2",
+          "x": 0,
+          "y": 160
+        },
+        "dgn_mix1": {
+          "instanceId": "eqi_mix1",
+          "x": 320,
+          "y": 60
+        },
+        "dgn_led1": {
+          "instanceId": "eqi_led1",
+          "x": 680,
+          "y": 0
+        },
+        "dgn_net1": {
+          "instanceId": "eqi_net1",
+          "x": 680,
+          "y": 200
+        }
+      },
+      "edgeLayouts": {
+        "cnx_4": {
+          "waypoints": [
+            [
+              560,
+              140
+            ],
+            [
+              560,
+              230
+            ]
+          ]
+        }
+      },
+      "hiddenConnections": []
+    }
+  },
+  "reportDefinitions": {},
+  "suppressions": [],
+  "ext": {}
+}

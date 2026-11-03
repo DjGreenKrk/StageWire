@@ -1,0 +1,46 @@
+name: Zgłoszenie błędu
+description: Zgłoś powtarzalny problem w StageWire
+title: "[Błąd]: "
+labels: [bug]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Obszar
+      options:
+        - Plan sali
+        - Schemat
+        - Racki i szafy
+        - Widok 3D
+        - Biblioteka urządzeń
+        - Eksport PDF i lista kabli
+        - Zapis i otwieranie projektu
+        - Instalator
+        - Dokumentacja
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Wersja
+      description: Menu ☰ → O programie.
+      placeholder: 0.0.1
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Opis i kroki odtworzenia
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Oczekiwany i faktyczny wynik
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Dodatkowe informacje
+      description: System, zrzut ekranu, ewentualnie plik projektu bez danych poufnych.

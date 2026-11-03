@@ -1,0 +1,42 @@
+// Test listy kabli w interfejsie: tabela, numeracja, długości, cofanie.
+import { createServer } from 'vite';
+import { chromium } from 'playwright-core';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const server = await createServer({ root: path.join(root, 'web'), configFile: false, logLevel: 'error', server: { port: 5194, strictPort: true, fs: { allow: [root] } } });
+await server.listen();
+const browser = await chromium.launch({ channel: 'msedge', headless: false, args: ['--window-size=1400,900'] });
+const checks = []; const check = (n, ok, i) => { checks.push({ name: n, ok }); console.log(`${ok ? 'OK  ' : 'FAIL'} ${n}${i !== undefined ? ' — ' + JSON.stringify(i) : ''}`); };
+const page = await (await browser.newContext({ viewport: { width: 1366, height: 768 } })).newPage();
+page.on('pageerror', (e) => console.log('BŁĄD STRONY', String(e).slice(0, 200)));
+await page.goto('http://localhost:5194/editor.html?new=1'); await page.waitForFunction(() => window.__editor?.ready);
+const E = (fn, arg) => page.evaluate(fn, arg);
+const addAt = async (key, x, y) => { await E(([x, y]) => window.__editor.look(x, y, 1), [x, y]); await page.click(`#cat-list button[data-cat="${key}"]`); };
+await addAt('camera_sdi', 0, 40); await addAt('camera_sdi', 0, 240); await addAt('video_switcher', 420, 120);
+await E(() => window.__editor.look(210, 140, 1));
+const [k1, k2, mix] = await E(() => Object.keys(window.__editor.nodes()));
+for (const [k, port] of [[k1, 'prt_sdiin1'], [k2, 'prt_sdiin2']]) {
+  const a = await E((i) => window.__editor.portScreen(i, 'prt_sdiout'), k), b = await E(([i, p]) => window.__editor.portScreen(i, p), [mix, port]);
+  await page.mouse.move(a[0], a[1]); await page.mouse.down(); await page.mouse.move(b[0], b[1], { steps: 10 }); await page.mouse.up();
+}
+await page.click('#b-burger'); await page.click('#b-report'); await page.waitForSelector('#reportdialog');
+check('tabela ma 2 wiersze', (await page.$$eval('#reportdialog tbody tr', (r) => r.length)) === 2);
+check('ostrzeżenie o kablach bez numeru', (await page.textContent('#reportdialog .imp')).includes('2 kabli bez numeru'));
+await page.click('#r-num');
+const nums = await page.$$eval('#reportdialog tbody tr td:first-child', (c) => c.map((x) => x.textContent));
+check('numeracja V001, V002', nums.join() === 'V001,V002', nums);
+await page.fill('#reportdialog .f-len', '12.5'); await page.press('#reportdialog .f-len', 'Tab');
+const len = await E(() => Object.values(window.__editor.store.state.cables).map((c) => c.lengthMm).filter((x) => x !== undefined));
+check('długość zapisana w mm', len.length === 1 && len[0] === 12500, len);
+check('typ kabla czytelny', (await page.textContent('#reportdialog tbody tr td:nth-child(2)')) === 'Koncentryk SDI');
+await page.screenshot({ path: path.join(process.env.TEMP, 'sw-raport.png') });
+await page.click('#r-close');
+await page.keyboard.press('Control+z');
+check('Ctrl+Z cofa długość', (await E(() => Object.values(window.__editor.store.state.cables).filter((c) => c.lengthMm !== undefined).length)) === 0);
+await page.keyboard.press('Control+z');
+check('Ctrl+Z cofa numerację', (await E(() => Object.values(window.__editor.store.state.cables).filter((c) => c.number).length)) === 0);
+check('bez błędów walidacji', (await E(() => window.__editor.issues())) === 0);
+await browser.close(); await server.close();
+console.log(`\n${checks.filter((c) => c.ok).length}/${checks.length} kontroli`);
+process.exit(checks.every((c) => c.ok) ? 0 : 1);

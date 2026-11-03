@@ -1,0 +1,20 @@
+name: Propozycja funkcji
+description: Zaproponuj nową funkcję lub zmianę
+title: "[Propozycja]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Jaki problem rozwiązuje
+      description: Opisz sytuację z pracy przy wydarzeniu, nie samo rozwiązanie.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proponowane rozwiązanie
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Obecne obejście lub alternatywy

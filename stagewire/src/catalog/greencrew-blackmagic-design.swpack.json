@@ -1,0 +1,1026 @@
+{
+  "format": "stagewire-pack/1",
+  "id": "greencrew-blackmagic-design",
+  "name": "Blackmagic Design — zestaw startowy GreenCrew",
+  "version": "1.0.0",
+  "author": "GreenCrew",
+  "license": "Opracowanie własne do użytku wewnętrznego GreenCrew; fakty techniczne na podstawie ogólnodostępnych specyfikacji.",
+  "description": "Osiem rzeczywistych modeli Blackmagic Design do StageWire. Dane wygenerowane automatycznie ze źródeł zewnętrznych i niezatwierdzone pomiarami. Nie jest to oficjalna biblioteka Blackmagic Design.",
+  "registries": {
+    "user/bmd-reference-video": {
+      "kind": "signal",
+      "name": "Video Reference (Tri-Sync / Black Burst)",
+      "domain": "sync",
+      "color": "#319a99",
+      "prefix": "S"
+    },
+    "user/bmd-usb4-40gbps": {
+      "kind": "signal",
+      "name": "USB4 / 40 Gb/s (wymagany transport)",
+      "domain": "control",
+      "color": "#7777aa",
+      "prefix": "U"
+    },
+    "user/bmd-cable-usb4-40gbps": {
+      "kind": "cable",
+      "name": "USB-C — przewód certyfikowany do 40 Gb/s",
+      "endPairs": [
+        [
+          "std/usb-c",
+          "std/usb-c"
+        ]
+      ],
+      "carriesSignals": [
+        "user/bmd-usb4-40gbps"
+      ]
+    },
+    "user/bmd-cable-bnc75-reference": {
+      "kind": "cable",
+      "name": "BNC 75 Ω (reference / LTC) — zweryfikuj tor",
+      "endPairs": [
+        [
+          "std/bnc-75",
+          "std/bnc-75"
+        ]
+      ],
+      "carriesSignals": [
+        "user/bmd-reference-video",
+        "std/timecode-ltc"
+      ]
+    },
+    "user/bmd-cable-rs422-de9": {
+      "kind": "cable",
+      "name": "RS-422 Remote (DE-9 ↔ DE-9, pin-to-pin)",
+      "endPairs": [
+        [
+          "std/db9",
+          "std/db9"
+        ]
+      ],
+      "carriesSignals": [
+        "std/rs422"
+      ]
+    },
+    "user/bmd-cable-sdi12g": {
+      "kind": "cable",
+      "name": "Koncentryk 75 Ω odpowiedni dla 12G-SDI",
+      "endPairs": [
+        [
+          "std/bnc-75",
+          "std/bnc-75"
+        ]
+      ],
+      "carriesSignals": [
+        "std/sdi-12g",
+        "std/sdi-6g",
+        "std/sdi-3g",
+        "std/sdi-hd"
+      ]
+    }
+  },
+  "devices": [
+    {
+      "key": "atem-mini-pro-iso",
+      "manufacturer": "Blackmagic Design",
+      "model": "ATEM Mini Pro ISO",
+      "category": "wideo / przełączanie",
+      "kind": "physical",
+      "tags": [
+        "atem",
+        "hdmi",
+        "iso",
+        "streaming",
+        "multiview"
+      ],
+      "description": "Kompaktowy mikser 4 wejść HDMI z nagrywaniem ISO, wyjściem HDMI, USB-C i streamingiem po Ethernet.",
+      "ports": [
+        {
+          "key": "hdmi-in-1",
+          "label": "HDMI IN 1",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in",
+          "group": "HDMI IN"
+        },
+        {
+          "key": "hdmi-in-2",
+          "label": "HDMI IN 2",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in",
+          "group": "HDMI IN"
+        },
+        {
+          "key": "hdmi-in-3",
+          "label": "HDMI IN 3",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in",
+          "group": "HDMI IN"
+        },
+        {
+          "key": "hdmi-in-4",
+          "label": "HDMI IN 4",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in",
+          "group": "HDMI IN"
+        },
+        {
+          "key": "hdmi-out",
+          "label": "HDMI OUT",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "out",
+          "group": "HDMI OUT",
+          "note": "Program/multiview — funkcja wybierana w ATEM Software Control."
+        },
+        {
+          "key": "mic-1",
+          "label": "MIC 1",
+          "connector": "std/jack-3-5",
+          "signals": [
+            "std/audio-unbalanced"
+          ],
+          "direction": "in",
+          "group": "Audio",
+          "note": "Analogowe wejście stereo 3,5 mm, możliwe zasilanie mikrofonu plug-in."
+        },
+        {
+          "key": "mic-2",
+          "label": "MIC 2",
+          "connector": "std/jack-3-5",
+          "signals": [
+            "std/audio-unbalanced"
+          ],
+          "direction": "in",
+          "group": "Audio",
+          "note": "Analogowe wejście stereo 3,5 mm, możliwe zasilanie mikrofonu plug-in."
+        },
+        {
+          "key": "ethernet",
+          "label": "ETHERNET",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io",
+          "group": "Sieć",
+          "note": "Gigabit Ethernet: streaming i sterowanie."
+        },
+        {
+          "key": "usb-c",
+          "label": "USB-C",
+          "connector": "std/usb-c",
+          "signals": [
+            "std/usb"
+          ],
+          "direction": "io",
+          "group": "Komputer / nagrywanie",
+          "note": "Jeden fizyczny port: kamera USB, dysk do zapisu ISO, konfiguracja; tryby zależą od konfiguracji."
+        },
+        {
+          "key": "dc-in",
+          "label": "12V DC",
+          "connector": "std/dc-barrel",
+          "signals": [
+            "std/power-dc"
+          ],
+          "direction": "in",
+          "group": "Zasilanie",
+          "note": "Zewnętrzny zasilacz 12 V; wtyk blokowany (typ barrel).",
+          "electrical": {
+            "voltageMinV": 12,
+            "voltageMaxV": 12,
+            "maxW": 36
+          }
+        }
+      ],
+      "source": {
+        "kind": "datasheet",
+        "ref": "Blackmagic Design — ATEM Mini Pro ISO, Technical Specifications (online)",
+        "url": "https://www.blackmagicdesign.com/products/atemmini/techspecs",
+        "generated": true,
+        "note": "Liczba portów i moc: specyfikacja producenta. Wymiary i masa pomocniczo: SQM Multimedia Solutions / BPM Media (237,5 × 103,5 × 35 mm, 0,55 kg)."
+      },
+      "dimensionsMm": {
+        "width": 237.5,
+        "depth": 103.5,
+        "height": 35
+      },
+      "weightKg": 0.55,
+      "powerW": 36
+    },
+    {
+      "key": "atem-sdi-pro-iso",
+      "manufacturer": "Blackmagic Design",
+      "model": "ATEM SDI Pro ISO",
+      "category": "wideo / przełączanie",
+      "kind": "physical",
+      "tags": [
+        "atem",
+        "sdi",
+        "iso",
+        "streaming"
+      ],
+      "description": "Mikser wizji HD z 4 wejściami 3G-SDI, 2 wyjściami 3G-SDI, nagrywaniem ISO i streamingiem.",
+      "ports": [
+        {
+          "key": "sdi-in-1",
+          "label": "SDI IN 1",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "in",
+          "group": "3G-SDI IN"
+        },
+        {
+          "key": "sdi-in-2",
+          "label": "SDI IN 2",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "in",
+          "group": "3G-SDI IN"
+        },
+        {
+          "key": "sdi-in-3",
+          "label": "SDI IN 3",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "in",
+          "group": "3G-SDI IN"
+        },
+        {
+          "key": "sdi-in-4",
+          "label": "SDI IN 4",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "in",
+          "group": "3G-SDI IN"
+        },
+        {
+          "key": "sdi-out-1",
+          "label": "SDI OUT 1",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "out",
+          "group": "3G-SDI OUT",
+          "note": "Wyjścia programowe / routowalne dla monitoringu według konfiguracji."
+        },
+        {
+          "key": "sdi-out-2",
+          "label": "SDI OUT 2",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "out",
+          "group": "3G-SDI OUT",
+          "note": "Wyjścia programowe / routowalne dla monitoringu według konfiguracji."
+        },
+        {
+          "key": "mic-1",
+          "label": "MIC 1",
+          "connector": "std/jack-3-5",
+          "signals": [
+            "std/audio-unbalanced"
+          ],
+          "direction": "in",
+          "group": "Audio",
+          "note": "Analogowe wejście stereo 3,5 mm."
+        },
+        {
+          "key": "mic-2",
+          "label": "MIC 2",
+          "connector": "std/jack-3-5",
+          "signals": [
+            "std/audio-unbalanced"
+          ],
+          "direction": "in",
+          "group": "Audio",
+          "note": "Analogowe wejście stereo 3,5 mm."
+        },
+        {
+          "key": "ethernet",
+          "label": "ETHERNET",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io",
+          "group": "Sieć",
+          "note": "Gigabit Ethernet: streaming, aktualizacje i sterowanie."
+        },
+        {
+          "key": "usb-c",
+          "label": "USB-C",
+          "connector": "std/usb-c",
+          "signals": [
+            "std/usb"
+          ],
+          "direction": "io",
+          "group": "Komputer / nagrywanie",
+          "note": "Dysk ISO / webcam / konfiguracja, 1 fizyczny port."
+        },
+        {
+          "key": "dc-in",
+          "label": "12V DC",
+          "connector": "std/dc-barrel",
+          "signals": [
+            "std/power-dc"
+          ],
+          "direction": "in",
+          "group": "Zasilanie",
+          "note": "Zewnętrzny zasilacz 12 V; konkretny typ wtyku warto potwierdzić na egzemplarzu.",
+          "electrical": {
+            "voltageMinV": 12,
+            "voltageMaxV": 12,
+            "maxW": 36
+          }
+        }
+      ],
+      "source": {
+        "kind": "datasheet",
+        "ref": "Blackmagic Design — ATEM SDI Pro ISO, Technical Specifications (online)",
+        "url": "https://www.blackmagicdesign.com/products/atemsdi/techspecs",
+        "generated": true,
+        "note": "Wymiary i masa pomocniczo: WGElectronic (237,5 × 118,8 × 35 mm, 680 g); porty i moc wg producenta."
+      },
+      "dimensionsMm": {
+        "width": 237.5,
+        "depth": 118.8,
+        "height": 35
+      },
+      "weightKg": 0.68,
+      "powerW": 36
+    },
+    {
+      "key": "micro-converter-hdmi-to-sdi-3g",
+      "manufacturer": "Blackmagic Design",
+      "model": "Micro Converter HDMI to SDI 3G",
+      "category": "wideo / konwertery",
+      "kind": "physical",
+      "tags": [
+        "hdmi",
+        "sdi",
+        "3g",
+        "micro-converter"
+      ],
+      "description": "Konwerter HDMI na dwa wyjścia 3G-SDI; konfiguracja i zasilanie przez USB-C.",
+      "ports": [
+        {
+          "key": "hdmi-in",
+          "label": "HDMI IN",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in",
+          "group": "Video"
+        },
+        {
+          "key": "sdi-out-1",
+          "label": "SDI OUT 1",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "out",
+          "group": "3G-SDI OUT"
+        },
+        {
+          "key": "sdi-out-2",
+          "label": "SDI OUT 2",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "out",
+          "group": "3G-SDI OUT"
+        },
+        {
+          "key": "usb-c",
+          "label": "USB-C",
+          "connector": "std/usb-c",
+          "signals": [
+            "std/usb",
+            "std/power-dc"
+          ],
+          "direction": "io",
+          "group": "Zasilanie / konfiguracja",
+          "note": "Port USB-C do konfiguracji/aktualizacji i zasilania 4,4–5,25 V; zasilanie jest wejściem.",
+          "electrical": {
+            "voltageMinV": 4.4,
+            "voltageMaxV": 5.25,
+            "maxW": 2
+          }
+        }
+      ],
+      "source": {
+        "kind": "datasheet",
+        "ref": "Blackmagic Design — Micro Converter HDMI to SDI 3G, Technical Specifications (online)",
+        "url": "https://www.blackmagicdesign.com/products/microconverters/techspecs",
+        "generated": true,
+        "note": "Wymiary i masa pomocniczo: dealer Photospecialist / Visuals (ok. 76,5 × 45,8 × 24,8 mm; 150 g)."
+      },
+      "dimensionsMm": {
+        "width": 76.5,
+        "depth": 45.8,
+        "height": 24.8
+      },
+      "weightKg": 0.15,
+      "powerW": 2
+    },
+    {
+      "key": "micro-converter-sdi-to-hdmi-3g",
+      "manufacturer": "Blackmagic Design",
+      "model": "Micro Converter SDI to HDMI 3G",
+      "category": "wideo / konwertery",
+      "kind": "physical",
+      "tags": [
+        "hdmi",
+        "sdi",
+        "3g",
+        "micro-converter",
+        "loop"
+      ],
+      "description": "Konwerter 3G-SDI na HDMI z wyjściem przelotowym SDI; konfiguracja i zasilanie przez USB-C.",
+      "ports": [
+        {
+          "key": "sdi-in",
+          "label": "SDI IN",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "in",
+          "group": "3G-SDI"
+        },
+        {
+          "key": "sdi-loop-out",
+          "label": "SDI LOOP OUT",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "loop",
+          "group": "3G-SDI",
+          "note": "Przelot sygnału wejściowego SDI; opcjonalne zastosowanie LUT."
+        },
+        {
+          "key": "hdmi-out",
+          "label": "HDMI OUT",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "out",
+          "group": "HDMI"
+        },
+        {
+          "key": "usb-c",
+          "label": "USB-C",
+          "connector": "std/usb-c",
+          "signals": [
+            "std/usb",
+            "std/power-dc"
+          ],
+          "direction": "io",
+          "group": "Zasilanie / konfiguracja",
+          "note": "Port USB-C do konfiguracji/aktualizacji i zasilania 4,4–5,25 V; zasilanie jest wejściem.",
+          "electrical": {
+            "voltageMinV": 4.4,
+            "voltageMaxV": 5.25,
+            "maxW": 1.6
+          }
+        }
+      ],
+      "source": {
+        "kind": "datasheet",
+        "ref": "Blackmagic Design — Micro Converter SDI to HDMI 3G, Technical Specifications (online)",
+        "url": "https://www.blackmagicdesign.com/products/microconverters/techspecs",
+        "generated": true,
+        "note": "Wymiary i masa pomocniczo: dealer ESV / Photospecialist (ok. 76,5 × 45,8 × 24,8 mm; 150 g)."
+      },
+      "dimensionsMm": {
+        "width": 76.5,
+        "depth": 45.8,
+        "height": 24.8
+      },
+      "weightKg": 0.15,
+      "powerW": 1.6
+    },
+    {
+      "key": "micro-converter-bidirectional-sdi-hdmi-3g",
+      "manufacturer": "Blackmagic Design",
+      "model": "Micro Converter BiDirectional SDI/HDMI 3G",
+      "category": "wideo / konwertery",
+      "kind": "physical",
+      "tags": [
+        "bidirectional",
+        "hdmi",
+        "sdi",
+        "3g",
+        "micro-converter",
+        "tally"
+      ],
+      "description": "Dwukierunkowy konwerter 3G-SDI ↔ HDMI z dwoma niezależnymi torami konwersji i obsługą tally.",
+      "ports": [
+        {
+          "key": "sdi-in",
+          "label": "SDI IN",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "in",
+          "group": "3G-SDI"
+        },
+        {
+          "key": "sdi-out",
+          "label": "SDI OUT",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "out",
+          "group": "3G-SDI",
+          "note": "Wyjście z niezależnego toru konwersji HDMI → SDI."
+        },
+        {
+          "key": "hdmi-in",
+          "label": "HDMI IN",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in",
+          "group": "HDMI"
+        },
+        {
+          "key": "hdmi-out",
+          "label": "HDMI OUT",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "out",
+          "group": "HDMI",
+          "note": "Wyjście z niezależnego toru konwersji SDI → HDMI."
+        },
+        {
+          "key": "usb-c",
+          "label": "USB-C",
+          "connector": "std/usb-c",
+          "signals": [
+            "std/usb",
+            "std/power-dc"
+          ],
+          "direction": "io",
+          "group": "Zasilanie / konfiguracja",
+          "note": "Port USB-C do konfiguracji/aktualizacji i zasilania 4,4–5,25 V; zasilanie jest wejściem.",
+          "electrical": {
+            "voltageMinV": 4.4,
+            "voltageMaxV": 5.25,
+            "maxW": 2.5
+          }
+        }
+      ],
+      "source": {
+        "kind": "datasheet",
+        "ref": "Blackmagic Design — Micro Converter BiDirectional SDI/HDMI 3G, Technical Specifications (online)",
+        "url": "https://www.blackmagicdesign.com/products/microconverters/techspecs",
+        "generated": true,
+        "note": "Wymiary i masa pomocniczo: dealer Visuals / Creation Networks (ok. 80,8 × 58,9 × 24,9 mm; 174 g)."
+      },
+      "dimensionsMm": {
+        "width": 80.8,
+        "depth": 58.9,
+        "height": 24.9
+      },
+      "weightKg": 0.174,
+      "powerW": 2.5
+    },
+    {
+      "key": "hyperdeck-studio-hd-mini",
+      "manufacturer": "Blackmagic Design",
+      "model": "HyperDeck Studio HD Mini",
+      "category": "wideo / nagrywanie i streaming",
+      "kind": "physical",
+      "tags": [
+        "hyperdeck",
+        "recorder",
+        "playback",
+        "sdi",
+        "timecode",
+        "rack"
+      ],
+      "description": "Rejestrator i odtwarzacz HD na karty SD z portami 3G-SDI, HDMI, timecode i synchronizacją.",
+      "ports": [
+        {
+          "key": "sdi-in",
+          "label": "SDI IN",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "in",
+          "group": "3G-SDI"
+        },
+        {
+          "key": "sdi-out",
+          "label": "SDI OUT",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "out",
+          "group": "3G-SDI"
+        },
+        {
+          "key": "hdmi-out",
+          "label": "HDMI OUT",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "out",
+          "group": "HDMI"
+        },
+        {
+          "key": "timecode-in",
+          "label": "TIMECODE IN",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/timecode-ltc"
+          ],
+          "direction": "in",
+          "group": "Timecode",
+          "note": "BNC; poziom i impedancję potwierdź przed doborem przewodu."
+        },
+        {
+          "key": "timecode-out",
+          "label": "TIMECODE OUT",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/timecode-ltc"
+          ],
+          "direction": "out",
+          "group": "Timecode"
+        },
+        {
+          "key": "ref-in",
+          "label": "REF IN",
+          "connector": "std/bnc-75",
+          "signals": [
+            "user/bmd-reference-video"
+          ],
+          "direction": "in",
+          "group": "Reference",
+          "note": "Tri-Sync lub Black Burst, BNC."
+        },
+        {
+          "key": "ref-out",
+          "label": "REF OUT",
+          "connector": "std/bnc-75",
+          "signals": [
+            "user/bmd-reference-video"
+          ],
+          "direction": "out",
+          "group": "Reference",
+          "note": "Referencja wideo, BNC."
+        },
+        {
+          "key": "remote",
+          "label": "REMOTE",
+          "connector": "std/db9",
+          "signals": [
+            "std/rs422"
+          ],
+          "direction": "in",
+          "group": "Sterowanie",
+          "note": "RS-422, połączenie DE-9; standard zdalnego sterowania dekiem."
+        },
+        {
+          "key": "ethernet",
+          "label": "ETHERNET",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io",
+          "group": "Sieć",
+          "note": "Sterowanie HyperDeck Ethernet Protocol i transmisja plików."
+        },
+        {
+          "key": "usb-c",
+          "label": "USB-C",
+          "connector": "std/usb-c",
+          "signals": [
+            "std/usb"
+          ],
+          "direction": "io",
+          "group": "Nagrywanie / komputer",
+          "note": "USB 3.0: nagrywanie na dysk, webcam, konfiguracja i aktualizacje."
+        },
+        {
+          "key": "ac-in",
+          "label": "AC IN",
+          "connector": "std/iec-c14",
+          "signals": [
+            "std/power-ac"
+          ],
+          "direction": "in",
+          "group": "Zasilanie",
+          "note": "Wewnętrzny zasilacz 100–240 V AC.",
+          "electrical": {
+            "voltageMinV": 100,
+            "voltageMaxV": 240,
+            "maxW": 50
+          }
+        },
+        {
+          "key": "dc-in",
+          "label": "12V DC",
+          "connector": "std/dc-barrel",
+          "signals": [
+            "std/power-dc"
+          ],
+          "direction": "in",
+          "group": "Zasilanie",
+          "note": "Wejście 12 V DC, blokowany wtyk barrel 5,5 mm; alternatywne zasilanie względem AC.",
+          "electrical": {
+            "voltageMinV": 12,
+            "voltageMaxV": 12,
+            "maxW": 50
+          }
+        }
+      ],
+      "source": {
+        "kind": "datasheet",
+        "ref": "Blackmagic Design — HyperDeck Studio HD Mini, Technical Specifications (online)",
+        "url": "https://www.blackmagicdesign.com/products/hyperdeckstudio/techspecs",
+        "generated": true,
+        "note": "Wymiary i masa pomocniczo: dealer Syntex (140 × 177 × 44,2 mm; 0,82 kg). Nie dodano slotów SD jako portów kablowych."
+      },
+      "dimensionsMm": {
+        "width": 140,
+        "depth": 177,
+        "height": 44.2
+      },
+      "weightKg": 0.82,
+      "powerMaxW": 50,
+      "rackUnits": {
+        "heightU": 1,
+        "widthFraction": 0.33
+      }
+    },
+    {
+      "key": "blackmagic-streaming-encoder-hd",
+      "manufacturer": "Blackmagic Design",
+      "model": "Blackmagic Streaming Encoder HD",
+      "category": "wideo / nagrywanie i streaming",
+      "kind": "physical",
+      "tags": [
+        "encoder",
+        "srt",
+        "rtmp",
+        "streaming",
+        "12g",
+        "rack"
+      ],
+      "description": "Samodzielny enkoder HD z wejściem 12G-SDI, wyjściami monitorowymi SDI/HDMI i streamingiem RTMP/SRT.",
+      "ports": [
+        {
+          "key": "sdi-in",
+          "label": "SDI IN",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-12g",
+            "std/sdi-6g",
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "in",
+          "group": "12G-SDI",
+          "note": "Wejście SDI obsługujące do 12G; streaming kodowany do HD."
+        },
+        {
+          "key": "sdi-loop-out",
+          "label": "SDI LOOP OUT",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-12g",
+            "std/sdi-6g",
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "loop",
+          "group": "12G-SDI",
+          "note": "Przelot sygnału wejściowego SDI."
+        },
+        {
+          "key": "sdi-monitor-out",
+          "label": "SDI MONITOR OUT",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "out",
+          "group": "Monitor",
+          "note": "Wyjście monitorujące w HD (nie 12G)."
+        },
+        {
+          "key": "hdmi-monitor-out",
+          "label": "HDMI MONITOR OUT",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "out",
+          "group": "Monitor",
+          "note": "Monitorowanie streamu/statusu."
+        },
+        {
+          "key": "webcam-usb-c",
+          "label": "WEBCAM OUT",
+          "connector": "std/usb-c",
+          "signals": [
+            "std/usb"
+          ],
+          "direction": "out",
+          "group": "USB",
+          "note": "Port USB-C na tylnym panelu: wyjście webcam 1080p60."
+        },
+        {
+          "key": "tether-usb-c",
+          "label": "USB-C (FRONT)",
+          "connector": "std/usb-c",
+          "signals": [
+            "std/usb"
+          ],
+          "direction": "io",
+          "group": "USB",
+          "note": "Przedni port USB-C do tetheringu ze smartfonem 4G/5G oraz obsługi urządzenia; potwierdzony w instrukcji/zdjęciach panelu."
+        },
+        {
+          "key": "ethernet",
+          "label": "LIVE STREAM",
+          "connector": "std/rj45",
+          "signals": [
+            "std/ethernet"
+          ],
+          "direction": "io",
+          "group": "Sieć",
+          "note": "Gigabit Ethernet: streaming RTMP/SRT, konfiguracja i REST API."
+        },
+        {
+          "key": "ac-in",
+          "label": "AC IN",
+          "connector": "std/iec-c14",
+          "signals": [
+            "std/power-ac"
+          ],
+          "direction": "in",
+          "group": "Zasilanie",
+          "note": "IEC, wbudowany zasilacz 100–240 V AC.",
+          "electrical": {
+            "voltageMinV": 100,
+            "voltageMaxV": 240,
+            "maxW": 21
+          }
+        },
+        {
+          "key": "dc-in",
+          "label": "12V DC",
+          "connector": "std/xlr-4",
+          "signals": [
+            "std/power-dc"
+          ],
+          "direction": "in",
+          "group": "Zasilanie",
+          "note": "Alternatywne wejście zasilania 12 V DC, XLR 4-pin.",
+          "electrical": {
+            "voltageMinV": 12,
+            "voltageMaxV": 12,
+            "maxW": 21
+          }
+        }
+      ],
+      "source": {
+        "kind": "datasheet",
+        "ref": "Blackmagic Design — Blackmagic Streaming Encoder HD, Technical Specifications (online)",
+        "url": "https://www.blackmagicdesign.com/products/blackmagicstreamingprocessors/techspecs",
+        "generated": true,
+        "note": "Wymiary pomocniczo: dealer Photospecialist (175 × 140 × 44,5 mm); rack 1/3 szerokości, 1U wg producenta. Zidentyfikowano dwa porty USB-C: przedni tether oraz tylny webcam. Wejścia AC i 12V DC alternatywne."
+      },
+      "dimensionsMm": {
+        "width": 175,
+        "depth": 140,
+        "height": 44.5
+      },
+      "powerW": 21,
+      "rackUnits": {
+        "heightU": 1,
+        "widthFraction": 0.33
+      }
+    },
+    {
+      "key": "ultrastudio-express-recorder-3g",
+      "manufacturer": "Blackmagic Design",
+      "model": "UltraStudio Express Recorder 3G",
+      "category": "wideo / nagrywanie i streaming",
+      "kind": "physical",
+      "tags": [
+        "ultrastudio",
+        "capture",
+        "usb4",
+        "sdi",
+        "hdmi"
+      ],
+      "description": "Zewnętrzne urządzenie przechwytujące 3G-SDI lub HDMI do komputera przez USB-C 40 Gb/s.",
+      "ports": [
+        {
+          "key": "sdi-in",
+          "label": "SDI IN",
+          "connector": "std/bnc-75",
+          "signals": [
+            "std/sdi-3g",
+            "std/sdi-hd"
+          ],
+          "direction": "in",
+          "group": "Wideo"
+        },
+        {
+          "key": "hdmi-in",
+          "label": "HDMI IN",
+          "connector": "std/hdmi-a",
+          "signals": [
+            "std/hdmi"
+          ],
+          "direction": "in",
+          "group": "Wideo"
+        },
+        {
+          "key": "usb4",
+          "label": "USB-C 40Gbps",
+          "connector": "std/usb-c",
+          "signals": [
+            "user/bmd-usb4-40gbps",
+            "std/power-dc"
+          ],
+          "direction": "io",
+          "group": "Komputer / zasilanie",
+          "note": "Host USB4 lub Thunderbolt 4 z transmisją 40 Gb/s; sprzęt zasilany z USB-C. Zwykły kabel USB-C może nie działać."
+        }
+      ],
+      "source": {
+        "kind": "datasheet",
+        "ref": "Blackmagic Design — UltraStudio Express Recorder 3G, Technical Specifications (online)",
+        "url": "https://www.blackmagicdesign.com/products/ultrastudio/techspecs",
+        "generated": true,
+        "note": "Wymaganie 40 Gb/s oraz zasilanie z USB-C wg producenta. Wymiary/masa pomocniczo: dealer BLK (92 × 45 × 23 mm, 158 g), wymagają sprawdzenia. Pobór mocy nieopublikowany — pominięto. Transport USB4 ma własny sygnał."
+      },
+      "dimensionsMm": {
+        "width": 92,
+        "depth": 45,
+        "height": 23
+      },
+      "weightKg": 0.158
+    }
+  ]
+}

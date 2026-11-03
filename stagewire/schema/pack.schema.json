@@ -1,0 +1,360 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://stagewire.local/schema/pack.schema.json",
+  "title": "Pakiet urządzeń StageWire (stagewire-pack/1)",
+  "description": "Schemat pomocniczy do podpowiedzi w edytorze (zmapuj go lokalnie, np. VS Code: json.schemas z fileMatch *.swpack.json; pakiet nie zawiera ścieżki do schematu). Pełna walidacja (odniesienia do złączy i sygnałów, konflikty rejestrów, kolizje identyfikatorów, wymagania co do źródła) jest w programie: `cli packs validate`. Pola nieznane są dozwolone (program zgłasza je jako ostrzeżenia).",
+  "type": "object",
+  "required": [
+    "format",
+    "id",
+    "name",
+    "version",
+    "license",
+    "devices"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "format": {
+      "const": "stagewire-pack/1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{2,39}$",
+      "description": "Małe litery, cyfry, myślniki; np. \"moje-urzadzenia\""
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "author": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Warunki użycia danych pakietu, np. \"własne (do użytku wewnętrznego)\""
+    },
+    "description": {
+      "type": "string"
+    },
+    "registries": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^(std|user)/[0-9a-z][0-9a-z._-]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "kind",
+          "name"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "connector",
+              "signal",
+              "cable"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "domain": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string"
+          },
+          "endPairs": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          },
+          "carriesSignals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "devices": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/device"
+      },
+      "description": "Pusta lista dozwolona tylko w pakiecie samych rejestrów"
+    }
+  },
+  "$defs": {
+    "device": {
+      "type": "object",
+      "required": [
+        "key",
+        "manufacturer",
+        "model",
+        "category",
+        "ports",
+        "source"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$",
+          "description": "Stabilny klucz urządzenia w pakiecie; nie zmieniaj go po publikacji"
+        },
+        "manufacturer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "description": "np. \"wideo / kamery\"; część przed ukośnikiem wybiera ikonę"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Własnymi słowami; bez kopiowania opisów katalogowych"
+        },
+        "kind": {
+          "enum": [
+            "physical",
+            "virtual"
+          ]
+        },
+        "dimensionsMm": {
+          "type": "object",
+          "required": [
+            "width",
+            "depth",
+            "height"
+          ],
+          "properties": {
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 20000
+            },
+            "depth": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 20000
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 20000
+            }
+          }
+        },
+        "weightKg": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5000
+        },
+        "powerW": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 200000,
+          "description": "Pobór typowy [W]"
+        },
+        "rackUnits": {
+          "type": "object",
+          "required": [
+            "heightU",
+            "widthFraction"
+          ],
+          "properties": {
+            "heightU": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60
+            },
+            "widthFraction": {
+              "enum": [
+                1,
+                0.5,
+                0.33
+              ]
+            }
+          },
+          "description": "Tylko dla urządzeń do racka; urządzenie nierackowe pomija to pole"
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/port"
+          }
+        },
+        "source": {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "datasheet",
+                "manual",
+                "measured",
+                "estimated",
+                "generic",
+                "custom"
+              ]
+            },
+            "ref": {
+              "type": "string",
+              "description": "Dokument producenta: nazwa i wersja, numer lub adres. Wymagane dla datasheet i manual"
+            },
+            "note": {
+              "type": "string"
+            },
+            "verified": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Data, kiedy człowiek porównał dane ze źródłem. Bez niej dane są niezweryfikowane"
+            },
+            "url": {
+              "type": "string",
+              "pattern": "^https?://\\S+$",
+              "description": "Adres dokumentu (nie jest pobierany przez program)"
+            },
+            "hardwareRevision": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Wersja sprzętowa, np. \"rev B\""
+            },
+            "generated": {
+              "type": "boolean",
+              "description": "true: dane wytworzone automatycznie; nigdy nie są uznawane za zweryfikowane bez daty verified"
+            }
+          }
+        },
+        "powerMaxW": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 200000,
+          "description": "Pobór maksymalny [W], nie mniej niż powerW"
+        },
+        "dinModules": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 72,
+          "description": "Szerokość na szynie DIN w modułach po 17,5 mm"
+        }
+      }
+    },
+    "port": {
+      "type": "object",
+      "required": [
+        "key",
+        "label",
+        "connector",
+        "signals",
+        "direction"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$",
+          "description": "Stabilny klucz portu (z niego powstaje identyfikator używany przez połączenia); nie zmieniaj po publikacji"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "connector": {
+          "type": "string",
+          "description": "Klucz złącza z rejestru (np. std/bnc-75)"
+        },
+        "signals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "direction": {
+          "enum": [
+            "in",
+            "out",
+            "io",
+            "loop"
+          ]
+        },
+        "capacity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "side": {
+          "enum": [
+            "left",
+            "right",
+            "top",
+            "bottom",
+            "auto"
+          ]
+        },
+        "note": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Nazwa grupy portów (np. \"Zasilanie\", \"Wejścia SDI\"); wskazówka porządkowa"
+        },
+        "electrical": {
+          "type": "object",
+          "description": "Parametry portu zasilania",
+          "properties": {
+            "voltageMinV": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100000
+            },
+            "voltageMaxV": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100000
+            },
+            "maxW": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100000
+            }
+          }
+        }
+      }
+    }
+  }
+}

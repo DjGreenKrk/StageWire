@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080" role="img" aria-label="StageWire — GreenCrew Tools">
+  <title>StageWire</title>
+  <desc>Oryginalny wielopłaszczyznowy heksagon GreenCrew z białym symbolem trzech urządzeń połączonych trasami kablowymi.</desc>
+  <!-- Canonical GreenCrew_logo.svg background: polygon coordinates/colors are copied 1:1. -->
+  <g id="greencrew-hexagon">
+    <polygon fill="#55dc4e" points="541.8 152.5 772.02 447.86 878.05 346.37" />
+    <polygon fill="#1ed61f" points="878.05 735.64 878.05 346.37 772.02 447.86" />
+    <polygon fill="#82e279" points="655.39 762.9 878.05 735.64 772.02 447.86" />
+    <polygon fill="#8ce585" points="541.8 928 655.39 762.9 878.05 735.64" />
+    <polygon fill="#78df6f" points="278.25 564.48 541.8 928 655.39 762.9" />
+    <polygon fill="#8de485" points="772.02 447.86 278.25 564.48 541.8 152.5" />
+    <polygon fill="#c8f2c3" points="201 346.38 278.25 564.48 541.8 152.5" />
+    <polygon fill="#a1e999" points="201 735.64 278.25 564.48 201 346.37" />
+    <polygon fill="#60dc57" points="541.8 928 201 735.64 278.25 564.48" />
+    <polygon fill="#48da3f" points="655.39 762.9 772.02 447.86 278.25 564.48" />
+  </g>
+
+  <!-- One flat-white topology / connection-route symbol, in the established icon language. -->
+  <g id="stagewire-topology" fill="none" stroke="#FFFFFF" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Orthogonal cable routes; connected at one branching point. -->
+    <path d="M540 447 V526 H415 V623 M540 526 H665 V623"
+          stroke-width="31" />
+    <!-- Three schematic device symbols. Their centers are transparent. -->
+    <rect x="473" y="351" width="134" height="96" rx="17" stroke-width="30" />
+    <rect x="350" y="623" width="130" height="94" rx="17" stroke-width="30" />
+    <rect x="600" y="623" width="130" height="94" rx="17" stroke-width="30" />
+  </g>
+</svg>

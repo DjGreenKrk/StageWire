@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Zgłoszenie podatności
+    url: https://github.com/DjGreenKrk/StageWire/security/advisories/new
+    about: Nie publikuj szczegółów podatności w issue.

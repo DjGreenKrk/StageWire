@@ -1,0 +1,19 @@
+[package]
+name = "stagewire"
+version = "0.0.1"
+edition = "2021"
+description = "StageWire PoC-3: powłoka Tauri, zapis atomowy, odzyskiwanie"
+license = "LicenseRef-PolyForm-Shield-1.0.0"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+
+[profile.release]
+opt-level = 2

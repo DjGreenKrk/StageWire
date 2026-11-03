@@ -1,0 +1,1307 @@
+{
+ "registries": {
+  "std/bnc-75": {
+   "kind": "connector",
+   "name": "BNC 75 Ω"
+  },
+  "std/hdmi-a": {
+   "kind": "connector",
+   "name": "HDMI typ A"
+  },
+  "std/dp": {
+   "kind": "connector",
+   "name": "DisplayPort"
+  },
+  "std/rj45": {
+   "kind": "connector",
+   "name": "RJ45"
+  },
+  "std/xlr-3": {
+   "kind": "connector",
+   "name": "XLR 3-pin"
+  },
+  "std/xlr-5": {
+   "kind": "connector",
+   "name": "XLR 5-pin"
+  },
+  "std/sdi-3g": {
+   "kind": "signal",
+   "name": "SDI 3G",
+   "domain": "video",
+   "color": "#2f7fd1",
+   "prefix": "V"
+  },
+  "std/hdmi": {
+   "kind": "signal",
+   "name": "HDMI",
+   "domain": "video",
+   "color": "#6b6b6b",
+   "prefix": "V"
+  },
+  "std/displayport": {
+   "kind": "signal",
+   "name": "DisplayPort",
+   "domain": "video",
+   "color": "#8b5fbf",
+   "prefix": "V"
+  },
+  "std/ethernet": {
+   "kind": "signal",
+   "name": "Ethernet",
+   "domain": "network",
+   "color": "#2fa84f",
+   "prefix": "N"
+  },
+  "std/dmx": {
+   "kind": "signal",
+   "name": "DMX512",
+   "domain": "lighting",
+   "color": "#d1a12f",
+   "prefix": "D"
+  },
+  "std/audio-analog": {
+   "kind": "signal",
+   "name": "Audio analogowe (symetryczne)",
+   "domain": "audio",
+   "color": "#d1572f",
+   "prefix": "A"
+  },
+  "std/cable-sdi": {
+   "kind": "cable",
+   "name": "Koncentryk SDI",
+   "endPairs": [
+    [
+     "std/bnc-75",
+     "std/bnc-75"
+    ]
+   ],
+   "carriesSignals": [
+    "std/sdi-3g"
+   ]
+  },
+  "std/cable-hdmi": {
+   "kind": "cable",
+   "name": "Kabel HDMI",
+   "endPairs": [
+    [
+     "std/hdmi-a",
+     "std/hdmi-a"
+    ]
+   ],
+   "carriesSignals": [
+    "std/hdmi"
+   ]
+  },
+  "std/cable-dp": {
+   "kind": "cable",
+   "name": "Kabel DisplayPort",
+   "endPairs": [
+    [
+     "std/dp",
+     "std/dp"
+    ]
+   ],
+   "carriesSignals": [
+    "std/displayport"
+   ]
+  },
+  "std/cable-cat6": {
+   "kind": "cable",
+   "name": "Kabel Cat6",
+   "endPairs": [
+    [
+     "std/rj45",
+     "std/rj45"
+    ]
+   ],
+   "carriesSignals": [
+    "std/ethernet"
+   ]
+  },
+  "std/cable-dmx": {
+   "kind": "cable",
+   "name": "Kabel DMX",
+   "endPairs": [
+    [
+     "std/xlr-5",
+     "std/xlr-5"
+    ]
+   ],
+   "carriesSignals": [
+    "std/dmx"
+   ]
+  },
+  "std/cable-xlr-audio": {
+   "kind": "cable",
+   "name": "Kabel audio XLR",
+   "endPairs": [
+    [
+     "std/xlr-3",
+     "std/xlr-3"
+    ]
+   ],
+   "carriesSignals": [
+    "std/audio-analog"
+   ]
+  }
+ },
+ "devices": {
+  "camera_sdi": {
+   "definitionId": "eqd_stagewirestartercamerasdi",
+   "model": "Kamera SDI",
+   "category": "wideo / kamery",
+   "description": "Kamera z wyjściem SDI",
+   "widthMm": 300,
+   "depthMm": 500,
+   "heightMm": 300,
+   "rackUnits": null,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Kamera SDI",
+    "category": "wideo / kamery",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 300,
+     "depth": 500,
+     "height": 300
+    },
+    "symbol": {
+     "icon": "wideo",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_sdiout": {
+      "label": "SDI OUT",
+      "order": 1,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     }
+    }
+   }
+  },
+  "camera_ptz": {
+   "definitionId": "eqd_stagewirestartercameraptz",
+   "model": "Kamera PTZ",
+   "category": "wideo / kamery",
+   "description": "Kamera obrotowa: wyjście SDI i sterowanie siecią",
+   "widthMm": 200,
+   "depthMm": 200,
+   "heightMm": 250,
+   "rackUnits": null,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Kamera PTZ",
+    "category": "wideo / kamery",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 200,
+     "depth": 200,
+     "height": 250
+    },
+    "symbol": {
+     "icon": "wideo",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_sdiout": {
+      "label": "SDI OUT",
+      "order": 1,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan": {
+      "label": "LAN",
+      "order": 2,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     }
+    }
+   }
+  },
+  "laptop": {
+   "definitionId": "eqd_stagewirestarterlaptop",
+   "model": "Laptop prezentera",
+   "category": "wideo / źródła",
+   "description": "Źródło HDMI i sieć",
+   "widthMm": 350,
+   "depthMm": 250,
+   "heightMm": 25,
+   "rackUnits": null,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Laptop prezentera",
+    "category": "wideo / źródła",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 350,
+     "depth": 250,
+     "height": 25
+    },
+    "symbol": {
+     "icon": "wideo",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_hdmiout": {
+      "label": "HDMI OUT",
+      "order": 1,
+      "connectorKey": "std/hdmi-a",
+      "signalKeys": [
+       "std/hdmi"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan": {
+      "label": "LAN",
+      "order": 2,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     }
+    }
+   }
+  },
+  "media_server": {
+   "definitionId": "eqd_stagewirestartermediaserver",
+   "model": "Serwer mediów",
+   "category": "wideo / źródła",
+   "description": "Dwa wyjścia DisplayPort i sieć",
+   "widthMm": 483,
+   "depthMm": 500,
+   "heightMm": 88,
+   "rackUnits": 2,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Serwer mediów",
+    "category": "wideo / źródła",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 483,
+     "depth": 500,
+     "height": 88
+    },
+    "symbol": {
+     "icon": "wideo",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_dpout1": {
+      "label": "DP OUT 1",
+      "order": 1,
+      "connectorKey": "std/dp",
+      "signalKeys": [
+       "std/displayport"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_dpout2": {
+      "label": "DP OUT 2",
+      "order": 2,
+      "connectorKey": "std/dp",
+      "signalKeys": [
+       "std/displayport"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan": {
+      "label": "LAN",
+      "order": 3,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     }
+    },
+    "rackUnits": {
+     "heightU": 2,
+     "widthFraction": 1
+    }
+   }
+  },
+  "video_switcher": {
+   "definitionId": "eqd_stagewirestartervideoswitcher",
+   "model": "Mikser wizji",
+   "category": "wideo / przełączanie",
+   "description": "8 wejść SDI, 4 wyjścia SDI, sieć",
+   "widthMm": 483,
+   "depthMm": 350,
+   "heightMm": 88,
+   "rackUnits": 2,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Mikser wizji",
+    "category": "wideo / przełączanie",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 483,
+     "depth": 350,
+     "height": 88
+    },
+    "symbol": {
+     "icon": "wideo",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_sdiin1": {
+      "label": "SDI IN 1",
+      "order": 1,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiin2": {
+      "label": "SDI IN 2",
+      "order": 2,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiin3": {
+      "label": "SDI IN 3",
+      "order": 3,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiin4": {
+      "label": "SDI IN 4",
+      "order": 4,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiin5": {
+      "label": "SDI IN 5",
+      "order": 5,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiin6": {
+      "label": "SDI IN 6",
+      "order": 6,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiin7": {
+      "label": "SDI IN 7",
+      "order": 7,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiin8": {
+      "label": "SDI IN 8",
+      "order": 8,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiout1": {
+      "label": "SDI OUT 1",
+      "order": 9,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiout2": {
+      "label": "SDI OUT 2",
+      "order": 10,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiout3": {
+      "label": "SDI OUT 3",
+      "order": 11,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiout4": {
+      "label": "SDI OUT 4",
+      "order": 12,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan": {
+      "label": "LAN",
+      "order": 13,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     }
+    },
+    "rackUnits": {
+     "heightU": 2,
+     "widthFraction": 1
+    }
+   }
+  },
+  "conv_hdmi_sdi": {
+   "definitionId": "eqd_stagewirestarterconvhdmisdi",
+   "model": "Konwerter HDMI → SDI",
+   "category": "wideo / konwertery",
+   "description": "",
+   "widthMm": 100,
+   "depthMm": 80,
+   "heightMm": 25,
+   "rackUnits": null,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Konwerter HDMI → SDI",
+    "category": "wideo / konwertery",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 100,
+     "depth": 80,
+     "height": 25
+    },
+    "symbol": {
+     "icon": "wideo",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_hdmiin": {
+      "label": "HDMI IN",
+      "order": 1,
+      "connectorKey": "std/hdmi-a",
+      "signalKeys": [
+       "std/hdmi"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiout": {
+      "label": "SDI OUT",
+      "order": 2,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     }
+    }
+   }
+  },
+  "conv_sdi_hdmi": {
+   "definitionId": "eqd_stagewirestarterconvsdihdmi",
+   "model": "Konwerter SDI → HDMI",
+   "category": "wideo / konwertery",
+   "description": "",
+   "widthMm": 100,
+   "depthMm": 80,
+   "heightMm": 25,
+   "rackUnits": null,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Konwerter SDI → HDMI",
+    "category": "wideo / konwertery",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 100,
+     "depth": 80,
+     "height": 25
+    },
+    "symbol": {
+     "icon": "wideo",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_sdiin": {
+      "label": "SDI IN",
+      "order": 1,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_hdmiout": {
+      "label": "HDMI OUT",
+      "order": 2,
+      "connectorKey": "std/hdmi-a",
+      "signalKeys": [
+       "std/hdmi"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     }
+    }
+   }
+  },
+  "monitor_hdmi": {
+   "definitionId": "eqd_stagewirestartermonitorhdmi",
+   "model": "Monitor HDMI",
+   "category": "wideo / wyświetlacze",
+   "description": "",
+   "widthMm": 600,
+   "depthMm": 80,
+   "heightMm": 350,
+   "rackUnits": null,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Monitor HDMI",
+    "category": "wideo / wyświetlacze",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 600,
+     "depth": 80,
+     "height": 350
+    },
+    "symbol": {
+     "icon": "wideo",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_hdmiin": {
+      "label": "HDMI IN",
+      "order": 1,
+      "connectorKey": "std/hdmi-a",
+      "signalKeys": [
+       "std/hdmi"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     }
+    }
+   }
+  },
+  "projector": {
+   "definitionId": "eqd_stagewirestarterprojector",
+   "model": "Projektor",
+   "category": "wideo / wyświetlacze",
+   "description": "Wejścia HDMI i SDI, sterowanie siecią",
+   "widthMm": 500,
+   "depthMm": 600,
+   "heightMm": 200,
+   "rackUnits": null,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Projektor",
+    "category": "wideo / wyświetlacze",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 500,
+     "depth": 600,
+     "height": 200
+    },
+    "symbol": {
+     "icon": "wideo",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_hdmiin": {
+      "label": "HDMI IN",
+      "order": 1,
+      "connectorKey": "std/hdmi-a",
+      "signalKeys": [
+       "std/hdmi"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_sdiin": {
+      "label": "SDI IN",
+      "order": 2,
+      "connectorKey": "std/bnc-75",
+      "signalKeys": [
+       "std/sdi-3g"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan": {
+      "label": "LAN",
+      "order": 3,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     }
+    }
+   }
+  },
+  "led_processor": {
+   "definitionId": "eqd_stagewirestarterledprocessor",
+   "model": "Procesor ekranu LED",
+   "category": "wideo / LED",
+   "description": "2 wejścia HDMI, 1 DisplayPort, 4 wyjścia sieciowe do ekranu, sterowanie",
+   "widthMm": 483,
+   "depthMm": 300,
+   "heightMm": 44,
+   "rackUnits": 1,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Procesor ekranu LED",
+    "category": "wideo / LED",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 483,
+     "depth": 300,
+     "height": 44
+    },
+    "symbol": {
+     "icon": "wideo",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_hdmiin1": {
+      "label": "HDMI IN 1",
+      "order": 1,
+      "connectorKey": "std/hdmi-a",
+      "signalKeys": [
+       "std/hdmi"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_hdmiin2": {
+      "label": "HDMI IN 2",
+      "order": 2,
+      "connectorKey": "std/hdmi-a",
+      "signalKeys": [
+       "std/hdmi"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_dpin1": {
+      "label": "DP IN 1",
+      "order": 3,
+      "connectorKey": "std/dp",
+      "signalKeys": [
+       "std/displayport"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_ledout1": {
+      "label": "LED OUT 1",
+      "order": 4,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_ledout2": {
+      "label": "LED OUT 2",
+      "order": 5,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_ledout3": {
+      "label": "LED OUT 3",
+      "order": 6,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_ledout4": {
+      "label": "LED OUT 4",
+      "order": 7,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan": {
+      "label": "LAN",
+      "order": 8,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     }
+    },
+    "rackUnits": {
+     "heightU": 1,
+     "widthFraction": 1
+    }
+   }
+  },
+  "network_switch_8": {
+   "definitionId": "eqd_stagewirestarternetworkswitch8",
+   "model": "Switch sieciowy 8-portowy",
+   "category": "sieć",
+   "description": "",
+   "widthMm": 483,
+   "depthMm": 250,
+   "heightMm": 44,
+   "rackUnits": 1,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Switch sieciowy 8-portowy",
+    "category": "sieć",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 483,
+     "depth": 250,
+     "height": 44
+    },
+    "symbol": {
+     "icon": "sie",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_lan1": {
+      "label": "LAN 1",
+      "order": 1,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan2": {
+      "label": "LAN 2",
+      "order": 2,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan3": {
+      "label": "LAN 3",
+      "order": 3,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan4": {
+      "label": "LAN 4",
+      "order": 4,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan5": {
+      "label": "LAN 5",
+      "order": 5,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan6": {
+      "label": "LAN 6",
+      "order": 6,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan7": {
+      "label": "LAN 7",
+      "order": 7,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan8": {
+      "label": "LAN 8",
+      "order": 8,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     }
+    },
+    "rackUnits": {
+     "heightU": 1,
+     "widthFraction": 1
+    }
+   }
+  },
+  "light_console": {
+   "definitionId": "eqd_stagewirestarterlightconsole",
+   "model": "Pulpit oświetleniowy",
+   "category": "oświetlenie",
+   "description": "Dwa uniwersa DMX i sieć",
+   "widthMm": 800,
+   "depthMm": 500,
+   "heightMm": 120,
+   "rackUnits": null,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Pulpit oświetleniowy",
+    "category": "oświetlenie",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 800,
+     "depth": 500,
+     "height": 120
+    },
+    "symbol": {
+     "icon": "owietlenie",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_dmxout1": {
+      "label": "DMX OUT 1",
+      "order": 1,
+      "connectorKey": "std/xlr-5",
+      "signalKeys": [
+       "std/dmx"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_dmxout2": {
+      "label": "DMX OUT 2",
+      "order": 2,
+      "connectorKey": "std/xlr-5",
+      "signalKeys": [
+       "std/dmx"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan": {
+      "label": "LAN",
+      "order": 3,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     }
+    }
+   }
+  },
+  "dmx_fixture": {
+   "definitionId": "eqd_stagewirestarterdmxfixture",
+   "model": "Oprawa DMX",
+   "category": "oświetlenie",
+   "description": "Wejście i przelot DMX",
+   "widthMm": 300,
+   "depthMm": 300,
+   "heightMm": 400,
+   "rackUnits": null,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Oprawa DMX",
+    "category": "oświetlenie",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 300,
+     "depth": 300,
+     "height": 400
+    },
+    "symbol": {
+     "icon": "owietlenie",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_dmxin": {
+      "label": "DMX IN",
+      "order": 1,
+      "connectorKey": "std/xlr-5",
+      "signalKeys": [
+       "std/dmx"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_dmxthru": {
+      "label": "DMX THRU",
+      "order": 2,
+      "connectorKey": "std/xlr-5",
+      "signalKeys": [
+       "std/dmx"
+      ],
+      "direction": "loop",
+      "side": "auto",
+      "capacity": 1
+     }
+    }
+   }
+  },
+  "audio_mixer": {
+   "definitionId": "eqd_stagewirestarteraudiomixer",
+   "model": "Mikser audio",
+   "category": "audio",
+   "description": "8 wejść i 4 wyjścia XLR, sieć",
+   "widthMm": 500,
+   "depthMm": 500,
+   "heightMm": 130,
+   "rackUnits": null,
+   "revision": {
+    "manufacturer": "Generic",
+    "model": "Mikser audio",
+    "category": "audio",
+    "kind": "physical",
+    "dimensionsMm": {
+     "width": 500,
+     "depth": 500,
+     "height": 130
+    },
+    "symbol": {
+     "icon": "audio",
+     "color": "#444444"
+    },
+    "origin": {
+     "custom": true,
+     "packId": "stagewire-starter",
+     "license": "własne (projekt StageWire)"
+    },
+    "ports": {
+     "prt_in1": {
+      "label": "IN 1",
+      "order": 1,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_in2": {
+      "label": "IN 2",
+      "order": 2,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_in3": {
+      "label": "IN 3",
+      "order": 3,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_in4": {
+      "label": "IN 4",
+      "order": 4,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_in5": {
+      "label": "IN 5",
+      "order": 5,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_in6": {
+      "label": "IN 6",
+      "order": 6,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_in7": {
+      "label": "IN 7",
+      "order": 7,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_in8": {
+      "label": "IN 8",
+      "order": 8,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "in",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_out1": {
+      "label": "OUT 1",
+      "order": 9,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_out2": {
+      "label": "OUT 2",
+      "order": 10,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_out3": {
+      "label": "OUT 3",
+      "order": 11,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_out4": {
+      "label": "OUT 4",
+      "order": 12,
+      "connectorKey": "std/xlr-3",
+      "signalKeys": [
+       "std/audio-analog"
+      ],
+      "direction": "out",
+      "side": "auto",
+      "capacity": 1
+     },
+     "prt_lan": {
+      "label": "LAN",
+      "order": 13,
+      "connectorKey": "std/rj45",
+      "signalKeys": [
+       "std/ethernet"
+      ],
+      "direction": "io",
+      "side": "auto",
+      "capacity": 1
+     }
+    }
+   }
+  }
+ }
+}

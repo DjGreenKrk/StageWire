@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Minimalne uprawnienia okna głównego (PoC-3). Polecenia aplikacji nie wymagają dodatkowych uprawnień.",
+  "windows": ["main"],
+  "permissions": ["core:default", "dialog:allow-open", "dialog:allow-save"]
+}
