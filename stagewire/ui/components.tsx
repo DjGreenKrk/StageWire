@@ -1,5 +1,5 @@
 // Biblioteka komponentów StageWire UI (React). Tokeny i style: `ui/styles.css`. Każdy komponent ma jawnie typowane `Props`.
-import { useEffect, useId, useRef, type ReactNode, type ButtonHTMLAttributes, type InputHTMLAttributes, type SelectHTMLAttributes } from 'react';
+import { useEffect, useId, useRef, type ReactNode, type Ref, type ButtonHTMLAttributes, type InputHTMLAttributes, type SelectHTMLAttributes } from 'react';
 
 const cx = (...a: (string | false | undefined)[]) => a.filter(Boolean).join(' ');
 
@@ -35,7 +35,7 @@ export function Field({ label, required, hint, error, children, className, grow,
     </label>
   );
 }
-export type InputProps = InputHTMLAttributes<HTMLInputElement>;
+export interface InputProps extends InputHTMLAttributes<HTMLInputElement> { ref?: Ref<HTMLInputElement> }
 export function Input({ className, ...rest }: InputProps) { return <input className={cx('sw-input', className)} {...rest} />; }
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> { options: [string, string][] }
 export function Select({ options, className, ...rest }: SelectProps) { return <select className={cx('sw-select', className)} {...rest}>{options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>; }

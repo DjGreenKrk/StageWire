@@ -1,9 +1,9 @@
 // Prototyp edytora diagramu: gest „port → port” (ryzyko R2, IMPLEMENTATION-PLAN). Wyłącznie do pomiaru kosztu interakcji.
 import { openAbout } from './about.ts';
-import { createLibBrowser } from './libBrowser.ts';
+import { createLibBrowser } from './libBrowser.tsx';
 import { settings, openSettings } from './settings.ts';
 import { openUpgradeDialog } from './upgradeUi.ts';
-import { openDeviceBuilder } from './deviceBuilder.ts';
+import { openDeviceBuilder } from './deviceBuilder.tsx';
 import { openElectricalBuilder } from './electricalBuilder.tsx';
 import { UPGRADES, pendingUpgrades } from '../src/migrations.ts';
 import { setHideMountedDin } from '../src/cabinets.ts';

@@ -590,3 +590,5 @@ Kontekst: pierwsze testy właściciela na prawdziwym projekcie (`projekt2.sw`) w
 **Pomiary pilotażu.** Katalog `dist-web` 3,3 → 3,6 MB; instalator NSIS 4,71 → 4,79 MiB; otwarcie kreatora ok. 90 ms w przeglądarce testowej; 347 testów jednostkowych i wszystkie zestawy UI przechodzą (w tym CSP).
 
 **Konsekwencje.** Okna zyskują jedno źródło wyglądu, spójne stany i dostępność (fokus, Esc, role ARIA). Do sprawdzenia w oknie Tauri przy ścisłej CSP: style ustawiane przez React (CSSOM). Docelowo `ui/` może stać się osobnym pakietem do synchronizacji z Claude Design.
+
+**Aktualizacja (2026-11-03): migracja okien.** Na komponentach `ui/` działają teraz także przeglądarka biblioteki (`web/libBrowser.tsx`, z zapamiętywaniem filtrów między otwarciami) i kreator urządzenia (`web/deviceBuilder.tsx`). Identyfikatory elementów i testy UI (20 + 15 + 17 kontroli) zostały bez zmian; dodano ciemne paski przewijania i wiersz portu w siatce. Pozostałe okna starego typu: biblioteka pakietów, edycja definicji, ustawienia, grupy, raporty, O programie, okna szafy i racka.

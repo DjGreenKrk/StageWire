@@ -87,3 +87,36 @@
 .sw-din i { flex: 1; border-right: 1px solid rgba(0, 0, 0, .25); }
 .sw-teeth { display: flex; gap: 2px; margin: 6px 0 10px; }
 .sw-tooth { flex: 1; min-width: 14px; height: 30px; border-radius: 3px 3px 0 0; display: flex; align-items: flex-end; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; padding-bottom: 2px; background: var(--c, #666); }
+
+/* ---------- Wiersz portu (kreator urządzenia) ---------- */
+.sw-prow.prow { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.3fr) minmax(0, 1.3fr) 112px repeat(4, 32px); gap: 6px; margin-bottom: 6px; align-items: center; }
+.sw-prow .sw-input, .sw-prow .sw-select { min-height: 36px; }
+
+/* ---------- Przeglądarka biblioteki ---------- */
+.sw-browse { display: grid; grid-template-columns: 230px minmax(0, 1fr) 340px; gap: var(--sw-s4); min-height: 0; flex: 1; }
+.sw-browse > div { min-height: 0; overflow: auto; }
+.sw-facet { margin-bottom: var(--sw-s4); }
+.sw-facet-h { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--sw-accent); margin-bottom: 6px; }
+.sw-fval { display: flex; align-items: center; gap: var(--sw-s2); padding: 4px 0; font-size: 13px; color: #ddd; cursor: pointer; }
+.sw-fval span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sw-fval small { color: var(--sw-text-3); }
+.sw-fval.zero { opacity: .45; }
+.sw-fval input { width: 16px; height: 16px; accent-color: var(--sw-accent); margin: 0; flex: none; }
+.sw-results { border: 1px solid var(--sw-border); border-radius: var(--sw-r-md); background: var(--sw-surface); }
+.sw-result { padding: 10px 14px; border-bottom: 1px solid var(--sw-border); cursor: pointer; }
+.sw-result:last-child { border-bottom: 0; }
+.sw-result:hover { background: var(--sw-surface-3); }
+.sw-result.on { background: var(--sw-accent-soft); box-shadow: inset 3px 0 0 var(--sw-accent); }
+.sw-result .sw-sub { font-size: 12px; color: var(--sw-text-2); margin-top: 2px; }
+.sw-detail h3 { margin: 0 0 2px; font-size: 16px; font-weight: 500; }
+.sw-kv { font-size: 12px; color: var(--sw-text-2); margin: 6px 0; line-height: 1.5; }
+.sw-portline { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; font-size: 12px; }
+.sw-portline span:last-child { color: var(--sw-text-3); }
+.sw-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--sw-s3); }
+
+/* ---------- Paski przewijania (ciemne) ---------- */
+.sw-overlay * { scrollbar-width: thin; scrollbar-color: #4a4a4a transparent; }
+.sw-overlay *::-webkit-scrollbar { width: 8px; height: 8px; }
+.sw-overlay *::-webkit-scrollbar-thumb { background: #4a4a4a; border-radius: 4px; }
+.sw-overlay *::-webkit-scrollbar-track { background: transparent; }
+#b-rows { overflow-x: hidden !important; }
