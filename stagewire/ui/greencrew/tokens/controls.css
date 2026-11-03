@@ -3,3 +3,12 @@
 .gc-range::-moz-range-thumb{pointer-events:auto;width:12px;height:12px;border-radius:9px;background:#fff;border:3px solid var(--primary);cursor:pointer}
 .gc-range::-webkit-slider-runnable-track{background:transparent}
 .gc-range::-moz-range-track{background:transparent}
+/* Okno modalne (GreenCrewDialog): wejście i ciemne paski przewijania. */
+@keyframes gc-fade{from{opacity:0}to{opacity:1}}
+@keyframes gc-pop{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+.gc-overlay{animation:gc-fade var(--dur-base) var(--ease-standard)}
+.gc-dialog{animation:gc-pop var(--dur-base) var(--ease-standard)}
+.gc-scroll{scrollbar-width:thin;scrollbar-color:var(--border-2) transparent}
+.gc-scroll::-webkit-scrollbar{width:8px;height:8px}
+.gc-scroll::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:4px}
+.gc-scroll::-webkit-scrollbar-track{background:transparent}

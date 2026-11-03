@@ -10,13 +10,15 @@
     "fixtures": "node scripts/make-fixtures.mjs",
     "bench": "node --experimental-strip-types bench/bench.ts",
     "cli": "node --experimental-strip-types src/cli.ts",
-    "build:web": "npm run -s gen:validator && vite build",
+    "build:web": "npm run -s sync:greencrew -- --soft && npm run -s gen:validator && vite build",
     "tauri": "tauri",
     "build:app": "tauri build --no-bundle",
     "packs:validate": "node --experimental-strip-types src/cli.ts packs validate packs",
     "packs:new": "node --experimental-strip-types src/cli.ts packs new",
     "gen:validator": "node scripts/gen-validator.mjs",
-    "pretest": "npm run -s gen:validator"
+    "pretest": "node scripts/sync-greencrew-ui.mjs --soft && npm run -s gen:validator",
+    "sync:greencrew": "node scripts/sync-greencrew-ui.mjs",
+    "check:greencrew": "node scripts/sync-greencrew-ui.mjs --check"
   },
   "devDependencies": {
     "@fontsource/roboto": "^5.3.0",

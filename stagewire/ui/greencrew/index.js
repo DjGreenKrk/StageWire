@@ -1,6 +1,7 @@
 // src/components.tsx
-import { createElement, useId, useState } from "react";
+import { createElement, useEffect, useId, useRef, useState } from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
+var H = (d) => d === "compact" ? "var(--control-h-compact)" : "var(--control-h-comfortable)";
 function Icon({ name, size = 24, fill = false, weight = 400, color, style, ...rest }) {
   return createElement("span", {
     "aria-hidden": "true",
@@ -14,15 +15,14 @@ var BV = {
   destructive: { bg: "var(--status-error)", hover: "#FF6E6E", press: "#E64848", fg: "var(--gc-black)", border: "transparent" },
   text: { bg: "transparent", hover: "var(--state-hover)", press: "var(--state-pressed)", fg: "var(--primary)", border: "transparent" }
 };
-function GreenCrewButton({ children, variant = "primary", size = "md", icon, trailingIcon, disabled = false, fullWidth = false, onClick, type = "button", style, id, title }) {
+function GreenCrewButton({ children, variant = "primary", size = "md", density, icon, trailingIcon, iconOnly = false, disabled = false, fullWidth = false, onClick, type = "button", style, ...rest }) {
   const [h, setH] = useState(false), [p, setP] = useState(false);
-  const v = BV[variant] || BV.primary, lg = size === "lg";
+  const v = BV[variant] || BV.primary, lg = size === "lg", sm = size === "sm", compact = density === "compact";
   const bg = disabled ? variant === "text" ? "transparent" : "var(--surface-2)" : p ? v.press : h ? v.hover : v.bg;
   return /* @__PURE__ */ jsxs(
     "button",
     {
-      id,
-      title,
+      ...rest,
       type,
       disabled,
       onClick,
@@ -38,16 +38,16 @@ function GreenCrewButton({ children, variant = "primary", size = "md", icon, tra
         alignItems: "center",
         justifyContent: "center",
         gap: 8,
-        height: lg ? 56 : 48,
-        minWidth: 48,
-        padding: variant === "text" ? "0 12px" : lg ? "0 24px" : "0 20px",
+        height: lg ? 56 : sm ? 36 : H(density),
+        minWidth: iconOnly ? sm ? 36 : H(density) : compact || sm ? 36 : 48,
+        padding: iconOnly ? 0 : variant === "text" ? "0 12px" : lg ? "0 24px" : sm ? "0 12px" : compact ? "0 16px" : "0 20px",
         width: fullWidth ? "100%" : void 0,
         borderRadius: lg ? "var(--radius-button-lg)" : "var(--radius-button)",
         border: `1px solid ${disabled ? "transparent" : v.border}`,
         background: bg,
         color: disabled ? "var(--text-disabled)" : v.fg,
         fontFamily: "var(--font-sans)",
-        fontSize: lg ? 16 : 14,
+        fontSize: lg ? 16 : sm ? 13 : 14,
         fontWeight: 700,
         letterSpacing: ".02em",
         cursor: disabled ? "not-allowed" : "pointer",
@@ -93,7 +93,8 @@ function GreenCrewTextField({ label, value, defaultValue, onChange, placeholder,
     (error || helper) && /* @__PURE__ */ jsx("div", { style: { fontSize: 12, color: error ? "var(--status-error)" : "var(--text-secondary)" }, children: error || helper })
   ] });
 }
-function GreenCrewCheckbox({ checked, onChange, size = 28, label, disabled, id }) {
+function GreenCrewCheckbox({ checked, onChange, size, label, disabled, id, density }) {
+  size ??= density === "compact" ? 20 : 28;
   const box = /* @__PURE__ */ jsx(
     "span",
     {
@@ -193,13 +194,88 @@ function GreenCrewConfirmDialog({ open = true, title, message, confirmLabel = "U
   if (inline) return box;
   return /* @__PURE__ */ jsx("div", { onClick: onCancel, style: { position: "absolute", inset: 0, zIndex: 50, background: "var(--scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }, children: /* @__PURE__ */ jsx("div", { onClick: (e) => e.stopPropagation(), style: { width: "100%", maxWidth: 360 }, children: box }) });
 }
+function GreenCrewField({ label, required, hint, error, children, grow, minWidth, style }) {
+  return /* @__PURE__ */ jsxs("label", { style: { display: "flex", flexDirection: "column", gap: 6, minWidth: 0, flexGrow: grow ?? 1, flexBasis: minWidth ?? 130, fontFamily: "var(--font-sans)", ...style }, children: [
+    /* @__PURE__ */ jsxs("span", { style: { fontSize: 13, color: error ? "var(--status-error)" : "var(--text-secondary)" }, children: [
+      label,
+      required && /* @__PURE__ */ jsx("span", { style: { color: "var(--primary)", marginLeft: 2 }, children: "*" })
+    ] }),
+    children,
+    (error || hint) && /* @__PURE__ */ jsx("span", { style: { fontSize: 12, color: error ? "var(--status-error)" : "var(--text-secondary)", lineHeight: 1.4 }, children: error || hint })
+  ] });
+}
+var controlStyle = (density, invalid) => ({ boxSizing: "border-box", width: "100%", height: H(density), padding: "0 12px", background: "var(--surface-1)", border: `1px solid ${invalid ? "var(--status-error)" : "var(--border-2)"}`, borderRadius: "var(--radius-field)", color: "var(--text-primary)", fontFamily: "var(--font-sans)", fontSize: density === "compact" ? 14 : 16, fontVariantNumeric: "tabular-nums", outline: "none" });
+function GreenCrewInput({ onChange, density, invalid, style, onFocus, onBlur, ...rest }) {
+  const [f, setF] = useState(false);
+  return /* @__PURE__ */ jsx(
+    "input",
+    {
+      ...rest,
+      onChange: (e) => onChange && onChange(e.target.value, e),
+      onFocus: (e) => {
+        setF(true);
+        onFocus?.(e);
+      },
+      onBlur: (e) => {
+        setF(false);
+        onBlur?.(e);
+      },
+      style: { ...controlStyle(density, invalid), borderColor: invalid ? "var(--status-error)" : f ? "var(--primary)" : "var(--border-2)", boxShadow: f && !invalid ? "0 0 0 1px var(--primary)" : "none", ...style }
+    }
+  );
+}
+function GreenCrewSelect({ options, onChange, density, invalid, style, ...rest }) {
+  return /* @__PURE__ */ jsx("select", { ...rest, onChange: (e) => onChange && onChange(e.target.value, e), style: { ...controlStyle(density, invalid), ...style }, children: options.map(([v, l]) => /* @__PURE__ */ jsx("option", { value: v, children: l }, v)) });
+}
+var NT = { ok: ["var(--success-tint)", "var(--primary)", "var(--primary-text)", "check_circle"], error: ["var(--error-tint)", "var(--status-error)", "var(--status-error)", "error"], warning: ["var(--warning-tint)", "var(--status-warning)", "var(--status-warning)", "warning"], info: ["var(--info-tint)", "var(--status-info)", "var(--status-info)", "info"] };
+function GreenCrewNotice({ tone = "info", children, id, icon }) {
+  const [bg, bd, fg, ic] = NT[tone];
+  return /* @__PURE__ */ jsxs("div", { id, role: tone === "error" ? "alert" : "status", style: { display: "flex", gap: 8, alignItems: "flex-start", padding: "8px 12px", borderRadius: "var(--radius-field)", border: `1px solid ${bd}`, background: bg, color: fg, fontFamily: "var(--font-sans)", fontSize: 13, lineHeight: 1.45 }, children: [
+    (icon ?? ic) && /* @__PURE__ */ jsx(Icon, { name: icon ?? ic, size: 18 }),
+    /* @__PURE__ */ jsx("div", { style: { minWidth: 0 }, children })
+  ] });
+}
+function GreenCrewDialog({ id, title, onClose, footer, children, width = 560 }) {
+  const ref = useRef(null), tid = useId();
+  useEffect(() => {
+    ref.current?.querySelector("input,select,button:not([data-gc-close])")?.focus();
+  }, []);
+  return /* @__PURE__ */ jsx(
+    "div",
+    {
+      id,
+      className: "gc-overlay",
+      onMouseDown: (e) => {
+        if (e.target === e.currentTarget) onClose();
+      },
+      onKeyDown: (e) => {
+        e.stopPropagation();
+        if (e.key === "Escape") onClose();
+      },
+      style: { position: "fixed", inset: 0, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "var(--scrim)", fontFamily: "var(--font-sans)" },
+      children: /* @__PURE__ */ jsxs("div", { ref, className: "gc-dialog gc-scroll", role: "dialog", "aria-modal": "true", "aria-labelledby": tid, style: { display: "flex", flexDirection: "column", width, maxWidth: "100%", maxHeight: "calc(100vh - 32px)", background: "var(--surface-2)", color: "var(--text-primary)", border: "1px solid var(--border-2)", borderRadius: "var(--radius-dialog)", boxShadow: "var(--shadow-dialog)" }, children: [
+        /* @__PURE__ */ jsxs("div", { style: { display: "flex", alignItems: "center", gap: 12, padding: "16px 24px", borderBottom: "1px solid var(--border-1)" }, children: [
+          /* @__PURE__ */ jsx("h2", { id: tid, style: { flex: 1, margin: 0, fontSize: "var(--fs-section-title)", fontWeight: 700 }, children: title }),
+          /* @__PURE__ */ jsx(GreenCrewButton, { variant: "text", size: "sm", iconOnly: true, icon: "close", "aria-label": "Zamknij", "data-gc-close": true, onClick: onClose, style: { color: "var(--text-secondary)" } })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "gc-scroll", style: { flex: 1, minHeight: 0, overflow: "auto", padding: 24 }, children }),
+        footer && /* @__PURE__ */ jsx("div", { style: { display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", padding: "12px 24px", borderTop: "1px solid var(--border-1)", background: "var(--surface-1)", borderRadius: "0 0 var(--radius-dialog) var(--radius-dialog)" }, children: footer })
+      ] })
+    }
+  );
+}
 export {
   GreenCrewButton,
   GreenCrewCard,
   GreenCrewCheckbox,
   GreenCrewConfirmDialog,
+  GreenCrewDialog,
+  GreenCrewField,
+  GreenCrewInput,
+  GreenCrewNotice,
   GreenCrewSectionHeader,
   GreenCrewSegmented,
+  GreenCrewSelect,
   GreenCrewStatusChip,
   GreenCrewTextField,
   Icon

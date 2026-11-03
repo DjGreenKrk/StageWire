@@ -16,6 +16,8 @@
 --margin-desktop-lg:32px;
 --touch-min:44px;
 --touch-target:48px;
+--control-h-comfortable:48px; /* przyciski i pola: domyślnie */
+--control-h-compact:44px; /* wariant gęsty (desktop), nie mniej niż --touch-min */
 --sidebar-w:232px; /* desktop sidebar */
 --bp-tablet:600px;
 --bp-desktop:1024px;

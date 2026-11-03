@@ -1,4 +1,6 @@
-import { type CSSProperties, type MouseEventHandler, type ReactNode } from 'react';
+import { type ButtonHTMLAttributes, type CSSProperties, type InputHTMLAttributes, type MouseEventHandler, type ReactNode, type Ref, type SelectHTMLAttributes } from 'react';
+/** Gęstość: `comfortable` (domyślna, dotykowa, 48 px) albo `compact` (desktop, 44 px = minimalny cel dotykowy). */
+export type Density = 'comfortable' | 'compact';
 /** Ikona Material Symbols Rounded (ligatura po nazwie, np. `check`, `delete`). Wymaga czcionki z `tokens/fonts.css`. */
 export interface IconProps {
     name: string;
@@ -871,21 +873,21 @@ export declare function Icon({ name, size, fill, weight, color, style, ...rest }
     'aria-hidden': "true";
 }, HTMLElement>;
 /** Przycisk: `primary` (główna akcja, jedna na ekran), `secondary`, `destructive`, `text`. Wysokość 48 px (`lg` 56 px), czytelny na telefonie. */
-export interface GreenCrewButtonProps {
+export interface GreenCrewButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'style' | 'onClick' | 'type'> {
     children?: ReactNode;
     variant?: 'primary' | 'secondary' | 'destructive' | 'text';
-    size?: 'md' | 'lg';
+    size?: 'md' | 'lg' | 'sm';
+    density?: Density;
     icon?: string;
     trailingIcon?: string;
+    iconOnly?: boolean;
     disabled?: boolean;
     fullWidth?: boolean;
     onClick?: MouseEventHandler<HTMLButtonElement>;
     type?: 'button' | 'submit';
     style?: CSSProperties;
-    id?: string;
-    title?: string;
 }
-export declare function GreenCrewButton({ children, variant, size, icon, trailingIcon, disabled, fullWidth, onClick, type, style, id, title }: GreenCrewButtonProps): import("react").JSX.Element;
+export declare function GreenCrewButton({ children, variant, size, density, icon, trailingIcon, iconOnly, disabled, fullWidth, onClick, type, style, ...rest }: GreenCrewButtonProps): import("react").JSX.Element;
 /** Pole tekstowe z etykietą, jednostką, podpowiedzią i błędem. Wysokość 48 px. */
 export interface GreenCrewTextFieldProps {
     label?: string;
@@ -912,8 +914,9 @@ export interface GreenCrewCheckboxProps {
     label?: string;
     disabled?: boolean;
     id?: string;
+    density?: Density;
 }
-export declare function GreenCrewCheckbox({ checked, onChange, size, label, disabled, id }: GreenCrewCheckboxProps): import("react").JSX.Element;
+export declare function GreenCrewCheckbox({ checked, onChange, size, label, disabled, id, density }: GreenCrewCheckboxProps): import("react").JSX.Element;
 /** Znacznik stanu: `ok`, `error`, `warning`, `info`, `neutral` albo `overlay` (na zdjęciu/obrazie). */
 export interface GreenCrewStatusChipProps {
     tone?: 'ok' | 'error' | 'warning' | 'info' | 'neutral' | 'overlay';
@@ -971,3 +974,49 @@ export interface GreenCrewConfirmDialogProps {
     inline?: boolean;
 }
 export declare function GreenCrewConfirmDialog({ open, title, message, confirmLabel, cancelLabel, destructive, icon, onConfirm, onCancel, inline }: GreenCrewConfirmDialogProps): import("react").JSX.Element | null;
+/** Pole formularza: etykieta, kontrolka (`GreenCrewInput`/`GreenCrewSelect`) i podpowiedź albo błąd. W rzędzie (flex) rośnie według `grow` i ma szerokość bazową `minWidth`. */
+export interface GreenCrewFieldProps {
+    label: string;
+    required?: boolean;
+    hint?: string;
+    error?: string;
+    children: ReactNode;
+    grow?: number;
+    minWidth?: number;
+    style?: CSSProperties;
+}
+export declare function GreenCrewField({ label, required, hint, error, children, grow, minWidth, style }: GreenCrewFieldProps): import("react").JSX.Element;
+/** Samo pole tekstowe (bez etykiety), do użycia w `GreenCrewField` i w gęstych układach. Ostrość pokazuje obwódka w kolorze akcentu. */
+export interface GreenCrewInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
+    onChange?: (value: string, event: React.ChangeEvent<HTMLInputElement>) => void;
+    density?: Density;
+    invalid?: boolean;
+    ref?: Ref<HTMLInputElement>;
+}
+export declare function GreenCrewInput({ onChange, density, invalid, style, onFocus, onBlur, ...rest }: GreenCrewInputProps): import("react").JSX.Element;
+/** Lista rozwijana (bez etykiety). `options`: pary [wartość, opis]. */
+export interface GreenCrewSelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'onChange' | 'size'> {
+    options: [string, string][];
+    onChange?: (value: string, event: React.ChangeEvent<HTMLSelectElement>) => void;
+    density?: Density;
+    invalid?: boolean;
+}
+export declare function GreenCrewSelect({ options, onChange, density, invalid, style, ...rest }: GreenCrewSelectProps): import("react").JSX.Element;
+/** Komunikat w bloku: `ok`, `error`, `warning` albo `info`. Błąd ma rolę `alert`. */
+export interface GreenCrewNoticeProps {
+    tone?: 'ok' | 'error' | 'warning' | 'info';
+    children: ReactNode;
+    id?: string;
+    icon?: string;
+}
+export declare function GreenCrewNotice({ tone, children, id, icon }: GreenCrewNoticeProps): import("react").JSX.Element;
+/** Okno modalne ogólnego użytku: nagłówek z zamknięciem, przewijana treść i stopka z akcjami. Esc i klik w tło zamykają; fokus trafia do pierwszej kontrolki. */
+export interface GreenCrewDialogProps {
+    id?: string;
+    title: string;
+    onClose: () => void;
+    footer?: ReactNode;
+    children: ReactNode;
+    width?: number;
+}
+export declare function GreenCrewDialog({ id, title, onClose, footer, children, width }: GreenCrewDialogProps): import("react").JSX.Element;
