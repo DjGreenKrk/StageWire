@@ -2,7 +2,7 @@
 
 Status: wersja 0.1 do audytu · 2026-10-31
 
-Priorytet: **szybkość projektowania na laptopie w czasie przygotowań do realizacji.** Nie projektujemy rozbudowanego interfejsu dlatego, że mamy dużo danych technicznych; pokazujemy to, co potrzebne w danym kroku. Ergonomia istniejących narzędzi, wywnioskowana ze struktury UI, jest wskazówką, nie wynikiem testów użyteczności [wewnętrzne materiały badawcze Q9]. Wszystkie założenia UX należy zweryfikować na prototypie z użytkownikami (B1). Funkcje `F-xx`: [MVP-SCOPE.md](MVP-SCOPE.md).
+Priorytet: **szybkość projektowania na laptopie w czasie przygotowań do realizacji.** Nie projektujemy rozbudowanego interfejsu dlatego, że mamy dużo danych technicznych; pokazujemy to, co potrzebne w danym kroku. Ergonomia istniejących narzędzi, wywnioskowana ze struktury UI, jest wskazówką, nie wynikiem testów użyteczności [materiały robocze Q9]. Wszystkie założenia UX należy zweryfikować na prototypie z użytkownikami (B1). Funkcje `F-xx`: [MVP-SCOPE.md](MVP-SCOPE.md).
 
 ## 1. Zasady interakcji
 

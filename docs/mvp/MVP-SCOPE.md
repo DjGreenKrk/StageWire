@@ -2,7 +2,7 @@
 
 Status: wersja 0.1 do audytu · 2026-10-31
 
-Priorytety: **M** = wymagane (Must), **S** = pożądane (Should, wchodzi do MVP, jeśli nie zagraża terminowi; kandydaci do wycięcia w kolejności odwrotnej do numeru), **C** = opcjonalne (Could), **D** = odłożone, **X** = świadomie wykluczone. Pojęcia modelu: [DOMAIN-MODEL.md](DOMAIN-MODEL.md). Wnioski `W-xx`: wewnętrzne materiały badawcze
+Priorytety: **M** = wymagane (Must), **S** = pożądane (Should, wchodzi do MVP, jeśli nie zagraża terminowi; kandydaci do wycięcia w kolejności odwrotnej do numeru), **C** = opcjonalne (Could), **D** = odłożone, **X** = świadomie wykluczone. Pojęcia modelu: [DOMAIN-MODEL.md](DOMAIN-MODEL.md). Wnioski `W-xx`: materiały robocze
 
 ## 1. Jak MVP unika trzech pułapek
 
@@ -10,7 +10,7 @@ Priorytety: **M** = wymagane (Must), **S** = pożądane (Should, wchodzi do MVP,
 |---|---|
 | 1. Tylko edytor diagramów bez modelu technicznego | Diagram jest widokiem modelu: węzły wskazują `EquipmentInstance`, krawędzie są pochodne od `Connection`. Walidacja, kable, raporty i plan działają na tym samym modelu od pierwszego etapu |
 | 2. Rozbudowany model bez użytecznego edytora | Do modelu wchodzi tylko to, co obsługuje scenariusz referencyjny (§2). Elementy modelu bez UI w MVP są jawnie oznaczone „R" (rezerwa). **Pionowy plaster** (urządzenie → połączenie → lista kabli w CSV) powstaje już w PoC-1 (plan realizacji §4, §9 jest kanoniczny) |
-| 3. Pełne narzędzia CAD i webowe | Lista „Odłożone" i „Wykluczone" (§5, §6), każdy odłożony mechanizm ma uzasadnienie kosztu/wartości (wewnętrzne materiały badawcze). Zakres ograniczony do **jednego** scenariusza referencyjnego |
+| 3. Pełne narzędzia CAD i webowe | Lista „Odłożone" i „Wykluczone" (§5, §6), każdy odłożony mechanizm ma uzasadnienie kosztu/wartości. Zakres ograniczony do **jednego** scenariusza referencyjnego |
 
 ## 2. Scenariusz referencyjny (definiuje „skończone")
 
@@ -271,7 +271,7 @@ Szablony projektu, własne reguły numeracji (poza wzorcem), wyrównywanie i roz
 
 ## 6. Funkcje świadomie wykluczone (X)
 
-Renderowanie realistyczne 3D; symulacja oświetlenia, laserów, efektów; odpowiednik Depence; pełny CAD/BIM; integracja z Unreal Engine; sterowanie i monitoring urządzeń; subskrypcje, konta wymagane do pracy, blokady funkcji; telemetria domyślnie włączona; edytor tekstu bogatego (W-27); edytor kształtu symbolu urządzenia.
+Renderowanie realistyczne 3D; symulacja oświetlenia, laserów, efektów; odpowiednik Depence; pełny CAD/BIM; integracja z Unreal Engine; sterowanie i monitoring urządzeń; subskrypcje, konta wymagane do pracy, blokady funkcji; telemetria domyślnie włączona; edytor tekstu bogatego; edytor kształtu symbolu urządzenia.
 
 ## 7. Biblioteka startowa — zakres i ryzyko
 

@@ -2,7 +2,7 @@
 
 Status: wersja 0.1 do audytu · 2026-10-31 · nazwa robocza: **Stagewire** (placeholder; wymaga sprawdzenia kolizji znaków towarowych, zob. OPEN-QUESTIONS Q-01)
 
-Oznaczenia pewności jak w wewnętrzne materiały badawcze.md §0.1. Persony i metryki poniżej to **[HIPOTEZA]**: nie przeprowadzono badań użytkowników (luka B1).
+Oznaczenia pewności: [FAKT], [WNIOSEK], [HIPOTEZA], [DECYZJA]. Persony i metryki poniżej to **[HIPOTEZA]**: nie przeprowadzono badań użytkowników (luka B1).
 
 ## 1. Jednozdaniowa wizja
 
@@ -14,8 +14,8 @@ To **narzędzie do projektowania**, nie wizualizator. Wartością jest poprawny,
 
 Przygotowanie techniczne wydarzenia rozbija się dziś na osobne artefakty: rzut sali (CAD lub PDF), schemat sygnałowy (rysunek), listy sprzętu i kabli (arkusz kalkulacyjny), packlista. Każda zmiana wymaga ręcznej aktualizacji wszystkich. Istniejące rozwiązania leżą na biegunach:
 
-- **rozwiązanie A** — szybkie i proste, ale płaskie: bez skali sali, bez stabilnych identyfikatorów portów, z kluczowymi funkcjami za paywallem i zależne od chmury [wewnętrzne materiały badawcze].
-- **rozwiązanie B** — precyzyjne technicznie, ale ciężkie, drogie, zależne od pełnego CAD i z niespójną integralnością danych [wewnętrzne materiały badawcze].
+- **Narzędzia webowe do schematów AV** — szybkie i proste, ale płaskie: bez skali sali, bez stabilnych identyfikatorów portów, z kluczowymi funkcjami za paywallem i zależne od chmury.
+- **Wtyczki do pakietów CAD** — precyzyjne technicznie, ale ciężkie, drogie, zależne od pełnego CAD i z niespójną integralnością danych.
 
 Brakuje narzędzia pośredniego: **precyzyjnego modelu połączeń + lekkiego planu w skali + szybkiego edytora, w otwartym formacie**.
 
@@ -45,13 +45,13 @@ Oświetlenie: narzędzie obejmuje **dokumentację połączeń i rozmieszczenie**
 
 1. **Model przed rysunkiem.** Edytor jest widokiem na model, nie odwrotnie. Eliminuje pułapkę „tylko edytor diagramów" [DECYZJA, zob. MVP-SCOPE §1].
 2. **Użyteczność przed kompletnością.** Każda funkcja MVP musi mieścić się w przepływie „pusty projekt → dokumentacja" (MVP-SCOPE §2). Eliminuje pułapkę „model bez edytora".
-3. **Szybkość na laptopie.** Skróty jednoliterowe, szybkie dodawanie sprzętu, praca klawiaturą [wewnętrzne materiały badawcze].
-4. **Model nie może się zepsuć; projekt może być niepoprawny.** Twarda integralność strukturalna, miękka walidacja projektowa [§11 syntezy].
+3. **Szybkość na laptopie.** Skróty jednoliterowe, szybkie dodawanie sprzętu, praca klawiaturą.
+4. **Model nie może się zepsuć; projekt może być niepoprawny.** Twarda integralność strukturalna, miękka walidacja projektowa.
 5. **Offline-first, bez konta.** Plik projektu na dysku, zero obowiązkowych usług.
 6. **Dane są Twoje.** Otwarty, udokumentowany, wersjonowany format; eksport CSV/PDF/SVG.
 7. **Uczciwość dotycząca danych.** Każda definicja urządzenia ma pochodzenie i licencję; nie kopiujemy cudzych baz (ADR-020).
-8. **Rozszerzalność przez rejestry, nie przez kod.** Własne złącza, sygnały, kable i urządzenia bez rekompilacji [wewnętrzne materiały badawcze].
-9. **Prostota przed repliką.** Nie odtwarzamy rozwiązanie B ani rozwiązanie A; odtwarzamy to, co służy scenariuszowi.
+8. **Rozszerzalność przez rejestry, nie przez kod.** Własne złącza, sygnały, kable i urządzenia bez rekompilacji.
+9. **Prostota przed repliką.** Nie odtwarzamy istniejących narzędzi; odtwarzamy to, co służy scenariuszowi.
 
 ## 6. Co produkt robi (granice)
 
@@ -81,9 +81,9 @@ IFC/BIM (np. most do BIMCraft), MVR/GDTF, widok 3D, współpraca zespołowa i se
 
 ## 7. Odróżnienie od istniejących rozwiązań
 
-| Wymiar | rozwiązanie A | rozwiązanie B | **Stagewire (cel)** |
+| Wymiar | Narzędzia webowe | Wtyczki CAD | **StageWire (cel)** |
 |---|---|---|---|
-| Cena/licencja | plan Starter z limitami, funkcje płatne | komercyjny, część Vectorworks | Darmowy, open source |
+| Cena/licencja | plan Starter z limitami, funkcje płatne | komercyjny, część pakietu CAD | Darmowy, kod źródłowy dostępny (PolyForm Shield) |
 | Działanie offline | zapis pomijany bez sieci | tak (desktop) | **Offline-first** |
 | Plan w skali | brak | tak (pełny CAD) | Lekki plan 2D w mm z Z |
 | Tożsamość portu | indeks | nazwa/ID mieszane | **Stabilne ID** |

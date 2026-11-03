@@ -2,7 +2,7 @@
 
 Status: wersja 0.1 do audytu · 2026-10-31
 
-Oceny technologii poniżej to **oceny eksperckie bez pomiarów** ([HIPOTEZA]). Stan wersji i licencji zależności trzeba zweryfikować w Etapie 0 (IMPLEMENTATION-PLAN). Kluczowe założenia wydajnościowe i platformowe weryfikuje PoC, nie ten dokument. Wnioski `W-xx`: wewnętrzne materiały badawcze Decyzje: [DECISIONS.md](DECISIONS.md).
+Oceny technologii poniżej to **oceny eksperckie bez pomiarów** ([HIPOTEZA]). Stan wersji i licencji zależności trzeba zweryfikować w Etapie 0 (IMPLEMENTATION-PLAN). Kluczowe założenia wydajnościowe i platformowe weryfikuje PoC, nie ten dokument. Decyzje: [DECISIONS.md](DECISIONS.md).
 
 ## 1. Wymagania sterujące architekturą
 
@@ -217,7 +217,7 @@ Zasada: UI nie importuje API Tauri bezpośrednio.
 
 | Opcja | Zalety | Wady |
 |---|---|---|
-| **DOM + SVG** | Trafienia i dostępność „za darmo"; prosta implementacja | Koszt DOM przy tysiącach elementów, wydajność niezmierzona [W-01]; skalowanie linii i tekstu wymaga uwagi |
+| **DOM + SVG** | Trafienia i dostępność „za darmo"; prosta implementacja | Koszt DOM przy tysiącach elementów, wydajność niezmierzona; skalowanie linii i tekstu wymaga uwagi |
 | **Canvas 2D + własny indeks** | Przewidywalna wydajność, pełna kontrola, ta sama DrawList do eksportu | Własne trafienia i nakładki, brak darmowej dostępności |
 | **WebGL (np. PixiJS)** | Największa wydajność | Złożoność, ryzyko sterowników na starszych komputerach, eksport wektorowy osobno |
 
@@ -292,7 +292,7 @@ Uwaga ze zbadanego BIMCraft: ścisłe `deny_unknown_fields` i `lenient.rs` gubi�
 | R4 | Eksport PDF: fonty, rozdzielczość, skala | niskie / średni | TS-07, TS-14 w PoC-3 | Inna biblioteka PDF; PDF z SVG |
 | R5 | Biblioteka startowa: jakość i prawa do danych | wysokie / wysoki | Przegląd prawny (Q-07) | Mniejszy zakres, generyki, wkład społeczności z DCO |
 | R6 | Format JSON zbyt duży/wolny przy dużych projektach | niskie / średni | Pomiar w PoC-1 | Podział na wpisy ZIP; SQLite za portem `ProjectStore` |
-| R7 | Nadmierny zakres produktu (pełne rozwiązanie B/webowe) | wysokie / wysoki | Kontrola zakresu względem MVP-SCOPE | Odcięcie [S] w kolejności odwrotnej |
+| R7 | Nadmierny zakres produktu (pełne narzędzie CAD lub webowe) | wysokie / wysoki | Kontrola zakresu względem MVP-SCOPE | Odcięcie [S] w kolejności odwrotnej |
 | R8 | Brak badań użytkowników → źle dobrane priorytety | wysokie / średni | Wywiady przed M2 (B1) | Korekta zakresu [S] |
 | R9 | Wiedza o zależnościach (licencje, wersje) nieaktualna | średnie / średni | Audyt w Etapie 0 | Zamienniki o zgodnej licencji |
 | R10 | Pliki osób trzecich ujawnione w repozytorium publicznym | średnie / wysoki (prawnie) | Przegląd repozytorium przed publikacją | Przegląd zawartości repo, `.gitignore`, ADR-020 |

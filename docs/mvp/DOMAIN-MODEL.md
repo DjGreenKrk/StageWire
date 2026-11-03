@@ -2,22 +2,22 @@
 
 Status: wersja 0.1 do audytu · format: `formatVersion` **1.0.0-draft** · 2026-10-31
 
-Model jest własny i niezależny od istniejących narzędzi. Powody każdej decyzji wskazują na wnioski `W-xx` z wewnętrzne materiały badawcze i ADR w [DECISIONS.md](DECISIONS.md). Nazwy encji i pól są po angielsku. Opis po polsku.
+Model jest własny i niezależny od istniejących narzędzi. Powody każdej decyzji opisują ADR w [DECISIONS.md](DECISIONS.md). Nazwy encji i pól są po angielsku. Opis po polsku.
 
 ## 1. Zasady nadrzędne
 
 | # | Zasada | Uzasadnienie |
 |---|---|---|
-| Z1 | Każdy obiekt ma stabilny, niezmienny identyfikator niezależny od nazwy | W-03; ADR-003 |
-| Z2 | Relacje są jawne (pole `…Id`/`PortRef`), nigdy przez nazwę | W-04, W-08; ADR-003 |
-| Z3 | Fakty domenowe istnieją raz; widoki trzymają tylko prezentację | §9 syntezy; ADR-002 |
-| Z4 | Model nigdy nie zawiera wiszących referencji; to niezmiennik wymuszany przez warstwę poleceń | W-08; ADR-008 |
-| Z5 | Poprawność projektowa (sygnały, nakładanie U…) to walidacja wyliczana, nie stan | W-06, W-26; ADR-007 |
+| Z1 | Każdy obiekt ma stabilny, niezmienny identyfikator niezależny od nazwy | ADR-003 |
+| Z2 | Relacje są jawne (pole `…Id`/`PortRef`), nigdy przez nazwę | ADR-003 |
+| Z3 | Fakty domenowe istnieją raz; widoki trzymają tylko prezentację | ADR-002 |
+| Z4 | Model nigdy nie zawiera wiszących referencji; to niezmiennik wymuszany przez warstwę poleceń | ADR-008 |
+| Z5 | Poprawność projektowa (sygnały, nakładanie U…) to walidacja wyliczana, nie stan | ADR-007 |
 | Z6 | Urządzenie techniczne, obiekt sceny i element rysunku to trzy różne klasy | wymaganie projektu; ADR-009 |
 | Z7 | Współrzędne są trójwymiarowe (X/Y/Z, mm) od początku, ale model 3D nie jest wymagany | ADR-009 |
-| Z8 | Nieznane pola są zachowywane przy odczycie i zapisie (round-trip) | W-29 (lekcja z BIMCraft `deny_unknown_fields`) |
+| Z8 | Nieznane pola są zachowywane przy odczycie i zapisie (round-trip) | (lekcja z BIMCraft `deny_unknown_fields`) |
 | Z9 | Format ma wersję i łańcuch migracji | ADR-014 |
-| Z10 | Wyniki pochodne (raporty, wyniki walidacji, ścieżki end-to-end) nie są przechowywane | W-12; ADR-018 |
+| Z10 | Wyniki pochodne (raporty, wyniki walidacji, ścieżki end-to-end) nie są przechowywane | ADR-018 |
 
 ## 2. Mapa pojęć: lista z zamówienia a model
 
@@ -169,7 +169,7 @@ W kolumnie „MVP" **M** = używane w MVP, **R** = pole zarezerwowane w modelu (
 | `views` | mapa `id → obiekt` | M | |
 | `reportDefinitions` | mapa `id → obiekt` | M (tylko zapisane szablony) | |
 | `suppressions` | `{ruleId, subject, reason, by, at}[]` | M | Odrzucone ostrzeżenia (jak odrzucanie w palecie statusu narzędzi CAD) |
-| `packing` | `{rows: {rowKey → packedCount}, extras: [{id, text, packed}]}` | M | Stan packlisty jako **dane użytkownika**. Klucz wiersza: sprzęt `eq:<definitionId>:<supply>` (rewizja pomijana: fizycznie to ten sam produkt), obiekty sceny `so:<kind>:<widthMm>x<depthMm>x<heightMm>`, kable `cb:<cableTypeKey>:<stockLengthMm>` (dla przydzielonej długości) lub `cb:<cableTypeKey>:sugg<mm>` (dla propozycji; przejście propozycja→przydział zmienia klucz i zeruje licznik). Lista pozycji pozostaje wyliczana (Z10), zapisywany jest tylko postęp i „extras" (wzorzec rozwiązanie A). **Reguła spójności:** przy każdej zmianie liczby w wierszu zapisany licznik jest **trwale przycinany** do `min(packedCount, nowa liczba)` (nie tylko przy wyświetlaniu), więc 5 spakowanych → liczba 3 → liczba 5 daje 3 z 5, a nie 5 z 5; wiersz jest spakowany tylko gdy `packedCount == liczba`; zmiana `supply` lub `stockLengthMm` zmienia klucz i zaczyna od 0; osierocone klucze są usuwane przy zapisie |
+| `packing` | `{rows: {rowKey → packedCount}, extras: [{id, text, packed}]}` | M | Stan packlisty jako **dane użytkownika**. Klucz wiersza: sprzęt `eq:<definitionId>:<supply>` (rewizja pomijana: fizycznie to ten sam produkt), obiekty sceny `so:<kind>:<widthMm>x<depthMm>x<heightMm>`, kable `cb:<cableTypeKey>:<stockLengthMm>` (dla przydzielonej długości) lub `cb:<cableTypeKey>:sugg<mm>` (dla propozycji; przejście propozycja→przydział zmienia klucz i zeruje licznik). Lista pozycji pozostaje wyliczana (Z10), zapisywany jest tylko postęp i „extras" (wzorzec inne narzędzia). **Reguła spójności:** przy każdej zmianie liczby w wierszu zapisany licznik jest **trwale przycinany** do `min(packedCount, nowa liczba)` (nie tylko przy wyświetlaniu), więc 5 spakowanych → liczba 3 → liczba 5 daje 3 z 5, a nie 5 z 5; wiersz jest spakowany tylko gdy `packedCount == liczba`; zmiana `supply` lub `stockLengthMm` zmienia klucz i zaczyna od 0; osierocone klucze są usuwane przy zapisie |
 | `ext` | obiekt | R | Dane rozszerzeń |
 
 W pliku i w pamięci kolekcje encji są **mapami `Record<ID, T>`**, a nie tablicami (kolejność nie niesie znaczenia, prostsze scalanie i sync w przyszłości, ADR-022). Kolejność, gdzie ma znaczenie (np. porty), jest jawnym polem `order`. **Dozwolone tablice** (wartości bez własnej tożsamości lub z kolejnością niosącą znaczenie; lista jest wyczerpująca dla wersji 1.0.0-draft, a każda nowa tablica wymaga wpisu tutaj): `meta.eventDates`, `settings.stockCableLengthsMm`, `signalKeys`, `tags`, `endPairs`, `carriesSignals`, `internalLinks`, `suppressions`, `packing.extras`, `waypoints`, `ReportDefinition.columns`/`groupBy`/`sortBy`, `hiddenConnections`, `boundary`/`polygon`/`footprint.points`. Tabele w §5 opisują pola, nie kształt kolekcji. Decyzja Q-12 jest rozstrzygnięta (mapy), warunkowo do pomiarów PoC-1.
@@ -180,7 +180,7 @@ W pliku i w pamięci kolekcje encji są **mapami `Record<ID, T>`**, a nie tablic
 
 ### 5.2 RegistryEntry (Connector Type, Signal Type, Cable Type)
 
-Jeden mechanizm, trzy rodzaje (`kind`). Rozstrzyga niespójność trzech taksonomii [W-05].
+Jeden mechanizm, trzy rodzaje (`kind`). Rozstrzyga niespójność trzech taksonomii.
 
 | Pole | Dotyczy | Opis |
 |---|---|---|
@@ -238,7 +238,7 @@ definitions[definitionId] = { latestRevision: N, revisions: { "1": {…}, "2": {
 
 | Pole | Typ | MVP | Opis |
 |---|---|---|---|
-| `id` | `prt_…` | M | Stabilny w ramach definicji, nigdy nie używany ponownie. **Zmiana etykiety nie zmienia ID** (W-03) |
+| `id` | `prt_…` | M | Stabilny w ramach definicji, nigdy nie używany ponownie. **Zmiana etykiety nie zmienia ID** |
 | `label` | string | M | Np. „SDI IN 1" |
 | `group` | string? | M | Grupa (np. „SDI IN") — do zwijania/układu |
 | `order` | int | M | Kolejność |
@@ -251,7 +251,7 @@ definitions[definitionId] = { latestRevision: N, revisions: { "1": {…}, "2": {
 | `channels` | int? | R | Liczba kanałów (np. 8 dla multipinu) |
 | `notes` | string | M | |
 
-Krotność znana z narzędzi CAD („Qty") nie jest polem modelu: edytor definicji **generuje N osobnych `PortDefinition`** (UX „szybkie porty"). Model pozostaje płaski i prosty [W-16].
+Krotność znana z narzędzi CAD („Qty") nie jest polem modelu: edytor definicji **generuje N osobnych `PortDefinition`** (UX „szybkie porty"). Model pozostaje płaski i prosty.
 
 ### 5.5 InternalLink (R→M, Should)
 
@@ -278,7 +278,7 @@ Służy do **wyprowadzania ścieżek end-to-end** przez patchpanele bez rozcinan
 | `notes` | string | M | |
 | `ext` | | R | |
 
-**Instancja nie ma własnej listy portów.** Aby zmienić strukturę portów, użytkownik **tworzy lokalną kopię definicji** (`derivedFrom`) i przepina instancje. Zapobiega rozjazdowi struktury instancji względem definicji (problem rozwiązanie A „pełna kopia" i rozwiązanie B „definicja w symbolu") [W-04].
+**Instancja nie ma własnej listy portów.** Aby zmienić strukturę portów, użytkownik **tworzy lokalną kopię definicji** (`derivedFrom`) i przepina instancje. Zapobiega rozjazdowi struktury instancji względem definicji (problem inne narzędzia „pełna kopia" i inne narzędzia „definicja w symbolu").
 
 ### 5.7 StageObject
 
@@ -319,7 +319,7 @@ Brak `Placement` jest dozwolony (urządzenie wirtualne, „jeszcze nie rozstawio
 
 ### 5.10 Rack
 
-`id`, `name`, `units` (np. 42), `widthIn` (19), `depthMm`, `zoneId?`, `notes`. Rack ma `Placement` (stoi w sali). Zawartość racka to instancje z `mount.rackId`; w MVP nie mają własnych `Placement` (położenie wynika z racka). Przesunięcie racka nie wymaga aktualizacji zawartości, bo zawartość nie ma współrzędnych [W-10: odpowiednik propagacji rozwiązanie B uzyskany strukturalnie].
+`id`, `name`, `units` (np. 42), `widthIn` (19), `depthMm`, `zoneId?`, `notes`. Rack ma `Placement` (stoi w sali). Zawartość racka to instancje z `mount.rackId`; w MVP nie mają własnych `Placement` (położenie wynika z racka). Przesunięcie racka nie wymaga aktualizacji zawartości, bo zawartość nie ma współrzędnych [W-10: odpowiednik propagacji inne narzędzia uzyskany strukturalnie].
 
 ### 5.11 Connection (połączenie logiczne)
 
@@ -355,7 +355,7 @@ Kabel **nie ma własnych końców**; końce wynikają z połączeń, które na n
 
 **View**: `id`, `kind` (`plan` \| `diagram`), `name`, `viewport {x, y, zoom}`, `layers` (widoczność kategorii), `print {paper, orientation, scale, titleBlock}`, `grid {sizeMm, snap, style}`; dla `plan`: `spaceId`, `underlay?`; dla `diagram`: `nodes`, `edgeLayouts`, `hiddenConnections[]`.
 
-**DiagramNode**: `id`, `instanceId`, `x`, `y`, `collapsed?`, `portSideOverrides?`. Co najwyżej jeden węzeł danej instancji na widok; dowolnie wiele widoków (W-25).
+**DiagramNode**: `id`, `instanceId`, `x`, `y`, `collapsed?`, `portSideOverrides?`. Co najwyżej jeden węzeł danej instancji na widok; dowolnie wiele widoków.
 
 **EdgeLayout**: `connectionId`, `waypoints[]`. Istnienie krawędzi na diagramie jest **pochodne**: krawędź jest rysowana, gdy oba końce mają węzeł w widoku, a połączenie nie jest w `hiddenConnections`. Dzięki temu nie ma wiszących krawędzi i nie trzeba synchronizować „linii" z modelem (ADR-010).
 
@@ -367,7 +367,7 @@ Kabel **nie ma własnych końców**; końce wynikają z połączeń, które na n
 
 ## 6. Reguły integralności referencyjnej (kluczowe)
 
-Tabela rozstrzyga niespójności zaobserwowane w narzędziach CAD [W-08] i brak odpowiedników w narzędziach webowych.
+Tabela rozstrzyga niespójności zaobserwowane w narzędziach CAD i brak odpowiedników w narzędziach webowych.
 
 | Operacja | Skutek | Potwierdzenie | Cofanie |
 |---|---|---|---|
@@ -387,7 +387,7 @@ Tabela rozstrzyga niespójności zaobserwowane w narzędziach CAD [W-08] i brak 
 
 ## 7. Walidacja (miękka) — katalog reguł MVP
 
-Poziomy: `error`, `warning`, `info`. Każdy poziom reguły można zmienić lub wyłączyć w `settings.validationOverrides`. Reguła ma ID, powód i, jeśli możliwe, „szybką naprawę". Wynik jest wyliczany i nie jest zapisywany [W-26].
+Poziomy: `error`, `warning`, `info`. Każdy poziom reguły można zmienić lub wyłączyć w `settings.validationOverrides`. Reguła ma ID, powód i, jeśli możliwe, „szybką naprawę". Wynik jest wyliczany i nie jest zapisywany.
 
 | ID | Domyślny poziom | Reguła | Szybka naprawa |
 |---|---|---|---|
@@ -422,7 +422,7 @@ Reguły są **danymi z kodem** w module `@core/validation`; użytkownik może zm
 | Ścieżka end-to-end | przejście grafem: połączenia + `InternalLink` |
 | Efektywna strefa | `zoneId` ?? `rack.zoneId` |
 | Pozycja efektywna (`effectivePosition`) | Poprawka audytu P1-08. (a) Obiekt z `Placement`: jego `position`. (b) Urządzenie z `mount` w racku: XY racka, `z = rack.z + (uStart − 1) × 44,45 mm` (jednostka U), obrót racka; używane przez raporty i estymatę. (c) Obiekt stojący na podeście: `z` jest **jawnie zapisane**; edytor jedynie *podpowiada* górną powierzchnię podestu pod obiektem (nie jest to automat). (d) Brak `Placement` i `mount` → pozycja nieznana |
-| Estymata długości | Manhattan między `effectivePosition` obu końców w XY + \|ΔZ\| + `defaultCableSlackMm` × 2, zaokrąglona do `stockCableLengthsMm` w raporcie. **Tylko gdy oba końce są w tej samej `Space`**; między różnymi `Space` brak wspólnego układu współrzędnych, więc estymata jest odmawiana (V-025), a długość wpisuje się ręcznie. Wyliczana poleceniem „Oszacuj długości"; wynik zapisuje się do `Cable.lengthMm` z `lengthSource = estimated` i `estimateBasis` **tylko na polecenie użytkownika** (nie nadpisuje `manual`). Po zmianie geometrii wartość pozostaje, ale jest oznaczana jako nieaktualna [W-11] |
+| Estymata długości | Manhattan między `effectivePosition` obu końców w XY + \|ΔZ\| + `defaultCableSlackMm` × 2, zaokrąglona do `stockCableLengthsMm` w raporcie. **Tylko gdy oba końce są w tej samej `Space`**; między różnymi `Space` brak wspólnego układu współrzędnych, więc estymata jest odmawiana (V-025), a długość wpisuje się ręcznie. Wyliczana poleceniem „Oszacuj długości"; wynik zapisuje się do `Cable.lengthMm` z `lengthSource = estimated` i `estimateBasis` **tylko na polecenie użytkownika** (nie nadpisuje `manual`). Po zmianie geometrii wartość pozostaje, ale jest oznaczana jako nieaktualna |
 | Pozycje krawędzi diagramu | trasowanie ortogonalne + `waypoints` |
 | Raporty | zapytania nad modelem (ADR-018) |
 

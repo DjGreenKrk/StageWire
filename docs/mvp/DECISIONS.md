@@ -2,7 +2,7 @@
 
 Status: wersja 0.1 do audytu · 2026-10-31
 
-Wszystkie decyzje mają status **Proponowana**, dopóki właściciel projektu ich nie zatwierdzi. Decyzje oznaczone ⚑ wymagają zatwierdzenia przed kodowaniem (zob. [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md)). Decyzje z „bramką" mogą zostać zmienione na podstawie wyników PoC. Odwołania `W-xx`: wewnętrzne materiały badawcze
+Wszystkie decyzje mają status **Proponowana**, dopóki właściciel projektu ich nie zatwierdzi. Decyzje oznaczone ⚑ wymagają zatwierdzenia przed kodowaniem (zob. [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md)). Decyzje z „bramką" mogą zostać zmienione na podstawie wyników PoC.
 
 Format: **Kontekst → Decyzja → Alternatywy → Konsekwencje → Dowody → Warunek rewizji**.
 
@@ -16,61 +16,61 @@ Format: **Kontekst → Decyzja → Alternatywy → Konsekwencje → Dowody → W
 
 
 ## ADR-002 — Jeden model, wiele widoków; informacja domenowa raz
-**Kontekst.** rozwiązanie A ma tylko schemat; rozwiązanie B skleja schemat, rack i layout nazwami [W-23].
-**Decyzja.** Rozdzielenie A–E: model (A) jest źródłem prawdy; plan (B), diagram (C), fizyczny (D) są widokami; dokumentacja (E) jest wyliczana (wewnętrzne materiały badawcze). `Placement` należy do modelu; pozycja węzła diagramu do widoku.
-**Alternatywy.** Model per widok z synchronizacją (odrzucone: dryf danych); dane domenowe w obiektach graficznych (rozwiązanie B, odrzucone [W-04]).
+**Kontekst.** Narzędzia webowe oferują zwykle tylko schemat, a narzędzia CAD sklejają schemat, rack i plan nazwami.
+**Decyzja.** Rozdzielenie A–E: model (A) jest źródłem prawdy; plan (B), diagram (C), fizyczny (D) są widokami; dokumentacja (E) jest wyliczana. `Placement` należy do modelu; pozycja węzła diagramu do widoku.
+**Alternatywy.** Model per widok z synchronizacją (odrzucone: dryf danych); dane domenowe w obiektach graficznych, jak w narzędziach CAD (odrzucone).
 **Konsekwencje.** Każda funkcja musi mieć jasne miejsce na dane; ułatwia raporty i sync.
 
 
 ## ADR-003 — Stabilne identyfikatory niezależne od nazw ⚑
-**Kontekst.** rozwiązanie A adresuje porty indeksem, rozwiązanie B zrywa połączenie przy zmianie nazwy portu.
+**Kontekst.** Część narzędzi adresuje porty indeksem, a część zrywa połączenie przy zmianie nazwy portu.
 **Decyzja.** Każdy obiekt, w tym `PortDefinition`, ma niezmienny ID (prefiks typu + UUIDv7 w base32); ID nigdy nie jest używany ponownie; relacje przez ID. Nazwy i etykiety to dane użytkownika, unikalność jako walidacja.
 **Alternatywy.** Klucze naturalne (nazwa) — odrzucone; indeksy tablicowe — odrzucone.
 **Konsekwencje.** Zmiana etykiet jest bezpieczna; wymaga generatora ID i czytelnych ID w testach. Dłuższe ID w pliku.
 
 
 ## ADR-004 — Definicja i instancja z przypiętą rewizją, osadzone w projekcie ⚑
-**Kontekst.** rozwiązanie A: instancja to kopia bez propagacji; rozwiązanie B: definicja w symbolu, zmiana może zrywać obwody.
+**Kontekst.** W narzędziach webowych instancja bywa kopią bez propagacji zmian, a w narzędziach CAD definicja siedzi w symbolu i jej zmiana może zrywać obwody.
 **Decyzja.** `EquipmentDefinition` ma rewizje; `EquipmentInstance` wskazuje `definitionId` + `definitionRevision`; użyte rewizje są osadzone w pliku projektu. Zmiana struktury portów tworzy nową rewizję; upgrade instancji jest jawny; w Core ([M]) pokazuje listę dotkniętych połączeń z wyborem „usuń / anuluj", a tabela różnic i przepinanie portów to F-19 [S]. Instancja nie ma własnej listy portów; modyfikacja = fork definicji.
-**Alternatywy.** (a) Kopia w instancji jak rozwiązanie A — odrzucone (brak propagacji, rozjazd); (b) żywe wiązanie instancja→biblioteka — odrzucone (projekt nieprzenośny, zmiana biblioteki psuje stare projekty); (c) brak rewizji, tylko fork — dopuszczalny plan awaryjny, jeśli PoC-1 wykaże nadmierną złożoność.
+**Alternatywy.** (a) Kopia w instancji bez propagacji — odrzucone (brak propagacji, rozjazd); (b) żywe wiązanie instancja→biblioteka — odrzucone (projekt nieprzenośny, zmiana biblioteki psuje stare projekty); (c) brak rewizji, tylko fork — dopuszczalny plan awaryjny, jeśli PoC-1 wykaże nadmierną złożoność.
 **Konsekwencje.** Przenośność, bezpieczne zmiany; kosztem logiki rewizji i UI upgrade.
 
 **Doprecyzowanie po audycie (P0-01).** Magazyn: `definitions[id].revisions[n]`, rewizje niemutowalne, każda edycja tworzy nową; w pliku rewizje przypięte + najnowsza; upgrade, fork, import i usunięcie portu opisane w DOMAIN-MODEL §5.3. Upgrade podstawowy (lista dotkniętych połączeń) jest [M], tabela różnic [S].
 **Warunek rewizji.** PoC-1: jeśli rewizje wymagają > ~1,5× zaplanowanego nakładu, MVP przechodzi na model fork-only (ta sama struktura `revisions`, jedna rewizja); TS-13a dostosować.
 
 ## ADR-005 — Port: trzy niezależne osie (złącze, sygnał, kierunek); `PortInstance` wirtualna
-**Kontekst.** rozwiązanie B pokazuje, że złącze, sygnał i kierunek są niezależne i wielowartościowe; rozwiązanie A ma trzy nakładające się taksonomie.
+**Kontekst.** Złącze, sygnał i kierunek są niezależne i wielowartościowe; istniejące narzędzia mieszają je w nakładających się taksonomiach.
 **Decyzja.** `PortDefinition` ma `connectorKey`, `signalKeys[]` i `direction`, plus `capacity`, `side`, `group`. Rejestry (złącza, sygnały, kable) są jednym mechanizmem z kluczami i możliwością własnych wpisów. `PortInstance` nie jest encją; tożsamość portu instancji to `PortRef {instanceId, portId}`, a rzadkie dane trzymane są w `portOverrides`. Krotność („Qty") realizuje edytor przez generowanie N portów.
-**Alternatywy.** Materializowanie `PortInstance` dla każdej instancji (więcej danych do synchronizacji z rewizjami); pojedyncza oś „typ" (rozwiązanie A).
+**Alternatywy.** Materializowanie `PortInstance` dla każdej instancji (więcej danych do synchronizacji z rewizjami); pojedyncza oś „typ”.
 **Konsekwencje.** Brak duplikacji portów w pliku; upgrade rewizji nie wymaga migracji portów.
 
 
 ## ADR-006 — `Connection` (logiczne) ≠ `Cable` (fizyczne), domyślnie 1:1
-**Kontekst.** rozwiązanie B rozdziela Circuit i Cable; rozwiązanie A łączy oba pojęcia.
+**Kontekst.** Część narzędzi rozdziela obwód i kabel, a część łączy oba pojęcia.
 **Decyzja.** Dwie encje; `Connection.cableId` opcjonalne; UI MVP tworzy parę 1:1; model pozwala wielu połączeniom wskazywać jeden kabel (to nie opisuje jeszcze fizycznej wiązki multicore, która wymaga osobnego projektu w v1.0) oraz połączenia bez kabla (`medium`).
-**Alternatywy.** Jedna encja (rozwiązanie A) — odrzucone (blokuje współdzielenie kabla i dane kablowe); osobne końce kabla — odrzucone (duplikacja).
+**Alternatywy.** Jedna encja na obwód i kabel — odrzucone (blokuje współdzielenie kabla i dane kablowe); osobne końce kabla — odrzucone (duplikacja).
 **Doprecyzowanie po audycie (P0-03).** `Connection.medium` (`physical`/`wireless`/`virtual`) jednoznacznie odróżnia połączenie bezprzewodowe od fizycznego bez kabla; `cableId = null` przy `physical` = kabel nieprzypisany (V-019).
 **Konsekwencje.** Raporty kabli i patchlisty mają jasne źródła.
 
 
 ## ADR-007 — Walidacja nieblokująca, trzypoziomowa, wyliczana; twarde tylko niezmienniki strukturalne ⚑
-**Kontekst.** rozwiązanie A blokuje tworzenie kabla; rozwiązanie B nie blokuje niczego, ale znaczniki są obiektami w stanie dokumentu.
+**Kontekst.** Narzędzia webowe bywają blokujące przy tworzeniu kabla, a narzędzia CAD nie blokują niczego, ale ich znaczniki są obiektami w stanie dokumentu.
 **Decyzja.** Reguły projektowe (zgodność sygnałów, kierunek, pojemność, nakładanie U…) dają wyniki `error/warning/info`, wyliczane i niezapisywane; gest łączenia pokazuje powód i pozwala wymusić. Twarde niezmienniki (referencje) wymusza warstwa poleceń. Poziomy konfigurowalne; odrzucanie z uzasadnieniem.
-**Alternatywy.** Walidacja blokująca (rozwiązanie A) — odrzucona (nietypowe przypadki, adaptery, tymczasowe plany); markup jako obiekty (rozwiązanie B) — odrzucone (stan do synchronizacji, brak odświeżania).
+**Alternatywy.** Walidacja blokująca — odrzucona (nietypowe przypadki, adaptery, tymczasowe plany); znaczniki jako obiekty dokumentu — odrzucone (stan do synchronizacji, brak odświeżania).
 **Konsekwencje.** Użytkownik może mieć niepoprawny, ale spójny projekt; wymagane czytelne komunikaty (UX §8).
 
 
 ## ADR-008 — Jedna reguła usuwania: kaskada z potwierdzeniem, bez osieroconych obiektów ⚑
-**Kontekst.** rozwiązanie B: usunięcie portu usuwa obwód bez ostrzeżenia, usunięcie urządzenia zostawia osierocony obwód.
+**Kontekst.** W niektórych narzędziach CAD usunięcie portu usuwa obwód bez ostrzeżenia, a usunięcie urządzenia zostawia osierocony obwód.
 **Decyzja.** Usunięcie obiektu usuwa zależne połączenia/kable/węzły w jednej transakcji, z oknem skutków, gdy skutki wykraczają poza obiekt; jeden krok cofania. „Usuń z widoku" nigdy nie usuwa danych modelu. Tabela reguł: DOMAIN-MODEL §6.
-**Alternatywy.** Osierocanie (rozwiązanie B) — odrzucone; blokowanie usunięcia — odrzucone (utrudnia pracę).
+**Alternatywy.** Osierocanie — odrzucone; blokowanie usunięcia — odrzucone (utrudnia pracę).
 **Konsekwencje.** Przewidywalność; test własności „brak wiszących referencji".
 
 
 ## ADR-009 — Trzy klasy obiektów; przestrzeń jako osobny `Placement` (X/Y/Z, obrót) ⚑
-**Kontekst.** Wymaganie: nie mieszać urządzenia technicznego z obiektem rysunkowym; X/Y/Z od początku; brak 3D w MVP. rozwiązanie A: kształty bez związku z urządzeniami; rozwiązanie B: sprzężenie z modelem 3D.
+**Kontekst.** Wymaganie: nie mieszać urządzenia technicznego z obiektem rysunkowym; X/Y/Z od początku; brak 3D w MVP. W narzędziach webowych kształty nie mają związku z urządzeniami, a w narzędziach CAD są sprzężone z modelem 3D.
 **Decyzja.** `EquipmentInstance` (porty), `StageObject` (fizyczny, bez portów), `DrawingElement` (grafika widoku). `Placement` jest odrębną, opcjonalną encją, co najwyżej jedną na obiekt; współrzędne w mm (X→E, Y→N, Z→góra), obrót wokół Z, `orientation` zarezerwowane.
-**Alternatywy.** Pola położenia w instancji — odrzucone (urządzenia wirtualne, rozdział domeny od przestrzeni); jedna klasa „item" (rozwiązanie A) — odrzucone.
+**Alternatywy.** Pola położenia w instancji — odrzucone (urządzenia wirtualne, rozdział domeny od przestrzeni); jedna klasa „item” — odrzucone.
 **Konsekwencje.** Estymata długości i eksport 3D możliwe bez modelu 3D.
 
 
@@ -80,7 +80,7 @@ Format: **Kontekst → Decyzja → Alternatywy → Konsekwencje → Dowody → W
 
 
 ## ADR-011 — Lokalizacja jako jawna relacja, nie wyprowadzana z geometrii
-**Kontekst.** rozwiązanie B trzyma Room/Rack/RackU niezależnie od współrzędnych.
+**Kontekst.** Pomieszczenie, rack i pozycja w racku są niezależne od współrzędnych planu.
 **Decyzja.** `EquipmentInstance.zoneId` i `mount` są jawne; edytor podpowiada strefę przy upuszczeniu; niezgodność z geometrią to ostrzeżenie V-016.
 **Alternatywy.** Lokalizacja wyliczana z geometrii (ukryte zmiany, niejednoznaczność dla stref bez geometrii) — odrzucone.
 **Konsekwencje.** Podwójny wpis ograniczony podpowiedzią.
@@ -93,7 +93,7 @@ Format: **Kontekst → Decyzja → Alternatywy → Konsekwencje → Dowody → W
 
 ## ADR-013 — Brak sieci tras 3D w MVP; długość kabla jako liczba z źródłem i estymatą z planu
 **Decyzja.** `Cable.lengthMm` + `lengthSource`; estymata Manhattan + zapasy + długości katalogowe jako jawne polecenie [S]; sieć tras jako encja po v1.0.
-**Alternatywy.** Pełna sieć tras (rozwiązanie B) — odłożone; tekst jak rozwiązanie A — odrzucone.
+**Alternatywy.** Pełna sieć tras — odłożone; sama etykieta tekstowa trasy — odrzucone.
 
 
 ## ADR-014 — Format: ZIP + JSON, schemat JSON Schema, migracje, round-trip nieznanych pól ⚑
@@ -105,7 +105,7 @@ Format: **Kontekst → Decyzja → Alternatywy → Konsekwencje → Dowody → W
 
 ## ADR-015 — Cofanie przez transakcje i łaty; historia tylko w pamięci
 **Decyzja.** Każde polecenie → łaty + łaty odwrotne; operacja złożona = jeden krok; historia nie jest zapisywana w pliku.
-**Alternatywy.** Migawki całego stanu (rozwiązanie A) — odrzucone (koszt pamięci); persystowana historia — odłożone.
+**Alternatywy.** Migawki całego stanu — odrzucone (koszt pamięci); persystowana historia — odłożone.
 
 
 ## ADR-016 — Stos: rdzeń TypeScript + React + własny Canvas 2D + Tauri 2 (bramka PoC-3, awaryjnie Electron) ⚑
@@ -116,12 +116,12 @@ Format: **Kontekst → Decyzja → Alternatywy → Konsekwencje → Dowody → W
 
 ## ADR-017 — Jedna `DrawList` dla ekranu i eksportu; wybór renderera ekranowego po PoC-2
 **Decyzja.** Czysta funkcja `model + widok → DrawList`; Canvas 2D rysuje, eksport PDF/SVG tłumaczy; wybór między Canvas a wirtualizowanym SVG według PoC-2.
-**Alternatywy.** Eksport z DOM (rozwiązanie A) — odrzucone (raster, rozjazd).
+**Alternatywy.** Eksport z DOM — odrzucone (raster, rozjazd).
 
 
 ## ADR-018 — Raporty jako zapytania nad znormalizowanym modelem; grupowanie po definicji
 **Decyzja.** Raporty wyliczane, nie przechowywane; packlista grupuje po `definitionId` (nie po nazwie).
-**Alternatywy.** Arkusze nad zdenormalizowanymi polami (rozwiązanie B) — odrzucone; grupowanie po nazwie (rozwiązanie A) — odrzucone.
+**Alternatywy.** Arkusze nad zdenormalizowanymi polami — odrzucone; grupowanie po nazwie — odrzucone.
 
 
 ## ADR-019 — Licencja kodu ⚑
@@ -154,7 +154,7 @@ Format: **Kontekst → Decyzja → Alternatywy → Konsekwencje → Dowody → W
 
 ## ADR-023 — Lokalne wyszukiwanie biblioteki
 **Decyzja.** Indeks w pamięci (MiniSearch lub podobny) z fasetami; brak usługi wyszukiwania.
-**Alternatywy.** Typesense/Algolia jak rozwiązanie A — odrzucone (infrastruktura, offline).
+**Alternatywy.** Zewnętrzny silnik (Typesense/Algolia) — odrzucone (infrastruktura, offline).
 
 
 ## ADR-024 — Packlista grupuje po definicji; brak ukrytej kategorii „Unknown"
@@ -174,7 +174,7 @@ Format: **Kontekst → Decyzja → Alternatywy → Konsekwencje → Dowody → W
 
 
 ## ADR-028 — Zakres MVP ograniczony do jednego scenariusza referencyjnego
-**Decyzja.** Funkcje [S] wycinane w kolejności odwrotnej do numeru; mechanizmy z §10 syntezy odłożone.
+**Decyzja.** Funkcje [S] wycinane w kolejności odwrotnej do numeru; mechanizmy odłożone zgodnie z zakresem MVP.
 
 
 ## ADR-029 — Zgodność fizyczna przez końcówki kabla (`endPairs`), wynik trójwartościowy
@@ -251,7 +251,7 @@ Format: **Kontekst → Decyzja → Alternatywy → Konsekwencje → Dowody → W
 **Warunek rewizji.** Badanie użytkowników wykaże, że oferta odzyskania przeszkadza, albo pomiar kosztu `packProject` pokaże, że zapis co kilka sekund jest zauważalny przy dużych projektach (nie mierzone).
 
 ## ADR-039 — Katalog urządzeń: pakiet startowy własny, dodawanie jedną transakcją
-**Decyzja.** (1) Pakiet `stagewire-starter` (14 ogólnych urządzeń: kamery, źródła, mikser wizji, konwertery, wyświetlacze, procesor LED, switch, pulpit i oprawa DMX, mikser audio) jest napisany na potrzeby projektu; producent „Generic”, pochodzenie `custom` z `packId` i licencją własną. **Nie zawiera danych skopiowanych z rozwiązanie B ani rozwiązanie A** (ADR-020); liczby portów i wymiary są przykładowe i mają być edytowane, nie traktowane jako dane produktów. (2) Dodanie urządzenia to jedna transakcja (jeden krok cofania): brakujące wpisy rejestrów (złącza, sygnały, typy kabli), definicja (jeśli jej jeszcze nie ma w projekcie) i instancja przypięta do najnowszej rewizji. Wpisów rejestru już obecnych w projekcie nie nadpisujemy. (3) Identyfikatory definicji i portów są deterministyczne i spełniają wzorzec formatu (`prefiks_alfanumeryczne`, bez dodatkowych podkreślników). (4) Wyszukiwanie bez rozróżniania wielkości liter i polskich znaków, wszystkie słowa muszą pasować. (5) Panel katalogu w edytorze po lewej; definicje własne projektu w sekcji „W tym projekcie”.
+**Decyzja.** (1) Pakiet `stagewire-starter` (14 ogólnych urządzeń: kamery, źródła, mikser wizji, konwertery, wyświetlacze, procesor LED, switch, pulpit i oprawa DMX, mikser audio) jest napisany na potrzeby projektu; producent „Generic”, pochodzenie `custom` z `packId` i licencją własną. **Nie zawiera danych skopiowanych z innych narzędzi** (ADR-020); liczby portów i wymiary są przykładowe i mają być edytowane, nie traktowane jako dane produktów. (2) Dodanie urządzenia to jedna transakcja (jeden krok cofania): brakujące wpisy rejestrów (złącza, sygnały, typy kabli), definicja (jeśli jej jeszcze nie ma w projekcie) i instancja przypięta do najnowszej rewizji. Wpisów rejestru już obecnych w projekcie nie nadpisujemy. (3) Identyfikatory definicji i portów są deterministyczne i spełniają wzorzec formatu (`prefiks_alfanumeryczne`, bez dodatkowych podkreślników). (4) Wyszukiwanie bez rozróżniania wielkości liter i polskich znaków, wszystkie słowa muszą pasować. (5) Panel katalogu w edytorze po lewej; definicje własne projektu w sekcji „W tym projekcie”.
 
 **Czego nie ma.** Edycji definicji w interfejsie (jest polecenie `editDefinition` z rewizjami, brak formularza portów), importu i eksportu własnych pakietów, rozszerzenia katalogu o zasilanie i rigging (poza MVP), weryfikacji, że 14 urządzeń pokrywa realne projekty (to założenie do sprawdzenia na przypadkach TS-01…TS-15), wyszukiwania po aliasach i producentach (brak producentów w pakiecie), ikon i kształtów symboli.
 **Warunek rewizji.** Użytkownicy wskażą, że ogólne urządzenia są mniej użyteczne niż dane konkretnych modeli; wtedy decyzja o źródle danych (własne wpisy, import użytkownika, pakiety społeczności) wymaga osobnego ADR i oceny licencji.

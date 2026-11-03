@@ -34,7 +34,7 @@ Typ: **D** = decyzja właściciela projektu, **B** = badanie/ustalenie faktów. 
 
 ## 3. Luki badawcze i badania do wykonania
 
-Numeracja `B-xx` tutaj grupuje luki `B1…B10` z wewnętrzne materiały badawcze w działania: B-01 = B1; B-02 = B2; B-03 i B-09 = B3, B7; B-04 = B4; B-06 = B5, B6; B-07 = B10; B-08 = B8; B-11 = B9. B-05 i B-10 dotyczą platformy i dystrybucji i nie mają odpowiednika w syntezie.
+Numeracja `B-xx` tutaj grupuje luki badawcze `B1…B10` w działania: B-01 = B1; B-02 = B2; B-03 i B-09 = B3, B7; B-04 = B4; B-06 = B5, B6; B-07 = B10; B-08 = B8; B-11 = B9. B-05 i B-10 dotyczą platformy i dystrybucji i nie mają odpowiednika w syntezie.
 
 | ID | Temat | Typ | Blokuje | Działanie |
 |---|---|---|---|---|
@@ -77,7 +77,7 @@ Poniższe założenia są w dokumentach i mogą zostać odwrócone na wniosek w�
 | **Q-19** | Czy zatwierdzamy profil Core MVP (TS-01 bez [S]) jako definicję „skończone"? | D | zatwierdzenie zakresu | Tak |
 | **Q-20** | Czy mini-test oświetleniowy TS-15 wystarcza, czy właściciel chce jakąkolwiek funkcję oświetleniową w MVP? | D | M3 | Tylko test modelu |
 | **Q-21** | Skąd pozyskać dane `endPairs` kabli i czy ograniczyć je do kabli scenariusza referencyjnego | D/B | M3 | Ograniczyć do scenariusza |
-| **Q-22** | Struktura repozytoriów: prywatne na materiały badawcze, publiczne od czystej historii | D | pierwsza publikacja | Tak (ADR-020) |
+| **Q-22** | Struktura repozytoriów: prywatne na materiały robocze, publiczne od czystej historii | D | pierwsza publikacja | Tak (ADR-020) |
 
 ## 7. Decyzje właściciela z 2026-11-01
 
