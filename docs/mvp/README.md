@@ -32,6 +32,7 @@ Darmowe, dostępne w kodzie źródłowym (PolyForm Shield), działające offline
 | — | [GreenCrew_Tools_Docs](https://github.com/DjGreenKrk/GreenCrew_Tools_Docs) | Zewnętrzne, kanoniczne standardy rodziny (branding, design system, architektura); nie kopiować (RIGHTS.md); zob. ADR-033 |
 | — | [POC3-RESULTS.md](POC3-RESULTS.md) | Wyniki PoC-3 (Tauri na Windows i Linuxie, zapis atomowy, PDF): Tauri potwierdzony warunkowo |
 | — | [POC3B-RESULTS.md](POC3B-RESULTS.md) | Wyniki prototypu gestu „port → port" (koszt interakcji edytora, ryzyko R2) |
+| — | [ELECTRICAL-TOPOLOGY.md](ELECTRICAL-TOPOLOGY.md) | Projekt rozszerzenia: węzły elektryczne, grzebienie, listwy, bloki rozdzielcze, obudowy i filtry widoczności (ADR-064) |
 | — | [DEVICE-DB.md](DEVICE-DB.md) | Jak tworzyć bazę urządzeń: format pakietu, identyfikacja i aktualizacje, rejestry, zasilanie, źródła i wiarygodność danych, generatory, zasady jakości i IP |
 | — | [POC2-RESULTS.md](POC2-RESULTS.md) | Wyniki PoC-2 (renderer Canvas 2D vs SVG, skala eksportu, pomiary w Edge): Canvas potwierdzony |
 | — | [POC1-RESULTS.md](POC1-RESULTS.md) | Wyniki PoC-1 (kod w `stagewire/`): 33 testy, pomiary, wnioski i korekty |

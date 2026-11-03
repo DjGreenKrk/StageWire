@@ -534,3 +534,23 @@ Kontekst: pierwsze testy właściciela na prawdziwym projekcie (`projekt2.sw`) w
 2. **Pojedyncze urządzenia bez mielenia bazy**: własne urządzenia trafiają do jednego małego pakietu „Moje urządzenia” (`src/deviceBuild.ts: mergeIntoMine`), zapisywanego samodzielnie; reszta biblioteki nie jest dotykana. Identyczne urządzenie jest pomijane, a przy konflikcie klucza użytkownik wybiera: zachowaj oba / podmień / pomiń. **Eksport jednego urządzenia** tworzy samowystarczalny plik (z potrzebnymi złączami i sygnałami, autorem i licencją), **„Importuj urządzenie z pliku…”** dopisuje wybrane urządzenia z pliku (jednego lub kilku) do Moich, z oceną nowe / już masz / inne niż u Ciebie. „Usuń z moich” zdejmuje urządzenie z biblioteki (projekty zachowują własne kopie definicji).
 3. **Kreator urządzenia** (`web/deviceBuilder.ts`): „Nowe urządzenie…”, „Użyj jako wzoru…” (kopia istniejącego) i „Edytuj…” (własne). Gotowe zestawy portów („8 × XLR wejście”, numeracja ciągnie dalej), podgląd bloku na żywo, przesuwanie, powielanie i usuwanie portów, podpowiedzi walidatora w zwykłym języku, zapis do Moich albo „Zapisz i dodaj do projektu”. Dane źródła (rodzaj, dokument, adres, data sprawdzenia) są częścią kreatora; bez daty dane są niezweryfikowane (ADR-020).
 4. Istniejące okno „Edytuj definicję…” (rewizje definicji w projekcie) zostaje bez zmian. Przycisk „Biblioteka urządzeń…” w panelu katalogu nazywa się teraz „Pakiety urządzeń…” (zarządzanie pakietami i aktualizacje).
+
+## ADR-064: Topologia elektryczna, grzebienie i listwy (propozycja, 2026-11-03)
+
+**Status:** proponowana. Projekt w [ELECTRICAL-TOPOLOGY.md](ELECTRICAL-TOPOLOGY.md); bez implementacji.
+
+**Kontekst.** Pakiet aparatury modułowej pokazał, że model portów i połączeń punkt–punkt nie opisuje grzebieni, listew N/PE, złączek i bloków rozdzielczych (wiele zacisków o wspólnym potencjale, kilka niezależnych torów w jednym elemencie, styk zależny od stanu aparatu). Obudowa bez portów nie przechodzi walidacji pakietu. Problem dotyczy też instalacji scenicznych i sterowania, nie jednego producenta.
+
+**Decyzja (rekomendacja).**
+1. **Węzły elektryczne są wyliczane** (`electricalNets`, union-find) z połączeń, wewnętrznych połączeń definicji i styków geometrycznych. Nie są zapisywane (zasada Z10).
+2. **Rozszerzenie `internalLinks`** o `bridge` (stały), `jumper` (konfigurowalny), `switched` (zależny od stanu, nigdy nie scala węzłów) i zapis grupowy `members`.
+3. **Opcjonalny `terminal` w porcie**: tor (`track`), położenie (`at`, `side`), przewody (`wires`), rodzaj, zgodność (`fits`). Pojemność przewodów = istniejące `capacity`.
+4. **Warstwa montażu `din.layer`** (`body`, `busbar`): zęby grzebienia styka się z zaciskami aparatów z położenia (wyliczane), więc przesunięcie aparatu przelicza węzły i walidację.
+5. **Pakiet: `enclosures`** (szablony szaf) oraz `terminal`, `internalLinks`, `placementLayer`, `phaseOrder`. Starsze aplikacje pomijają nieznane pola z ostrzeżeniem.
+6. **Montaż na płycie** `plate {cabinetId, x, y}` dla elementów bez DIN.
+7. **Filtry widoczności**: osprzęt DIN domyślnie poza schematem blokowym (w nowych projektach), a w widoku szafy domyślnie tylko elementy DIN i zamontowane na płycie; zapis w `views.*.filters`.
+8. **Walidacja V-040…V-051**: błędy tylko dla rzeczy jednoznacznych (zwarcie torów, pojemność), ostrzeżenia dla zgodności zależnej od danych producenta. Zgodność geometryczna nie oznacza dopuszczenia przez producenta.
+
+**Alternatywy.** Zapisywana encja `nets` (odrzucona: niezmienniki do pilnowania, rozjazd po przesunięciu aparatu; możliwa później jako adnotacja); węzeł-pośrednik w `Connection` (odrzucone: zmienia wszystkie widoki); osobny silnik elektryczny (odrzucone: duplikuje model); spłaszczenie grzebienia 3P do jednego węzła (odrzucone: gubi tory); reguły zależne od producenta (odrzucone: mechanizm ma być uniwersalny).
+
+**Konsekwencje.** Zmiany addytywne; stare projekty i pakiety działają bez zmian. Wymagane potwierdzenie round-trip nieznanych pól projektu (Z8) w pierwszym etapie. Poza zakresem MVP: symulacja stanów, obciążenia, selektywność, przekroje, zwarcia, cięcie grzebieni na miarę.

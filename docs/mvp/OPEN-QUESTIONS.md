@@ -119,5 +119,6 @@ Poniższe założenia są w dokumentach i mogą zostać odwrócone na wniosek w�
 | **R2 (ryzyko)** | Obniżone dla samego gestu (ADR-037). Pozostaje koszt przebudowy listy rysowania przy dużych projektach (M3: aktualizacja przyrostowa) |
 | **Q-28 (nowe)** | Czy przesuwanie węzłów na diagramie ma być w historii cofania (dane widoku, obecnie poza `Store`)? Rekomendacja: tak, jako osobna transakcja widoku z łączeniem kolejnych ruchów w jeden wpis |
 | **Q-29 (nowe)** | Czy niezgodne połączenie (kierunek, sygnał, zajęty port) ma powstawać po prostu z uwagą (obecny prototyp), czy po dodatkowym potwierdzeniu? Rekomendacja: z uwagą, bez potwierdzenia; sprawdzić w badaniu z użytkownikami |
+| **Q-30 (nowe)** | Czy filtr „osprzęt DIN poza schematem blokowym” ma być domyślnie włączony tylko w nowych projektach (rekomendacja, zgodność wsteczna), czy także po otwarciu starszych? (ADR-064) |
 
 **Rozstrzygnięcie właściciela (2026-11-01):** Q-28 i Q-29 zgodnie z rekomendacją: przesuwanie węzłów wchodzi do historii cofania (osobna transakcja widoku, ruchy łączone w jeden wpis); niezgodne połączenie powstaje z uwagą, bez potwierdzenia. Implementacja cofania układu: M3.
