@@ -85,7 +85,8 @@ StageWire jest udostępniany na warunkach [PolyForm Shield License 1.0.0](https:
 ├── docs/mvp/           specyfikacja, ADR, model danych
 ├── stagewire/
 │   ├── src/            rdzeń: model, format, walidacja, eksporty (bez UI, testowalny w Node)
-│   ├── web/            interfejs (Canvas 2D, edytor)
+│   ├── web/            interfejs (Canvas 2D, edytor, dialogi)
+│   ├── ui/             biblioteka komponentów React i style (tokeny GreenCrew)
 │   ├── src-tauri/      powłoka Tauri 2 (Rust)
 │   ├── schema/         schemat JSON projektu i pakietów
 │   ├── packs/          przykładowy pakiet urządzeń

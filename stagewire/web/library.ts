@@ -6,7 +6,7 @@ import type { Mutator } from '../src/store.ts';
 import { loadPack, planInstall, installPack, loadedPacks, starterRegistries, STARTER_ID, BUILTIN_IDS, type InstallPlan } from '../src/catalog/index.ts';
 import { libraryUpdates, updateFromCatalog } from '../src/definitions.ts';
 import { validatePack, revisionToDevice, deviceKeyFor, defKeyOf, type Pack, type PackDevice } from '../src/pack.ts';
-import { mergeIntoMine, removeFromPack, registriesFor, singleDevicePack, type Conflict, type MergeResult } from '../src/deviceBuild.ts';
+import { mergeIntoMine, mergeEnclosureIntoMine, removeFromPack, registriesFor, singleDevicePack, type Conflict, type MergeResult } from '../src/deviceBuild.ts';
 
 export interface LibFileReport { name: string; path: string; errors: string[]; warnings: string[]; packId?: string }
 export const MY_PACK_ID = 'moje-urzadzenia';
@@ -210,6 +210,11 @@ export function createLibrary(ctx: LibraryCtx) {
     if (res.added.length || res.replaced.length) await persistMine(res.pack);
     return res;
   }
+  /** Dopisuje obudowę (szablon szafy) do „Moje urządzenia”. */
+  async function saveEnclosure(enc: import('../src/pack.ts').PackEnclosure): Promise<{ replaced: boolean }> {
+    const res = mergeEnclosureIntoMine(myPack(), enc, { ...starterRegistries });
+    await persistMine(res.pack); return { replaced: res.replaced };
+  }
   async function removeMine(key: string): Promise<void> {
     const mp = myPack(); if (!mp) return;
     await persistMine(removeFromPack(mp, key));
@@ -236,5 +241,5 @@ export function createLibrary(ctx: LibraryCtx) {
     return rep;
   }
 
-  return { init, openDialogUi, saveToMyLibrary, saveDevices, removeMine, exportDevice, pickDevicesFile, checkDevicesFile, myPack, report: () => report, dir: () => dir, defKeyOf };
+  return { init, openDialogUi, saveToMyLibrary, saveDevices, saveEnclosure, removeMine, exportDevice, pickDevicesFile, checkDevicesFile, myPack, report: () => report, dir: () => dir, defKeyOf };
 }

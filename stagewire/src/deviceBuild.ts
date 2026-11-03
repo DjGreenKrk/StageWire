@@ -1,7 +1,7 @@
 // Budowanie urządzeń dla człowieka: gotowe zestawy portów, składanie urządzenia z formularza, dopisywanie pojedynczych urządzeń do pakietu „Moje urządzenia”
 // (bez przepisywania całej bazy) i pakiety jednourządzeniowe do udostępniania.
 import type { RegistryEntry } from './types.ts';
-import { validatePack, deviceKeyFor, PACK_FORMAT, type Pack, type PackDevice, type PackPort, type PackSource, type PackReport } from './pack.ts';
+import { validatePack, deviceKeyFor, PACK_FORMAT, type Pack, type PackDevice, type PackPort, type PackSource, type PackReport, type PackEnclosure } from './pack.ts';
 
 export const MY_PACK_ID = 'moje-urzadzenia';
 export interface PortPreset { id: string; label: string; base: string; connector: string; signals: string[]; direction: PackPort['direction']; group?: string }
@@ -94,6 +94,14 @@ export function mergeIntoMine(existing: Pack | undefined, devices: PackDevice[],
   pack.registries = { ...regs, ...(pack.registries ?? {}) };
   if (res.added.length || res.replaced.length) pack.version = bump(pack.version);
   return res;
+}
+/** Dopisuje obudowę (szablon szafy) do pakietu „Moje urządzenia”; ten sam klucz = podmiana. */
+export function mergeEnclosureIntoMine(existing: Pack | undefined, enc: PackEnclosure, regs: Record<string, RegistryEntry>): { pack: Pack; replaced: boolean } {
+  const pack: Pack = existing ? JSON.parse(JSON.stringify(existing)) : { format: PACK_FORMAT, id: MY_PACK_ID, name: 'Moje urządzenia', version: '1.0.0', license: 'własne (do użytku wewnętrznego)', description: 'Urządzenia i obudowy utworzone w programie.', devices: [] };
+  pack.enclosures ??= []; const i = pack.enclosures.findIndex((e) => e.key === enc.key), replaced = i >= 0;
+  if (replaced) pack.enclosures[i] = JSON.parse(JSON.stringify(enc)); else pack.enclosures.push(JSON.parse(JSON.stringify(enc)));
+  pack.registries = { ...regs, ...(pack.registries ?? {}) }; pack.version = bump(pack.version);
+  return { pack, replaced };
 }
 /** Usunięcie urządzenia z pakietu użytkownika. */
 export function removeFromPack(pack: Pack, key: string): Pack { const p: Pack = JSON.parse(JSON.stringify(pack)); p.devices = p.devices.filter((d) => d.key !== key); p.version = bump(p.version); return p; }

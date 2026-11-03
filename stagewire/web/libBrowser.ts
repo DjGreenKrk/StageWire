@@ -5,6 +5,7 @@ import { buildFacets, filterEntries, sortEntries, toggleSelection, FACET_ORDER, 
 import { sourceTrust, TRUST_LABEL, type Pack, type PackDevice } from '../src/pack.ts';
 import { MY_PACK_ID, type Conflict } from '../src/deviceBuild.ts';
 import { openDeviceBuilder } from './deviceBuilder.ts';
+import { openElectricalBuilder } from './electricalBuilder.tsx';
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 export interface BrowserLib {
@@ -125,7 +126,7 @@ export function createLibBrowser(c: BrowserCtx) {
       .bw-more{min-height:28px!important;padding:0 8px!important;font-size:12px!important;margin:2px 0!important;background:none!important;border:0!important;color:#64B5F6!important}.bw-r{padding:8px 10px;border-bottom:1px solid #222;cursor:pointer}.bw-r:hover{background:#1A1A1A}.bw-r.on{background:#16301f;outline:1px solid #00C853}.bw-m{color:#8A8A8A;font-size:13px}.bw-s{font-size:12px;color:#B0B0B0;margin-top:2px}.bw-kv{font-size:12px;color:#B0B0B0;margin:4px 0}.bw-box{margin-top:10px;padding:10px;border:1px solid #2A2A2A;border-radius:6px;background:#161616}</style>
       <div class="dlg" style="width:1120px;max-width:96vw;height:86vh;display:flex;flex-direction:column"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><h2 style="margin:0;flex:none">Biblioteka urządzeń</h2>
         <input id="bw-q" type="search" placeholder="Szukaj: model, producent, port…" aria-label="Szukaj w bibliotece" style="flex:1;min-height:40px;padding:0 10px;border-radius:6px;border:1px solid #2A2A2A;background:#121212;color:#fff"><span id="bw-count" class="imp" style="flex:none"></span><button id="bw-clear" style="margin:0">Wyczyść filtry</button></div>
-        <div style="display:flex;gap:8px;margin-bottom:8px"><button id="bw-new" class="primary" style="margin:0">+ Nowe urządzenie…</button><button id="bw-import" style="margin:0">Importuj urządzenie z pliku…</button><button id="bw-packs" style="margin:0">Pakiety…</button><span style="flex:1"></span><button id="bw-close" style="margin:0">Zamknij</button></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px"><button id="bw-new" class="primary" style="margin:0">+ Nowe urządzenie…</button><button id="bw-newel" style="margin:0">+ Element elektryczny…</button><button id="bw-import" style="margin:0">Importuj urządzenie z pliku…</button><button id="bw-packs" style="margin:0">Pakiety…</button><span style="flex:1"></span><button id="bw-close" style="margin:0">Zamknij</button></div>
         <div style="display:flex;gap:12px;flex:1;min-height:0"><div id="bw-facets" style="width:230px;overflow:auto;flex:none;padding-right:6px"></div><div id="bw-list" style="flex:1;overflow:auto;border:1px solid #2A2A2A;border-radius:6px;min-width:0"></div><div id="bw-detail" style="width:330px;overflow:auto;flex:none"></div></div><div id="bw-msg" style="flex:none;max-height:34vh;overflow:auto"></div></div>`;
     document.body.appendChild(ov);
     const q = ov.querySelector('#bw-q') as HTMLInputElement; q.value = query; q.addEventListener('input', () => { query = q.value; render(); }); q.addEventListener('keydown', (e) => e.stopPropagation());
@@ -133,6 +134,7 @@ export function createLibBrowser(c: BrowserCtx) {
     ov.addEventListener('mousedown', (e) => { if (e.target === ov) close(); });
     ov.querySelector('#bw-clear')!.addEventListener('click', () => { query = ''; sel = {}; q.value = ''; render(); });
     ov.querySelector('#bw-new')!.addEventListener('click', () => { close(); openDeviceBuilder({ library: c.library as any, say: c.say, addToProject: c.addToProject }); });
+    ov.querySelector('#bw-newel')!.addEventListener('click', () => { close(); openElectricalBuilder({ library: c.library as any, say: c.say, addToProject: c.addToProject }); });
     ov.querySelector('#bw-import')!.addEventListener('click', () => void importFile());
     ov.querySelector('#bw-packs')!.addEventListener('click', () => { close(); c.library.openDialogUi(); });
     ov.querySelector('#bw-facets')!.addEventListener('change', (e) => { const t = e.target as HTMLInputElement; if (t.dataset.f) { sel = toggleSelection(sel, t.dataset.f as any, t.dataset.v!); render(); } });

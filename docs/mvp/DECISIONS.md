@@ -573,3 +573,20 @@ Kontekst: pierwsze testy właściciela na prawdziwym projekcie (`projekt2.sw`) w
 **Alternatywy.** Brak migracji i prośba o odbudowę projektu (odrzucone: sprzeczne z zasadą „migracje zamiast resetu”); ciche stosowanie nowych zachowań po otwarciu (odrzucone: zmienia widok istniejącego projektu bez wiedzy użytkownika); jedna wielka funkcja „aktualizuj wszystko” (odrzucone: brak kontroli).
 
 **Konsekwencje.** Każda przyszła zmiana formatu ma miejsce na migrację i test. Pierwsze realne ulepszenie (ukrywanie osprzętu DIN na schemacie) dopisze się do `UPGRADES` razem z etapem E0 (ADR-064). Rejestr `UPGRADES` jest dziś pusty, więc okno pokazuje „Projekt jest aktualny”.
+
+## ADR-066: Interfejs: biblioteka komponentów React dla dialogów i paneli (pilotaż, 2026-11-03)
+
+**Status:** pilotaż przyjęty; decyzja o migracji pozostałych okien po ocenie wyglądu w oknie Tauri.
+
+**Kontekst.** ADR-016 i ADR-034 zakładały UI w React, ale kod rósł jako Canvas 2D plus dialogi składane przez `innerHTML` (inline `style=`), bez wspólnych komponentów. Okna wyglądają technicznie i niespójnie, a każdy nowy dialog powiela te same pomocnicze funkcje i ręczne odświeżanie widoku.
+
+**Decyzja.**
+1. React 19 (nie Preact) dla dialogów, paneli i kreatorów. Powód: docelowe narzędzia (Claude Design, skill design-sync) działają na prawdziwych komponentach React; rozmiar nie jest ograniczeniem.
+2. Widoki na Canvas 2D (schemat, plan, rack, szafa, 3D) zostają bez zmian i bez frameworka.
+3. Biblioteka `stagewire/ui/`: tokeny i style (`styles.css`, prefiks `.sw-`, paleta i zasady GreenCrew Tools) oraz komponenty z typowanymi `Props`: `Dialog`, `Button`, `Field`, `Input`, `Select`, `Checkbox`, `ChoiceCards`, `Chip`, `Panel`, `Notice`, `Row`, `Section`. Starsze okna i ich style działają bez zmian.
+4. Pilotaż: kreator elementów elektrycznych (`web/electricalBuilder.tsx`) przepisany na komponenty; identyfikatory elementów zachowane, więc testy UI zostały te same (poza wyborem rodzaju: karty zamiast listy rozwijanej).
+5. Migracja kolejnych okien jedna po drugiej, od przeglądarki biblioteki i kreatora urządzeń, z zachowaniem identyfikatorów i testów.
+
+**Pomiary pilotażu.** Katalog `dist-web` 3,3 → 3,6 MB; instalator NSIS 4,71 → 4,79 MiB; otwarcie kreatora ok. 90 ms w przeglądarce testowej; 347 testów jednostkowych i wszystkie zestawy UI przechodzą (w tym CSP).
+
+**Konsekwencje.** Okna zyskują jedno źródło wyglądu, spójne stany i dostępność (fokus, Esc, role ARIA). Do sprawdzenia w oknie Tauri przy ścisłej CSP: style ustawiane przez React (CSSOM). Docelowo `ui/` może stać się osobnym pakietem do synchronizacji z Claude Design.

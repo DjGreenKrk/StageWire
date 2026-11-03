@@ -4,6 +4,7 @@ import { createLibBrowser } from './libBrowser.ts';
 import { settings, openSettings } from './settings.ts';
 import { openUpgradeDialog } from './upgradeUi.ts';
 import { openDeviceBuilder } from './deviceBuilder.ts';
+import { openElectricalBuilder } from './electricalBuilder.tsx';
 import { UPGRADES, pendingUpgrades } from '../src/migrations.ts';
 import { setHideMountedDin } from '../src/cabinets.ts';
 import { exportName } from './exportName.ts';
@@ -606,6 +607,8 @@ setTitle();
   document.getElementById('cat-fit-cb')!.addEventListener('change', (ev) => { const vk = viewKind(); if (vk) fitOn[vk] = (ev.target as HTMLInputElement).checked; renderCatalog(); if (cabApi?.active) cabApi.refresh(); });
   // kreator własnego urządzenia: wprost z panelu katalogu i z menu
   const openBuilder = () => openDeviceBuilder({ library: library as any, say, addToProject: (key, model) => addCatalog(key, model) });
+  const openElBuilder = () => openElectricalBuilder({ library: library as any, say, addToProject: (key, model) => addCatalog(key, model) });
+  document.getElementById('b-newel')!.onclick = openElBuilder; document.getElementById('b-newel2')!.onclick = () => { document.getElementById('filemenu')?.setAttribute('hidden', ''); openElBuilder(); };
   document.getElementById('b-newdev')!.onclick = openBuilder; document.getElementById('b-newdev2')!.onclick = () => { document.getElementById('filemenu')?.setAttribute('hidden', ''); openBuilder(); };
   // upuszczenie pozycji z katalogu na schemat blokowy albo na plan sali: nowa instancja w miejscu upuszczenia
   { const stage = document.getElementById('stage')!;

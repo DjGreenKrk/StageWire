@@ -17,6 +17,7 @@ Wszystkie istotne zmiany StageWire są dokumentowane w tym pliku. Format wzorowa
 - zapis atomowy, kopie robocze `.autosave`, migracje formatu,
 - instalator NSIS i wersja przenośna dla Windows (niepodpisane),
 - budowanie rozdzielnicy i racka wprost z katalogu po lewej: przeciąganie pozycji na wskazane miejsce szyny lub U, filtr „tylko pasujące do widoku” (DIN / rack), skrót G w widokach szafy i racka,
+- biblioteka komponentów React (`stagewire/ui`) i kreator elementów elektrycznych (listwa, grzebień, blok rozdzielczy, złączka, aparat modułowy, obudowa) jako pierwszy ekran na niej (ADR-066),
 - przycisk „+ Nowe urządzenie…” (kreator) w panelu katalogu i w menu ☰, filtr listy katalogu także na schemacie blokowym (domyślnie bez aparatów DIN), upuszczanie pozycji z listy na schemat i na plan sali,
 - topologia elektryczna (ADR-064): zaciski z torem i położeniem, mostki wewnętrzne (stałe, konfigurowalne, zależne od stanu), węzły elektryczne wyliczane z połączeń, grzebienie na zaciskach aparatów (warstwa montażu, styki z położenia), płyta montażowa dla elementów bez DIN, obudowy w pakietach, reguły V-040/041/046/047/050/052,
 - ukrywanie osprzętu zamontowanego w szafach na schemacie blokowym (przycisk „Osprzęt DIN”, domyślnie ukryty w nowych projektach, dla starszych jako ulepszenie w oknie „Aktualizacja projektu”),
