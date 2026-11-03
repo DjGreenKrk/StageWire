@@ -146,7 +146,7 @@ export interface DiagramView { nodes: Record<string, NodeLayout> } // klucz = in
 export type PRef = { instanceId: string; portId: string };
 const isCabId = (id: string) => id.startsWith('cab_');
 /** Szafa pokazywana jako blok, w której stoi osprzęt (undefined = osprzęt widoczny normalnie). */
-export const blockCabOf = (p: Project, instanceId: string): string | undefined => { const c = (p.equipment[instanceId]?.din as any)?.cabinetId as string | undefined; return c && p.cabinets?.[c]?.asBlock ? c : undefined; };
+export const blockCabOf = (p: Project, instanceId: string): string | undefined => { const c = ((p.equipment[instanceId]?.din as any)?.cabinetId ?? (p.equipment[instanceId]?.plate as any)?.cabinetId) as string | undefined; return c && p.cabinets?.[c]?.asBlock ? c : undefined; };
 /** Osprzęt zamontowany w szafie bywa ukrywany na schemacie (ustawienie projektu `hideMountedDin`, ADR-064); niezamontowany zostaje widoczny, żeby było widać, co dodano. */
 export const hiddenOnDiagram = (p: Project, instanceId: string): boolean => !!(blockCabOf(p, instanceId) || ((p.settings as { hideMountedDin?: boolean } | undefined)?.hideMountedDin && (p.equipment[instanceId]?.din as any)?.cabinetId && p.cabinets?.[(p.equipment[instanceId].din as any).cabinetId]));
 /** Port bloku szafy → port rzeczywistego osprzętu (dla grupy terminali: pierwszy terminal grupy). Inne porty bez zmian. */

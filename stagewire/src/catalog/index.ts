@@ -105,6 +105,10 @@ export function installPack(raw: unknown): InstallPlan {
 export const loadPack = (raw: unknown): InstallPlan => installPack(raw);
 export const unloadPack = (id: string) => { if (!BUILTIN_IDS.has(id) && packs.delete(id)) rebuild(); };
 export const loadedPacks = (): Pack[] => [...packs.values()];
+/** Obudowy (szablony szaf) ze wszystkich wczytanych pakietów. */
+export function catalogEnclosures(): { key: string; packId: string; packName: string; enclosure: NonNullable<Pack['enclosures']>[number] }[] {
+  return [...packs.values()].flatMap((p) => (p.enclosures ?? []).map((e) => ({ key: `${p.id}/${e.key}`, packId: p.id, packName: p.name, enclosure: e })));
+}
 
 for (const json of [starterJson, registriesJson, blackmagicJson]) {
   const rep = installPack(json); if (!rep.pack || rep.errors.length) throw new Error('Pakiet wbudowany jest niepoprawny: ' + rep.errors.slice(0, 3).join('; '));

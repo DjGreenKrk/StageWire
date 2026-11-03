@@ -535,9 +535,9 @@ Kontekst: pierwsze testy właściciela na prawdziwym projekcie (`projekt2.sw`) w
 3. **Kreator urządzenia** (`web/deviceBuilder.ts`): „Nowe urządzenie…”, „Użyj jako wzoru…” (kopia istniejącego) i „Edytuj…” (własne). Gotowe zestawy portów („8 × XLR wejście”, numeracja ciągnie dalej), podgląd bloku na żywo, przesuwanie, powielanie i usuwanie portów, podpowiedzi walidatora w zwykłym języku, zapis do Moich albo „Zapisz i dodaj do projektu”. Dane źródła (rodzaj, dokument, adres, data sprawdzenia) są częścią kreatora; bez daty dane są niezweryfikowane (ADR-020).
 4. Istniejące okno „Edytuj definicję…” (rewizje definicji w projekcie) zostaje bez zmian. Przycisk „Biblioteka urządzeń…” w panelu katalogu nazywa się teraz „Pakiety urządzeń…” (zarządzanie pakietami i aktualizacje).
 
-## ADR-064: Topologia elektryczna, grzebienie i listwy (propozycja, 2026-11-03)
+## ADR-064: Topologia elektryczna, grzebienie i listwy (2026-11-03)
 
-**Status:** proponowana. Projekt w [ELECTRICAL-TOPOLOGY.md](ELECTRICAL-TOPOLOGY.md); bez implementacji.
+**Status:** przyjęta; zaimplementowane etapy E0–E5 (stan i różnice: ELECTRICAL-TOPOLOGY.md §9). Projekt w [ELECTRICAL-TOPOLOGY.md](ELECTRICAL-TOPOLOGY.md).
 
 **Kontekst.** Pakiet aparatury modułowej pokazał, że model portów i połączeń punkt–punkt nie opisuje grzebieni, listew N/PE, złączek i bloków rozdzielczych (wiele zacisków o wspólnym potencjale, kilka niezależnych torów w jednym elemencie, styk zależny od stanu aparatu). Obudowa bez portów nie przechodzi walidacji pakietu. Problem dotyczy też instalacji scenicznych i sterowania, nie jednego producenta.
 

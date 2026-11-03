@@ -1,4 +1,4 @@
-import type { DefinitionRevision, Direction, PortDefinition, RegistryEntry } from './types.ts';
+import type { DefinitionRevision, Direction, PortDefinition, RegistryEntry, TerminalSpec, InternalLinkKind } from './types.ts';
 
 /**
  * Pakiet urządzeń (baza urządzeń): plik JSON `*.swpack.json` z listą urządzeń, ich portów i (opcjonalnie) wpisów rejestrów.
@@ -18,21 +18,27 @@ export const SIDES = ['left', 'right', 'top', 'bottom', 'auto'] as const;
 export interface PackSource { kind: SourceKind; ref?: string; url?: string; note?: string; verified?: string; hardwareRevision?: string; generated?: boolean }
 /** Parametry elektryczne portu zasilania (zakres napięć, moc). Samo połączenie zasilania to zwykły port i zwykłe połączenie. */
 export interface PortElectrical { voltageMinV?: number; voltageMaxV?: number; maxW?: number }
-export interface PackPort { key: string; label: string; connector: string; signals: string[]; direction: Direction; capacity?: number; side?: (typeof SIDES)[number]; note?: string; group?: string; electrical?: PortElectrical }
+export interface PackPort { key: string; label: string; connector: string; signals: string[]; direction: Direction; capacity?: number; side?: (typeof SIDES)[number]; note?: string; group?: string; electrical?: PortElectrical; terminal?: TerminalSpec }
+/** Połączenie wewnętrzne urządzenia w pakiecie: klucze portów (nie identyfikatory). */
+export interface PackLink { kind: InternalLinkKind; a?: string; b?: string; members?: string[]; contact?: string }
+/** Obudowa jako szablon szafy w bibliotece (nie ma portów; po użyciu powstaje zwykła szafa projektu). */
+export interface PackEnclosure { key: string; manufacturer: string; model: string; widthMm: number; heightMm: number; depthMm?: number; rows: number; modules: number; ip?: string; mounting?: 'surface' | 'flush' | 'wall' | 'floor'; description?: string; tags?: string[]; source?: PackSource }
 export interface PackDevice {
   key: string; manufacturer: string; model: string; category: string; tags?: string[]; description?: string; kind?: 'physical' | 'virtual';
   dimensionsMm?: { width: number; depth: number; height: number }; weightKg?: number; powerW?: number; powerMaxW?: number;
   rackUnits?: { heightU: number; widthFraction: number };
   dinModules?: number;
+  /** Połączenia wewnętrzne (listwy, mostki, styki zależne od stanu). */
+  internalLinks?: PackLink[]; placementLayer?: 'body' | 'busbar'; phaseOrder?: string[];
   ports: PackPort[]; source: PackSource;
 }
-export interface Pack { format: typeof PACK_FORMAT; id: string; name: string; version: string; author?: string; license: string; description?: string; registries?: Record<string, RegistryEntry>; devices: PackDevice[] }
+export interface Pack { format: typeof PACK_FORMAT; id: string; name: string; version: string; author?: string; license: string; description?: string; registries?: Record<string, RegistryEntry>; devices: PackDevice[]; enclosures?: PackEnclosure[] }
 
 export interface PackReport { errors: string[]; warnings: string[]; pack?: Pack }
 
-const TOP_FIELDS = ['$schema', 'format', 'id', 'name', 'version', 'author', 'license', 'description', 'registries', 'devices'];
-const DEV_FIELDS = ['key', 'manufacturer', 'model', 'category', 'tags', 'description', 'kind', 'dimensionsMm', 'weightKg', 'powerW', 'powerMaxW', 'dinModules', 'rackUnits', 'ports', 'source'];
-const PORT_FIELDS = ['key', 'label', 'connector', 'signals', 'direction', 'capacity', 'side', 'note', 'group', 'electrical'];
+const TOP_FIELDS = ['$schema', 'format', 'id', 'name', 'version', 'author', 'license', 'description', 'registries', 'devices', 'enclosures'];
+const DEV_FIELDS = ['key', 'manufacturer', 'model', 'category', 'tags', 'description', 'kind', 'dimensionsMm', 'weightKg', 'powerW', 'powerMaxW', 'dinModules', 'rackUnits', 'internalLinks', 'placementLayer', 'phaseOrder', 'ports', 'source'];
+const PORT_FIELDS = ['key', 'label', 'connector', 'signals', 'direction', 'capacity', 'side', 'note', 'group', 'electrical', 'terminal'];
 const SRC_FIELDS = ['kind', 'ref', 'url', 'note', 'verified', 'hardwareRevision', 'generated'];
 
 /** Wiarygodność danych urządzenia: verified = człowiek sprawdził z dokumentem; unverified = źródło wskazane, ale bez daty weryfikacji lub wygenerowane; approximate = szacunek; generic = urządzenie ogólne. */
@@ -55,6 +61,65 @@ export const defKeyOf = (packId: string, devKey: string) => `${packId}/${devKey}
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 const isStr = (v: unknown): v is string => typeof v === 'string' && v.trim().length > 0;
+
+const LINK_KINDS = ['passthrough', 'loopthrough', 'bridge', 'jumper', 'switched'];
+function validateTerminal(t: any, pa: string, err: (m: string) => void) {
+  if (!t || typeof t !== 'object' || Array.isArray(t)) { err(`${pa}.terminal: oczekiwano obiektu {track, at, side, wires, kind, fits}`); return; }
+  if (t.track !== undefined && (!isStr(t.track) || t.track.length > 12)) err(`${pa}.terminal.track: tekst do 12 znaków (np. L1, N, PE)`);
+  if (t.at !== undefined && (!isNum(t.at) || t.at < 0 || t.at > 72)) err(`${pa}.terminal.at: liczba modułów 0–72 od lewej krawędzi aparatu`);
+  if (t.side !== undefined && !['top', 'bottom'].includes(t.side)) err(`${pa}.terminal.side: top lub bottom`);
+  if (t.kind !== undefined && !['screw', 'push-in', 'spring', 'comb-slot'].includes(t.kind)) err(`${pa}.terminal.kind: screw, push-in, spring lub comb-slot`);
+  if (t.fits !== undefined && (!Array.isArray(t.fits) || t.fits.some((x: unknown) => !isStr(x)))) err(`${pa}.terminal.fits: lista tagów zgodności`);
+  if (t.wires !== undefined) {
+    const w = t.wires;
+    if (!w || typeof w !== 'object') err(`${pa}.terminal.wires: oczekiwano obiektu {minMm2, maxMm2, ferrule}`);
+    else {
+      for (const f of ['minMm2', 'maxMm2']) if (w[f] !== undefined && (!isNum(w[f]) || w[f] <= 0 || w[f] > 1000)) err(`${pa}.terminal.wires.${f}: liczba mm² 0–1000`);
+      if (isNum(w.minMm2) && isNum(w.maxMm2) && w.minMm2 > w.maxMm2) err(`${pa}.terminal.wires: minMm2 większe od maxMm2`);
+      if (w.ferrule !== undefined && !['allowed', 'required', 'forbidden'].includes(w.ferrule)) err(`${pa}.terminal.wires.ferrule: allowed, required lub forbidden`);
+    }
+  }
+}
+function validateLinks(links: unknown, portKeys: Set<string>, at: string, err: (m: string) => void) {
+  if (!Array.isArray(links)) { err(`${at}.internalLinks: oczekiwano listy`); return; }
+  links.forEach((l: any, i: number) => {
+    const la = `${at}.internalLinks[${i}]`;
+    if (!l || typeof l !== 'object') { err(`${la}: oczekiwano obiektu`); return; }
+    if (!LINK_KINDS.includes(l.kind)) { err(`${la}.kind: ${LINK_KINDS.join(', ')}`); return; }
+    const has = (k: unknown) => typeof k === 'string' && portKeys.has(k);
+    if (l.members !== undefined) {
+      if (!Array.isArray(l.members) || l.members.length < 2) err(`${la}.members: co najmniej dwa porty`);
+      else for (const k of l.members) if (!has(k)) err(`${la}.members: nie ma portu „${k}”`);
+      if (l.kind === 'switched') err(`${la}: połączenie zależne od stanu (switched) opisuje para a/b, nie grupa members`);
+    } else {
+      if (!has(l.a)) err(`${la}.a: nie ma portu „${l.a}”`);
+      if (!has(l.b)) err(`${la}.b: nie ma portu „${l.b}”`);
+      if (l.a !== undefined && l.a === l.b) err(`${la}: port połączony sam ze sobą`);
+    }
+    if (l.contact !== undefined && !isStr(l.contact)) err(`${la}.contact: niepusty tekst (np. "K1")`);
+  });
+}
+function validateEnclosures(raw: unknown, err: (m: string) => void, warn: (m: string) => void): boolean {
+  if (raw === undefined) return false;
+  if (!Array.isArray(raw)) { err('enclosures: oczekiwano listy obudów'); return false; }
+  const keys = new Set<string>();
+  raw.forEach((e: any, i: number) => {
+    const at = `enclosures[${i}]${isStr(e?.key) ? ` (${e.key})` : ''}`;
+    if (!e || typeof e !== 'object') { err(`${at}: oczekiwano obiektu`); return; }
+    if (!isStr(e.key) || !KEY_RE.test(e.key)) err(`${at}.key: małe litery, cyfry, - lub _`); else { if (keys.has(e.key)) err(`${at}.key: duplikat klucza`); keys.add(e.key); }
+    for (const f of ['manufacturer', 'model']) if (!isStr(e[f])) err(`${at}.${f}: wymagane`);
+    for (const f of ['widthMm', 'heightMm']) if (!isNum(e[f]) || e[f] < 50 || e[f] > 5000) err(`${at}.${f}: liczba mm 50–5000`);
+    if (e.depthMm !== undefined && (!isNum(e.depthMm) || e.depthMm <= 0 || e.depthMm > 2000)) err(`${at}.depthMm: liczba mm 1–2000`);
+    if (!Number.isInteger(e.rows) || e.rows < 1 || e.rows > 12) err(`${at}.rows: całkowite 1–12 (liczba szyn)`);
+    if (!Number.isInteger(e.modules) || e.modules < 1 || e.modules > 72) err(`${at}.modules: całkowite 1–72 (moduły na szynie)`);
+    if (e.mounting !== undefined && !['surface', 'flush', 'wall', 'floor'].includes(e.mounting)) err(`${at}.mounting: surface, flush, wall lub floor`);
+    if (e.ip !== undefined && !isStr(e.ip)) err(`${at}.ip: tekst (np. IP65)`);
+    if (e.description !== undefined && (typeof e.description !== 'string' || e.description.length > 400)) err(`${at}.description: tekst do 400 znaków`);
+    if (e.source !== undefined && (typeof e.source !== 'object' || !SOURCE_KINDS.includes(e.source?.kind))) err(`${at}.source.kind: jedno z ${SOURCE_KINDS.join(', ')}`);
+    if (e.source === undefined) warn(`${at}: brak źródła danych (source)`);
+  });
+  return raw.length > 0;
+}
 
 /**
  * Sprawdza pakiet. `known` to wpisy rejestrów dostępne poza pakietem (np. wbudowane); złącza i sygnały portów muszą być w `registries` pakietu lub w `known`.
@@ -86,8 +151,9 @@ export function validatePack(raw: unknown, known: Record<string, RegistryEntry> 
     }
   }
   const hasRegs = typeof reg === 'object' && !Array.isArray(reg) && Object.keys(reg).length > 0;
-  if (Array.isArray(p.devices) && !p.devices.length && hasRegs) { if (errors.length) return { errors, warnings }; return { errors, warnings, pack: p as Pack }; } // pakiet samych rejestrów (wspólne złącza/sygnały dla innych pakietów)
-  if (!Array.isArray(p.devices) || !p.devices.length) { err('devices: wymagana niepusta lista urządzeń (albo pakiet samych rejestrów: devices = [] i niepuste registries)'); return { errors, warnings }; }
+  const encs = validateEnclosures(p.enclosures, err, warn);
+  if (Array.isArray(p.devices) && !p.devices.length && (hasRegs || encs)) { if (errors.length) return { errors, warnings }; return { errors, warnings, pack: p as Pack }; } // pakiet samych rejestrów (wspólne złącza/sygnały dla innych pakietów)
+  if (!Array.isArray(p.devices) || !p.devices.length) { err('devices: wymagana niepusta lista urządzeń (albo pakiet samych rejestrów: devices = [] i niepuste registries albo enclosures)'); return { errors, warnings }; }
   const keys = new Set<string>(), defIds = new Set<string>(), missing = new Set<string>();
   p.devices.forEach((d: any, i: number) => {
     const at = `devices[${i}]${isStr(d?.key) ? ` (${d.key})` : ''}`;
@@ -143,6 +209,7 @@ export function validatePack(raw: unknown, known: Record<string, RegistryEntry> 
           if (isNum(e.voltageMinV) && isNum(e.voltageMaxV) && e.voltageMinV > e.voltageMaxV) err(`${pa}.electrical: voltageMinV większe od voltageMaxV`);
         }
       }
+      if (q.terminal !== undefined) validateTerminal(q.terminal, pa, err);
       if (!isStr(q.key) || !KEY_RE.test(q.key)) err(`${pa}.key: małe litery, cyfry, - lub _ (np. "sdi-in-1")`);
       else { if (pk.has(q.key)) err(`${pa}.key: duplikat w urządzeniu`); pk.add(q.key); const id = portIdOf(q.key); if (pids.has(id)) err(`${pa}.key: po usunięciu znaków specjalnych koliduje z innym portem (${id})`); pids.add(id); }
       if (!isStr(q.label)) err(`${pa}.label: wymagana etykieta`); else labels.set(q.label, (labels.get(q.label) ?? 0) + 1);
@@ -154,6 +221,9 @@ export function validatePack(raw: unknown, known: Record<string, RegistryEntry> 
       if (q.side !== undefined && !(SIDES as readonly string[]).includes(q.side)) err(`${pa}.side: ${SIDES.join(', ')}`);
     });
     for (const [l, n] of labels) if (n > 1) warn(`${at}: etykieta portu "${l}" występuje ${n} razy`);
+    if (d.placementLayer !== undefined && !['body', 'busbar'].includes(d.placementLayer)) err(`${at}.placementLayer: body lub busbar`);
+    if (d.phaseOrder !== undefined && (!Array.isArray(d.phaseOrder) || d.phaseOrder.some((t: unknown) => !isStr(t)))) err(`${at}.phaseOrder: lista torów (np. ["L1","L2","L3"])`);
+    if (d.internalLinks !== undefined) validateLinks(d.internalLinks, pk, at, err);
   });
   if (missing.size) errors.unshift(`Brakujące wpisy rejestrów (${missing.size}): ${[...missing].sort().join(', ')}. Dodaj je do registries tego pakietu albo do pakietu rejestrów, który jest już wczytany`);
   if (errors.length) return { errors, warnings };
@@ -164,7 +234,7 @@ export function validatePack(raw: unknown, known: Record<string, RegistryEntry> 
 export function deviceToRevision(pack: Pack, d: PackDevice): DefinitionRevision {
   const ports: Record<string, PortDefinition> = {};
   d.ports.forEach((q, i) => {
-    ports[portIdOf(q.key)] = { label: q.label, order: i + 1, connectorKey: q.connector, signalKeys: [...q.signals], direction: q.direction, side: q.side ?? 'auto', capacity: q.capacity ?? 1, ...(q.note ? { notes: q.note } : {}), ...(q.group ? { group: q.group } : {}), ...(q.electrical ? { electrical: { ...q.electrical } } : {}) };
+    ports[portIdOf(q.key)] = { label: q.label, order: i + 1, connectorKey: q.connector, signalKeys: [...q.signals], direction: q.direction, side: q.side ?? 'auto', capacity: q.capacity ?? 1, ...(q.note ? { notes: q.note } : {}), ...(q.group ? { group: q.group } : {}), ...(q.electrical ? { electrical: { ...q.electrical } } : {}), ...(q.terminal ? { terminal: JSON.parse(JSON.stringify(q.terminal)) } : {}) };
   });
   const custom = d.source.kind === 'generic' || d.source.kind === 'custom';
   const rev: DefinitionRevision = {
@@ -177,6 +247,9 @@ export function deviceToRevision(pack: Pack, d: PackDevice): DefinitionRevision 
   if (d.dimensionsMm) rev.dimensionsMm = { ...d.dimensionsMm };
   if (d.rackUnits) rev.rackUnits = { ...d.rackUnits };
   if (d.dinModules) rev.dinModules = d.dinModules;
+  if (d.internalLinks?.length) rev.internalLinks = d.internalLinks.map((l) => ({ kind: l.kind, ...(l.a ? { a: portIdOf(l.a) } : {}), ...(l.b ? { b: portIdOf(l.b) } : {}), ...(l.members ? { members: l.members.map(portIdOf) } : {}), ...(l.contact ? { contact: l.contact } : {}) }));
+  if (d.placementLayer && d.placementLayer !== 'body') rev.placementLayer = d.placementLayer;
+  if (d.phaseOrder?.length) rev.phaseOrder = [...d.phaseOrder];
   if (d.tags?.length) rev.tags = [...d.tags];
   if (d.weightKg !== undefined) rev.weightKg = d.weightKg;
   if (d.powerW !== undefined) rev.powerW = d.powerW;
@@ -195,6 +268,7 @@ export function revisionToDevice(rev: DefinitionRevision, key: string): PackDevi
     key: id.replace(/^prt_/, ''), label: p.label, connector: p.connectorKey, signals: [...p.signalKeys], direction: p.direction, ...(p.capacity !== 1 ? { capacity: p.capacity } : {}),
     ...(p.side && p.side !== 'auto' ? { side: p.side } : {}), ...(p.notes ? { note: p.notes } : {}),
     ...(typeof p.group === 'string' && p.group ? { group: p.group } : {}), ...(p.electrical && typeof p.electrical === 'object' ? { electrical: { ...(p.electrical as PortElectrical) } } : {}),
+    ...(p.terminal ? { terminal: JSON.parse(JSON.stringify(p.terminal)) } : {}),
   }));
   const src = (rev.sourceKind as SourceKind | undefined) ?? 'custom';
   const d: PackDevice = {
@@ -206,6 +280,9 @@ export function revisionToDevice(rev: DefinitionRevision, key: string): PackDevi
   if (rev.dimensionsMm) d.dimensionsMm = { ...rev.dimensionsMm };
   if (rev.rackUnits) d.rackUnits = { ...rev.rackUnits };
   if (rev.dinModules) d.dinModules = rev.dinModules;
+  if (rev.internalLinks?.length) d.internalLinks = rev.internalLinks.map((l) => ({ kind: l.kind, ...(l.a ? { a: l.a.replace(/^prt_/, '') } : {}), ...(l.b ? { b: l.b.replace(/^prt_/, '') } : {}), ...(l.members ? { members: l.members.map((m) => m.replace(/^prt_/, '')) } : {}), ...(l.contact ? { contact: l.contact } : {}) }));
+  if (rev.placementLayer) d.placementLayer = rev.placementLayer;
+  if (rev.phaseOrder?.length) d.phaseOrder = [...rev.phaseOrder];
   if (Array.isArray(rev.tags) && rev.tags.length) d.tags = [...(rev.tags as string[])];
   if (typeof rev.weightKg === 'number') d.weightKg = rev.weightKg;
   if (typeof rev.powerW === 'number') d.powerW = rev.powerW;

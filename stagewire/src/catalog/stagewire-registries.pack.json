@@ -2,7 +2,7 @@
   "format": "stagewire-pack/1",
   "id": "stagewire-registries",
   "name": "Standardowe złącza, sygnały i kable",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "StageWire",
   "license": "własne (projekt StageWire)",
   "description": "Wspólny słownik złączy, sygnałów i typów kabli dla pakietów urządzeń. Nazwy standardów i złączy są pojęciami technicznymi, nie treścią cudzej bazy danych.",
@@ -458,6 +458,10 @@
     "std/din-terminal": {
       "kind": "connector",
       "name": "Zacisk na szynę DIN (śrubowy/sprężynowy)"
+    },
+    "std/din-comb-slot": {
+      "kind": "connector",
+      "name": "Wejście na grzebień/mostek (szyna zbiorcza)"
     },
     "std/ctrl-0-10v": {
       "kind": "signal",

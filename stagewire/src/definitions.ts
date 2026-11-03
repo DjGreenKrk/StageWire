@@ -119,6 +119,15 @@ export function saveDefinition(defId: Id, v: { model?: string; ports: PortDraft[
       const next: Record<string, PortDefinition> = {};
       for (const p of v.ports) { const { id, ...rest } = p; next[id] = { ...rest, label: p.label.trim(), order: order.get(id)! }; }
       rev.ports = next;
+      // połączenia wewnętrzne wskazujące usunięte porty są usuwane (grupy zostają, jeśli zostały co najmniej dwa porty)
+      if (rev.internalLinks) {
+        const keep = (id?: string) => !!id && !!next[id];
+        rev.internalLinks = rev.internalLinks.flatMap((l) => {
+          if (l.members) { const m = l.members.filter(keep); return m.length >= 2 ? [{ ...l, members: m }] : []; }
+          return keep(l.a) && keep(l.b) ? [l] : [];
+        });
+        if (!rev.internalLinks.length) delete rev.internalLinks;
+      }
     })(d);
     if (upgrade === 'all') {
       const def = d.definitions[defId];
@@ -172,7 +181,8 @@ export function draftRevision(rev: DefinitionRevision, v: { ports: PortDraft[]; 
 const comparable = (r: DefinitionRevision) => JSON.stringify({
   m: [r.manufacturer, r.model, r.category, r.kind], dim: r.dimensionsMm, rack: r.rackUnits, din: r.dinModules, tags: r.tags, w: r.weightKg, p: r.powerW, pm: r.powerMaxW, n: r.notes,
   s: [r.sourceKind, r.sourceVerified, r.sourceUrl, r.hardwareRevision, r.sourceGenerated],
-  ports: Object.keys(r.ports).sort().map((k) => [k, r.ports[k].label, r.ports[k].connectorKey, r.ports[k].signalKeys, r.ports[k].direction, r.ports[k].capacity, r.ports[k].group, r.ports[k].electrical, r.ports[k].notes, r.ports[k].side]),
+  ports: Object.keys(r.ports).sort().map((k) => [k, r.ports[k].label, r.ports[k].connectorKey, r.ports[k].signalKeys, r.ports[k].direction, r.ports[k].capacity, r.ports[k].group, r.ports[k].electrical, r.ports[k].notes, r.ports[k].side, r.ports[k].terminal]),
+  links: r.internalLinks, layer: r.placementLayer, phases: r.phaseOrder,
 });
 
 export interface LibraryUpdate {

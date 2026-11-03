@@ -80,8 +80,10 @@
         "ports": { "type": "object", "propertyNames": { "$ref": "#/$defs/id" }, "additionalProperties": { "$ref": "#/$defs/portDefinition" } },
         "internalLinks": {
           "type": "array",
-          "items": { "type": "object", "required": ["a", "b", "kind"], "properties": { "a": { "$ref": "#/$defs/id" }, "b": { "$ref": "#/$defs/id" }, "kind": { "enum": ["passthrough", "loopthrough"] } } }
-        }
+          "items": { "type": "object", "required": ["kind"], "properties": { "a": { "$ref": "#/$defs/id" }, "b": { "$ref": "#/$defs/id" }, "members": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/id" } }, "contact": { "type": "string" }, "kind": { "enum": ["passthrough", "loopthrough", "bridge", "jumper", "switched"] } } }
+        },
+        "placementLayer": { "enum": ["body", "busbar"] },
+        "phaseOrder": { "type": "array", "items": { "type": "string" } }
       }
     },
     "portDefinition": {
@@ -94,7 +96,18 @@
         "signalKeys": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/registryKey" } },
         "direction": { "enum": ["in", "out", "io", "loop"] },
         "side": { "enum": ["left", "right", "top", "bottom", "auto"] },
-        "capacity": { "type": "integer", "minimum": 1 }
+        "capacity": { "type": "integer", "minimum": 1 },
+        "terminal": {
+          "type": "object",
+          "properties": {
+            "track": { "type": "string" },
+            "at": { "type": "number", "minimum": 0 },
+            "side": { "enum": ["top", "bottom"] },
+            "wires": { "type": "object", "properties": { "minMm2": { "type": "number", "exclusiveMinimum": 0 }, "maxMm2": { "type": "number", "exclusiveMinimum": 0 }, "ferrule": { "enum": ["allowed", "required", "forbidden"] } } },
+            "kind": { "enum": ["screw", "push-in", "spring", "comb-slot"] },
+            "fits": { "type": "array", "items": { "type": "string" } }
+          }
+        }
       }
     },
     "cabinet": {
@@ -138,8 +151,14 @@
         "din": {
           "type": "object",
           "required": ["cabinetId", "row", "at"],
-          "properties": { "cabinetId": { "$ref": "#/$defs/id" }, "row": { "type": "integer", "minimum": 1 }, "at": { "type": "integer", "minimum": 1 } }
+          "properties": { "cabinetId": { "$ref": "#/$defs/id" }, "row": { "type": "integer", "minimum": 1 }, "at": { "type": "integer", "minimum": 1 }, "layer": { "enum": ["body", "busbar"] } }
         },
+        "plate": {
+          "type": "object",
+          "required": ["cabinetId", "x", "y"],
+          "properties": { "cabinetId": { "$ref": "#/$defs/id" }, "x": { "type": "number" }, "y": { "type": "number" } }
+        },
+        "jumpers": { "type": "array", "items": { "type": "integer", "minimum": 0 } },
         "mount": {
           "type": "object",
           "required": ["rackId", "uStart", "face", "slot"],

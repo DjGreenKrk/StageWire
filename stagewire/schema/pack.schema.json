@@ -101,6 +101,13 @@
         "$ref": "#/$defs/device"
       },
       "description": "Pusta lista dozwolona tylko w pakiecie samych rejestrów"
+    },
+    "enclosures": {
+      "type": "array",
+      "description": "Obudowy (szafy, rozdzielnice) jako szablony; po użyciu powstaje zwykła szafa projektu. Obudowa nie ma portów.",
+      "items": {
+        "$ref": "#/$defs/enclosure"
+      }
     }
   },
   "$defs": {
@@ -270,6 +277,57 @@
           "minimum": 1,
           "maximum": 72,
           "description": "Szerokość na szynie DIN w modułach po 17,5 mm"
+        },
+        "internalLinks": {
+          "type": "array",
+          "description": "Połączenia wewnętrzne po kluczach portów: bridge (stały mostek, także grupa members), jumper (konfigurowalny), switched (zależny od stanu, nie scala węzłów), passthrough, loopthrough",
+          "items": {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "passthrough",
+                  "loopthrough",
+                  "bridge",
+                  "jumper",
+                  "switched"
+                ]
+              },
+              "a": {
+                "type": "string"
+              },
+              "b": {
+                "type": "string"
+              },
+              "members": {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "contact": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "placementLayer": {
+          "enum": [
+            "body",
+            "busbar"
+          ],
+          "description": "busbar = grzebień/mostek leżący na zaciskach aparatów"
+        },
+        "phaseOrder": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Oczekiwana kolejność torów grzebienia, np. [\"L1\",\"L2\",\"L3\"]"
         }
       }
     },
@@ -353,6 +411,135 @@
               "maximum": 100000
             }
           }
+        },
+        "terminal": {
+          "type": "object",
+          "description": "Opis zacisku: tor, położenie na aparacie, przewody, zgodność mechaniczna",
+          "properties": {
+            "track": {
+              "type": "string",
+              "maxLength": 12
+            },
+            "at": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 72,
+              "description": "Moduły od lewej krawędzi aparatu"
+            },
+            "side": {
+              "enum": [
+                "top",
+                "bottom"
+              ]
+            },
+            "wires": {
+              "type": "object",
+              "properties": {
+                "minMm2": {
+                  "type": "number"
+                },
+                "maxMm2": {
+                  "type": "number"
+                },
+                "ferrule": {
+                  "enum": [
+                    "allowed",
+                    "required",
+                    "forbidden"
+                  ]
+                }
+              }
+            },
+            "kind": {
+              "enum": [
+                "screw",
+                "push-in",
+                "spring",
+                "comb-slot"
+              ]
+            },
+            "fits": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "enclosure": {
+      "type": "object",
+      "required": [
+        "key",
+        "manufacturer",
+        "model",
+        "widthMm",
+        "heightMm",
+        "rows",
+        "modules"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "manufacturer": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "widthMm": {
+          "type": "number",
+          "minimum": 50,
+          "maximum": 5000
+        },
+        "heightMm": {
+          "type": "number",
+          "minimum": 50,
+          "maximum": 5000
+        },
+        "depthMm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 2000
+        },
+        "rows": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12,
+          "description": "Liczba szyn DIN"
+        },
+        "modules": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 72,
+          "description": "Moduły 17,5 mm na szynie"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "mounting": {
+          "enum": [
+            "surface",
+            "flush",
+            "wall",
+            "floor"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source": {
+          "type": "object"
         }
       }
     }

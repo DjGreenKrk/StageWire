@@ -2,6 +2,8 @@ import type { Project, Issue } from './types.ts';
 import { rackContents, conflicts, itemInfo, type Rack } from './racks.ts';
 import { cabinetContents, dinConflicts, type Cabinet } from './cabinets.ts';
 import { pointInPolygon } from './plan.ts';
+import { electricalNets } from './nets.ts';
+import { busbarContacts } from './busbar.ts';
 
 const SOURCE_OK = new Set(['out', 'io', 'loop']);
 const SINK_OK = new Set(['in', 'io']);
@@ -68,6 +70,34 @@ export function validate(p: Project): Issue[] {
       }
       const rev = p.definitions[p.equipment[o.id].definitionId]?.revisions[String(p.equipment[o.id].definitionRevision)];
       if (k.depthMm && rev?.dimensionsMm && rev.dimensionsMm.depth > k.depthMm) push('V-029', 'warning', o.id, `„${nm}” ma głębokość ${rev.dimensionsMm.depth} mm, szafa „${k.name}” ${k.depthMm} mm`);
+    }
+  }
+
+  // V-052 element na płycie montażowej wychodzi poza płytę szafy
+  for (const [iid, inst] of Object.entries(p.equipment)) {
+    const pl = inst.plate as { cabinetId: string; x: number; y: number } | undefined, k = pl && (p.cabinets?.[pl.cabinetId] as Cabinet | undefined); if (!pl || !k) continue;
+    const dim = p.definitions[inst.definitionId]?.revisions[String(inst.definitionRevision)]?.dimensionsMm;
+    if (dim && (pl.x + dim.width > k.widthMm || pl.y + dim.height > k.heightMm)) push('V-052', 'warning', iid, `„${inst.name}” wychodzi poza płytę szafy „${k.name}” (${k.widthMm} × ${k.heightMm} mm)`);
+  }
+
+  // V-040/V-041 zwarcia torów w węźle elektrycznym; V-046/V-047/V-050 grzebienie na zaciskach aparatów (ADR-064)
+  {
+    const lbl = (r: { instanceId: string; portId: string }) => `${p.equipment[r.instanceId]?.name ?? r.instanceId} · ${p.definitions[p.equipment[r.instanceId]?.definitionId]?.revisions[String(p.equipment[r.instanceId]?.definitionRevision)]?.ports[r.portId]?.label ?? r.portId}`;
+    const CLS = ['L1', 'L2', 'L3', 'N', 'PE'];
+    for (const net of electricalNets(p).nets) {
+      const named = net.tracks.filter((t) => CLS.includes(t));
+      if (named.length < 2) continue;
+      const portsOf = (t: string) => net.ports.filter((r) => p.definitions[p.equipment[r.instanceId]?.definitionId]?.revisions[String(p.equipment[r.instanceId]?.definitionRevision)]?.ports[r.portId]?.terminal?.track === t);
+      const sample = named.map((t) => `${t}: ${lbl(portsOf(t)[0])}`).join('; ');
+      const neutralEarth = named.length === 2 && named.includes('N') && named.includes('PE');
+      push(neutralEarth ? 'V-041' : 'V-040', 'error', portsOf(named[0])[0].instanceId, neutralEarth ? `Przewód neutralny (N) połączony z ochronnym (PE) w jednym węźle (${sample})` : `Zwarcie torów ${named.join(' i ')} w jednym węźle elektrycznym (${sample})`);
+    }
+    const nm = (id: string) => p.equipment[id]?.name ?? id;
+    const toothLabel = (id: string, port: string) => p.definitions[p.equipment[id]?.definitionId]?.revisions[String(p.equipment[id]?.definitionRevision)]?.ports[port]?.label ?? port;
+    for (const is of busbarContacts(p).issues) {
+      if (is.kind === 'mismatch') push('V-046', 'warning', is.busbar, `Ząb „${toothLabel(is.busbar, is.tooth)}” grzebienia „${nm(is.busbar)}” leży na „${nm(is.body!)}”, ale zacisk aparatu nie jest zgodny z grzebieniem (typ lub rozstaw); sprawdź w danych producenta`);
+      else if (is.kind === 'unaligned') push('V-047', 'warning', is.busbar, `Ząb „${toothLabel(is.busbar, is.tooth)}” grzebienia „${nm(is.busbar)}” nie trafia w zacisk „${nm(is.body!)}” (moduł ${is.module}); przesuń grzebień lub aparat`);
+      else push('V-050', 'info', is.busbar, `Ząb „${toothLabel(is.busbar, is.tooth)}” grzebienia „${nm(is.busbar)}” nie ma pod sobą aparatu (moduł ${is.module}); zabezpiecz nieużywany koniec`);
     }
   }
 

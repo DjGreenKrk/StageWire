@@ -193,6 +193,40 @@ Zasilanie jest **zwykłymi portami i zwykłymi połączeniami**, nie osobnym mod
 - `group` jest wskazówką porządkową (np. `Wejścia SDI`, `PoE`, `Uplink`) i trafia do definicji w projekcie. Bilans mocy, rozdział zasilania i obciążenia dojdą po MVP, a model portów nie będzie wtedy przebudowywany.
 - Urządzenie nierackowe: pomiń `rackUnits`. Nieznane wymiary: pomiń `dimensionsMm` (ostrzeżenie: urządzenie nie trafi na plan w skali). Port wielostandardowy: kilka wartości w `signals`.
 
+## 12a. Topologia elektryczna: zaciski, listwy, grzebienie, obudowy
+
+Dla aparatury modułowej (listwy N/PE, złączki, bloki rozdzielcze, grzebienie) pakiet opisuje **które zaciski są ze sobą połączone**. Szczegóły i uzasadnienie: [ELECTRICAL-TOPOLOGY.md](ELECTRICAL-TOPOLOGY.md), ADR-064. Wszystkie pola są opcjonalne; starsze pakiety działają bez zmian, a starsze wersje programu pomijają je z ostrzeżeniem.
+
+**Port: `terminal`**
+
+| Pole | Znaczenie |
+|---|---|
+| `track` | tor: `L1`, `L2`, `L3`, `N`, `PE` albo własny napis do 12 znaków |
+| `at` | położenie w modułach od lewej krawędzi aparatu (0 = pierwszy moduł) |
+| `side` | `top` albo `bottom` (strona szyny, z której jest zacisk) |
+| `wires` | `{minMm2, maxMm2, ferrule: allowed/required/forbidden}` (informacyjnie) |
+| `kind` | `screw`, `push-in`, `spring` albo `comb-slot` (wejście pod grzebień) |
+| `fits` | tagi zgodności mechanicznej (np. rozstaw grzebienia); styk wymaga wspólnego tagu |
+
+Liczba przewodów na zacisku to zwykłe `capacity`. Zacisk, do którego można wpiąć przewód **i** grzebień, to dwa porty o tym samym `terminal.at` (port ze złączem `std/din-comb-slot` i `kind: comb-slot` plus zwykły port), połączone w urządzeniu mostkiem.
+
+**Urządzenie: `internalLinks`** (po kluczach portów)
+
+| `kind` | Znaczenie |
+|---|---|
+| `bridge` | stały mostek; zapis `{a, b}` albo grupowy `{members: [...]}` |
+| `jumper` | mostek konfigurowalny; scala tylko po włączeniu w instancji |
+| `switched` | styk zależny od stanu aparatu (wyłącznik, stycznik); **nigdy nie scala** węzłów |
+| `passthrough`, `loopthrough` | jak dotąd |
+
+**Urządzenie: `placementLayer`** (`body` domyślnie albo `busbar` dla grzebieni i mostków leżących na zaciskach aparatów) oraz **`phaseOrder`** (oczekiwana kolejność torów grzebienia, informacyjnie).
+
+**Grzebień** to zwykłe urządzenie z zębami jako portami (`terminal.at` = indeks zęba, `terminal.track`) i mostkami między zębami tego samego toru. Styk z aparatem jest wyliczany z położenia na szynie; przesunięcie aparatu zmienia węzły i walidację.
+
+**Obudowy: `enclosures`** (pole pakietu, zamiast urządzeń z pustymi portami): `{key, manufacturer, model, widthMm, heightMm, depthMm?, rows, modules, ip?, mounting?, description?, source}`. W oknie „Nowa szafa” pojawiają się jako typy obudowy.
+
+Reguły walidacji: V-040 (zwarcie torów), V-041 (N połączone z PE), V-046 (zacisk niezgodny z grzebieniem), V-047 (ząb nie trafia w zacisk), V-050 (ząb bez aparatu), V-052 (element wychodzi poza płytę).
+
 ## 13. Zgodność formatu i narzędzia zewnętrzne
 
 - **Format `stagewire-pack/1` jest rozszerzany tylko addytywnie.** Nowe pola opcjonalne nie zmieniają numeru. Program ignoruje pola, których nie zna, i zgłasza je jako **ostrzeżenie** (wychwytuje literówki, np. `powerw`). Zmiana łamiąca zgodność dostanie `stagewire-pack/2` z jawną migracją i bez cichej konwersji.

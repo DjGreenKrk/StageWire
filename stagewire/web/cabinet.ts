@@ -2,7 +2,8 @@
 import { exportName } from './exportName.ts';
 import type { Store, Mutator } from '../src/store.ts';
 import type { Project } from '../src/types.ts';
-import { cabCmd, cabinetContents, cabinetTotals, cabinetWiring, dinFit, dinProblem, firstFreeDin, newCabinetId, CABINET_PRESETS, MODULE_MM, type Cabinet, type DinMount } from '../src/cabinets.ts';
+import { cabCmd, cabinetContents, cabinetTotals, cabinetWiring, dinFit, dinProblem, firstFreeDin, layerOf, newCabinetId, CABINET_PRESETS, MODULE_MM, type Cabinet, type DinMount, type PlateMount } from '../src/cabinets.ts';
+import { catalogEnclosures } from '../src/catalog/index.ts';
 import { cmd } from '../src/commands.ts';
 import { cabinetPdf } from '../src/cabinetPdf.ts';
 import { invoke } from '@tauri-apps/api/core';
@@ -80,7 +81,11 @@ export function createCabinet(ctx: CabinetCtx) {
     const place = (list: typeof all, y: number, side: 't' | 'b') => list.map(([pid, p], i) => ({ ref: { instanceId: id, portId: pid } as PRef, label: p.label, x: r.x + ((i + 0.5) / list.length) * r.w, y, side, signals: p.signalKeys as string[] }));
     return [...place(top, r.y, 't'), ...place(bot, r.y + r.h, 'b')];
   }
-  const dotsAll = () => { if (!cabId) return []; return cabinetContents(S(), cabId).flatMap((o) => portDots(o.id, devRect(o))); };
+  /** Grzebień/mostek (warstwa `busbar`) rysuje się jako cienki pasek nad aparatami; aparat jako blok na szynie. */
+  const BAR_H = 9;
+  const rectOf = (o: { din: DinMount; modules: number; layer?: string }, gm = geo()) => { const r = devRect(o, gm); return o.layer === 'busbar' ? { x: r.x, y: r.y - BAR_H - 1, w: r.w, h: BAR_H } : r; };
+  const trackColor = (t?: string) => ({ L1: '#8D6E63', L2: '#212121', L3: '#9E9E9E', N: '#1E88E5', PE: '#43A047' } as Record<string, string>)[t ?? ''] ?? '#FFB300';
+  const dotsAll = () => { if (!cabId) return []; return cabinetContents(S(), cabId).filter((o) => o.layer !== 'busbar').flatMap((o) => portDots(o.id, devRect(o))); };
   const same = (a?: PRef, b?: PRef) => !!a && !!b && a.instanceId === b.instanceId && a.portId === b.portId;
   const isTerminal = (r: PRef) => !!cur()?.terminals?.some((t) => same(t, r));
   const groupOf = (r: PRef) => cur()?.terminals?.find((t) => same(t, r))?.group;
@@ -124,7 +129,12 @@ export function createCabinet(ctx: CabinetCtx) {
     }
     const contents = cabinetContents(S(), cabId);
     for (const o of contents) {
-      const r = devRect(o, gm), rev = revOf(o.id), isDrag = drag?.id === o.id && drag.moved;
+      const r = rectOf(o, gm), rev = revOf(o.id), isDrag = drag?.id === o.id && drag.moved;
+      if (o.layer === 'busbar') { // pasek grzebienia: ząb w kolorze toru nad modułem, na którym leży
+        g.globalAlpha = isDrag ? 0.35 : 1; g.fillStyle = '#2B2B2B'; g.fillRect(r.x, r.y, r.w, r.h);
+        for (const q of Object.values(rev?.ports ?? {})) { const tm = (q as { terminal?: { at?: number; track?: string } }).terminal; if (!tm || tm.at === undefined) continue; g.fillStyle = trackColor(tm.track); g.fillRect(r.x + Math.floor(tm.at) * gm.pxMod + 1, r.y + 1, Math.max(2, gm.pxMod - 3), r.h - 2); }
+        g.strokeStyle = selected === o.id ? '#00C853' : '#00000088'; g.lineWidth = selected === o.id ? 2 : 1; g.strokeRect(r.x + 0.5, r.y + 0.5, r.w - 1, r.h - 1); g.globalAlpha = 1; continue;
+      }
       g.globalAlpha = isDrag ? 0.35 : 1; g.fillStyle = colorOf(rev?.category ?? ''); g.fillRect(r.x, r.y, r.w, r.h);
       g.strokeStyle = selected === o.id ? '#00C853' : '#00000088'; g.lineWidth = selected === o.id ? 2 : 1; g.strokeRect(r.x + 0.5, r.y + 0.5, r.w - 1, r.h - 1);
       g.fillStyle = '#FFFFFF'; g.font = '500 11px Roboto,sans-serif';
@@ -149,7 +159,7 @@ export function createCabinet(ctx: CabinetCtx) {
     if (drag?.moved) {
       const t = dragTarget(drag), mod = dinFit(S(), drag.id);
       if (t && mod !== undefined) {
-        const bad = dinProblem(S(), drag.id, t), r = devRect({ din: t, modules: mod }, gm);
+        const bad = dinProblem(S(), drag.id, t), r = rectOf({ din: t, modules: mod, layer: layerOf(S(), drag.id) }, gm);
         g.fillStyle = bad ? '#E5393555' : '#00C85344'; g.fillRect(r.x, r.y, r.w, r.h); g.strokeStyle = bad ? '#E53935' : '#00C853'; g.lineWidth = 2; g.strokeRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
       }
       g.fillStyle = '#FFFFFF'; g.font = '12px Roboto,sans-serif'; g.fillText(nameOf(drag.id), drag.x + 12, drag.y - 8);
@@ -172,12 +182,16 @@ export function createCabinet(ctx: CabinetCtx) {
     (bar.querySelector('#cb-edit') as HTMLButtonElement).disabled = !cabs().length;
     const bb = bar.querySelector('#cb-block') as HTMLButtonElement; bb.disabled = !cabs().length; (bar.querySelector('#cb-pdf') as HTMLButtonElement).disabled = !cabs().length; bb.textContent = cur()?.asBlock ? 'Schemat: blok' : 'Schemat: osprzęt'; bb.style.borderColor = cur()?.asBlock ? '#FFD54F' : '';
   }
+  /** Kolejne wolne miejsce na płycie: schodkowo od lewego górnego rogu (położenie można potem poprawić w danych). */
+  function nextPlateSpot(cid: string): PlateMount { const n = Object.values(S().equipment).filter((i) => (i.plate as PlateMount | undefined)?.cabinetId === cid).length; return { cabinetId: cid, x: 20 + (n % 8) * 40, y: 20 + Math.floor(n / 8) * 60 }; }
   function renderPanel() {
     const cab = cur();
     if (!cab || !cabId) { panel.innerHTML = '<h3>Szafa</h3><div class="meta">Utwórz szafę lub rozdzielnicę (rzędy szyn DIN, moduły po 17,5 mm), a potem przeciągaj do niej osprzęt, który ma szerokość w modułach.</div>'; return; }
     const t = cabinetTotals(S(), cabId), w = cabinetWiring(S(), cabId), sel = selected ? S().equipment[selected] : undefined, sm = sel?.din as DinMount | undefined;
-    const free = Object.entries(S().equipment).filter(([id, i]) => !i.din && dinFit(S(), id) !== undefined);
-    const li = (id: string) => { const r = revOf(id); return `<button class="li${selected === id ? ' sel' : ''}" data-un="${id}"><span>${esc(nameOf(id))}</span><small>${esc(r ? `${r.manufacturer} ${r.model}` : '')} · ${dinFit(S(), id)} mod.</small></button>`; };
+    const showAll = !(document.getElementById('cat-fit-cb') as HTMLInputElement | null)?.checked;
+    const free = Object.entries(S().equipment).filter(([id, i]) => !i.din && !i.plate && (dinFit(S(), id) !== undefined || showAll));
+    const onPlate = Object.entries(S().equipment).filter(([, i]) => (i.plate as PlateMount | undefined)?.cabinetId === cabId);
+    const li = (id: string) => { const r = revOf(id); return `<button class="li${selected === id ? ' sel' : ''}" data-un="${id}"><span>${esc(nameOf(id))}</span><small>${esc(r ? `${r.manufacturer} ${r.model}` : '')} · ${dinFit(S(), id) !== undefined ? dinFit(S(), id) + ' mod.' : 'bez DIN'}</small></button>`; };
     const portsHtml = selected && sm ? Object.entries(revOf(selected)?.ports ?? {}).sort((a, b) => a[1].order - b[1].order).map(([pid, p]) => {
       const ref = { instanceId: selected!, portId: pid }, n = connsOf(ref).length;
       return `<div class="pr"><span>${esc(p.label)}</span><small style="color:#888">${n ? n + ' pol.' : ''}</small><label title="Terminal szafy: wchodzi lub wychodzi poza szafę"><input type="checkbox" data-term="${pid}"${isTerminal(ref) ? ' checked' : ''}>terminal</label></div>${isTerminal(ref) ? `<div class="pr" style="margin-left:12px"><input data-grp="${pid}" list="cb-groups" placeholder="grupa (np. 230 V, DMX)" value="${esc(groupOf(ref) ?? '')}" style="flex:1;width:auto;height:32px;border-radius:6px;border:1px solid #2A2A2A;background:#1E1E1E;color:#fff;padding:0 6px"></div>` : ''}`;
@@ -190,9 +204,13 @@ export function createCabinet(ctx: CabinetCtx) {
       ${wsel && selWire ? `<h3>Przewód</h3><div class="meta">${esc(nameOf(wsel.from.instanceId))} → ${esc(nameOf(wsel.to.instanceId))}<br>${esc(S().registries[wsel.signalKey]?.name ?? wsel.signalKey)}</div><button id="cb-delw" class="danger">Usuń przewód</button>` : ''}
       ${sel && selected ? `<h3>Zaznaczone</h3><div class="meta"><b style="color:#fff">${esc(sel.name)}</b><br>${sm ? `szyna ${sm.row}, pozycja ${sm.at}${(dinFit(S(), selected) ?? 1) > 1 ? '–' + (sm.at + (dinFit(S(), selected) ?? 1) - 1) : ''}` : 'poza szafą'}</div>
         ${sm ? `<button id="cb-un">Zdejmij z szyny</button><div class="meta" style="margin-top:8px">Porty: zaznacz terminale (wejścia/wyjścia szafy). Terminale o tej samej nazwie grupy (np. „230 V”: L, N, PE, także z różnych urządzeń) są jednym portem bloku na schemacie. Opinanie: kliknij kropkę portu, potem drugi port.</div>${portsHtml}` : '<button id="cb-auto" class="primary">Zamontuj w pierwszym wolnym</button>'}` : ''}
+      ${onPlate.length ? `<h3>Na płycie montażowej (${onPlate.length})</h3>${onPlate.map(([id, i]) => `<button class="li${selected === id ? ' sel' : ''}" data-un="${id}"><span>${esc(i.name)}</span><small>x ${(i.plate as PlateMount).x}, y ${(i.plate as PlateMount).y} mm</small></button>`).join('')}` : ''}
+      ${sel && selected && !sm && dinFit(S(), selected) === undefined && !(sel.plate) ? '<button id="cb-plate" class="primary">Przykręć do płyty montażowej</button>' : ''}${sel && selected && sel.plate ? '<button id="cb-unplate">Zdejmij z płyty</button>' : ''}
       <h3>Poza szafą (${free.length})</h3>
       ${free.length ? `<div class="meta">Przeciągnij na szynę albo kliknij i użyj przycisku.</div>${free.map(([id]) => li(id)).join('')}` : '<div class="meta">Cały osprzęt DIN jest zamontowany.</div>'}`;
     panel.querySelector('#cb-un')?.addEventListener('click', () => dispatch('Zdejmij z szyny', cabCmd.unmount(selected!)));
+    panel.querySelector('#cb-plate')?.addEventListener('click', () => dispatch('Przykręć do płyty', cabCmd.mountPlate(selected!, nextPlateSpot(cabId!))));
+    panel.querySelector('#cb-unplate')?.addEventListener('click', () => dispatch('Zdejmij z płyty', cabCmd.unmount(selected!)));
     panel.querySelector('#cb-auto')?.addEventListener('click', () => { const m = selected && cabId ? firstFreeDin(S(), selected, cabId) : undefined; if (!m) { ctx.say('W tej szafie nie ma wolnego miejsca dla tego urządzenia'); return; } dispatch('Zamontuj na szynie', cabCmd.mount(selected!, m)); });
     panel.querySelector('#cb-delw')?.addEventListener('click', () => { const id = selWire!; selWire = undefined; dispatch('Usuń przewód', cmd.disconnect(id)); });
     for (const gi of panel.querySelectorAll<HTMLInputElement>('[data-grp]')) {
@@ -232,7 +250,8 @@ export function createCabinet(ctx: CabinetCtx) {
   function hit(x: number, y: number): string | undefined {
     const c = cell(x, y); if (!c || !cabId) return undefined;
     const gm = geo();
-    return cabinetContents(S(), cabId).find((o) => { const r = devRect(o, gm); return x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h; })?.id;
+    const inR = (o: ReturnType<typeof cabinetContents>[number]) => { const r = rectOf(o, gm); return x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h; };
+    const all = cabinetContents(S(), cabId); return (all.find((o) => o.layer === 'busbar' && inR(o)) ?? all.find((o) => o.layer !== 'busbar' && inR(o)))?.id;
   }
   function wireAt(x: number, y: number): string | undefined {
     for (const w of wires()) for (let i = 1; i < w.pts.length; i++) {
@@ -280,7 +299,7 @@ export function createCabinet(ctx: CabinetCtx) {
     o.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:10';
     const f = (id: string, label: string, v: unknown) => `<label style="flex:1">${label}<input id="${id}" style="display:block;width:100%;margin:4px 0 10px" value="${esc(String(v ?? ''))}"></label>`;
     o.innerHTML = `<div class="dlg" style="width:480px"><h2>${esc(title)}</h2>
-      ${presets ? `<label>Typ obudowy<select id="cf-preset" style="display:block;width:100%;margin:4px 0 10px;min-height:40px;border-radius:6px;border:1px solid #2A2A2A;background:#1E1E1E;color:#fff;padding:0 8px"><option value="">(własna)</option>${CABINET_PRESETS.map((p) => `<option value="${p.key}">${esc(p.label)}</option>`).join('')}</select></label>` : ''}
+      ${presets ? `<label>Typ obudowy<select id="cf-preset" style="display:block;width:100%;margin:4px 0 10px;min-height:40px;border-radius:6px;border:1px solid #2A2A2A;background:#1E1E1E;color:#fff;padding:0 8px"><option value="">(własna)</option>${[...CABINET_PRESETS.map((p) => `<option value="${p.key}">${esc(p.label)}</option>`), ...catalogEnclosures().map((e) => `<option value="enc:${esc(e.key)}">${esc(`${e.enclosure.manufacturer} ${e.enclosure.model} (${e.enclosure.rows} × ${e.enclosure.modules} mod.${e.enclosure.ip ? ', ' + e.enclosure.ip : ''})`)}</option>`)].join('')}</select></label>` : ''}
       <label>Nazwa<input id="cf-name" style="display:block;width:100%;margin:4px 0 10px" value="${esc(init.name)}"></label>
       <div style="display:flex;gap:8px">${f('cf-w', 'Szerokość [mm]', init.widthMm)}${f('cf-h', 'Wysokość [mm]', init.heightMm)}${f('cf-d', 'Głębokość [mm]', init.depthMm)}</div>
       <div style="display:flex;gap:8px">${f('cf-rows', 'Szyny DIN (rzędy)', init.rows)}${f('cf-mods', 'Moduły na szynie', init.modules)}${f('cf-ru', 'Moduł do racka [U] (puste = nie)', init.rackUnits?.heightU)}</div>
@@ -291,7 +310,9 @@ export function createCabinet(ctx: CabinetCtx) {
     for (const i of o.querySelectorAll('input')) i.addEventListener('keydown', (ev) => ev.stopPropagation());
     const v = (id: string) => (o.querySelector('#' + id) as HTMLInputElement).value.trim(), num = (id: string) => (v(id) ? Number(v(id).replace(',', '.')) : undefined);
     (o.querySelector('#cf-preset') as HTMLSelectElement | null)?.addEventListener('change', (e) => {
-      const p = CABINET_PRESETS.find((x) => x.key === (e.target as HTMLSelectElement).value); if (!p) return;
+      const sel = (e.target as HTMLSelectElement).value, enc = sel.startsWith('enc:') ? catalogEnclosures().find((x) => 'enc:' + x.key === sel)?.enclosure : undefined;
+      const p = enc ? { key: sel, label: '', v: { widthMm: enc.widthMm, heightMm: enc.heightMm, depthMm: enc.depthMm, rows: enc.rows, modules: enc.modules, rackUnits: undefined as { heightU: number } | undefined } } : CABINET_PRESETS.find((x) => x.key === sel); if (!p) return;
+      if (enc) (o.querySelector('#cf-name') as HTMLInputElement).value = `${enc.manufacturer} ${enc.model}`;
       for (const [id, val] of [['cf-w', p.v.widthMm], ['cf-h', p.v.heightMm], ['cf-d', p.v.depthMm ?? ''], ['cf-rows', p.v.rows], ['cf-mods', p.v.modules], ['cf-ru', p.v.rackUnits?.heightU ?? '']] as const) (o.querySelector('#' + id) as HTMLInputElement).value = String(val);
     });
     o.querySelector('#cf-cancel')!.addEventListener('click', () => o.remove());
@@ -352,9 +373,9 @@ export function createCabinet(ctx: CabinetCtx) {
       };
     },
     canvas: cv,
-    mountOnAdd(id: string): Mutator { return (d) => { if (!active || !cabId) return; const m = firstFreeDin(d as Project, id, cabId); if (m) cabCmd.mount(id, m)(d); }; },
+    mountOnAdd(id: string): Mutator { return (d) => { if (!active || !cabId) return; if (dinFit(d as Project, id) === undefined) { const n = Object.values(d.equipment).filter((i) => (i.plate as PlateMount | undefined)?.cabinetId === cabId).length; cabCmd.mountPlate(id, { cabinetId: cabId, x: 20 + (n % 8) * 40, y: 20 + Math.floor(n / 8) * 60 })(d); return; } const m = firstFreeDin(d as Project, id, cabId); if (m) cabCmd.mount(id, m)(d); }; },
     /** Do testów: środek bloku urządzenia, pozycja portu i środek komórki. */
-    deviceCenter(id: string): [number, number] | undefined { const o = cabId ? cabinetContents(S(), cabId).find((x) => x.id === id) : undefined; if (!o) return undefined; const r = devRect(o); return [r.x + r.w / 2, r.y + r.h / 2]; },
+    deviceCenter(id: string): [number, number] | undefined { const o = cabId ? cabinetContents(S(), cabId).find((x) => x.id === id) : undefined; if (!o) return undefined; const r = rectOf(o); return [r.x + r.w / 2, r.y + r.h / 2]; },
     portPoint(id: string, portId: string): [number, number] | undefined { const d = dotsAll().find((x) => x.ref.instanceId === id && x.ref.portId === portId); return d ? [d.x, d.y] : undefined; },
     cellPoint(row: number, at: number): [number, number] { const gm = geo(); return [gm.x0 + (at - 0.5) * gm.pxMod, devY(row, gm) + devH(gm) / 2]; },
     wireMid(connId: string): [number, number] | undefined { const w = wires().find((x) => x.id === connId); if (!w) return undefined; const a = w.pts[1], b = w.pts[2] ?? w.pts[1]; return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; },

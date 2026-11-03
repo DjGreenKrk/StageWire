@@ -20,6 +20,22 @@ export interface RegistryEntry {
   [k: string]: unknown;
 }
 
+/** Opis zacisku (ADR-064): tor, położenie na aparacie, dopuszczalne przewody, zgodność mechaniczna. Wszystkie pola opcjonalne. */
+export interface TerminalSpec {
+  /** Tor elektryczny: L1, L2, L3, N, PE albo dowolny napis (np. A, COM). */
+  track?: string;
+  /** Położenie w modułach DIN od lewej krawędzi aparatu (0 = pierwszy moduł). */
+  at?: number;
+  side?: 'top' | 'bottom';
+  wires?: { minMm2?: number; maxMm2?: number; ferrule?: 'allowed' | 'required' | 'forbidden' };
+  kind?: 'screw' | 'push-in' | 'spring' | 'comb-slot';
+  /** Tagi zgodności mechanicznej (np. rozstaw grzebienia); styk wymaga wspólnego tagu. */
+  fits?: string[];
+}
+export type InternalLinkKind = 'passthrough' | 'loopthrough' | 'bridge' | 'jumper' | 'switched';
+/** Połączenie wewnętrzne definicji: para `a`/`b` albo grupa `members` (wszystkie porty grupy w jednym węźle). */
+export interface InternalLink { kind: InternalLinkKind; a?: Id; b?: Id; members?: Id[]; contact?: string; bidirectional?: boolean }
+
 export interface PortDefinition {
   label: string;
   group?: string;
@@ -30,6 +46,7 @@ export interface PortDefinition {
   side?: 'left' | 'right' | 'top' | 'bottom' | 'auto';
   capacity: number;
   notes?: string;
+  terminal?: TerminalSpec;
   [k: string]: unknown;
 }
 
@@ -52,7 +69,11 @@ export interface DefinitionRevision {
   notes?: string;
   origin?: { custom?: boolean; packId?: string; packVersion?: string; license?: string; source?: string; derivedFrom?: { definitionId: string; revision: number } };
   ports: Record<Id, PortDefinition>;
-  internalLinks?: { a: Id; b: Id; kind: 'passthrough' | 'loopthrough'; bidirectional?: boolean }[];
+  internalLinks?: InternalLink[];
+  /** Warstwa montażu na szynie: `busbar` = grzebień/mostek leżący na zaciskach aparatów (domyślnie `body`). */
+  placementLayer?: 'body' | 'busbar';
+  /** Oczekiwana kolejność torów grzebienia (np. L1, L2, L3). */
+  phaseOrder?: string[];
   [k: string]: unknown;
 }
 
@@ -76,7 +97,11 @@ export interface EquipmentInstance {
   portOverrides?: Record<Id, { label?: string; notes?: string; attrs?: Record<string, string> }>;
   /** Pozycja w racku (ADR-051); wartość osadzona, nie encja. */
   /** Pozycja na szynie DIN w szafie/rozdzielnicy (ADR-052); wykluczająca się z `mount`. */
-  din?: { cabinetId: Id; row: number; at: number };
+  din?: { cabinetId: Id; row: number; at: number; layer?: 'body' | 'busbar' };
+  /** Montaż na płycie montażowej szafy (element bez DIN przykręcony do obudowy), mm od lewego górnego rogu; wyklucza się z `din` i `mount`. */
+  plate?: { cabinetId: Id; x: number; y: number };
+  /** Indeksy włączonych mostków konfigurowalnych (`internalLinks` rodzaju `jumper`). */
+  jumpers?: number[];
   mount?: { rackId: Id; uStart: number; face: 'front' | 'rear'; slot: 'full' | 'left' | 'center' | 'right' };
   notes?: string;
   [k: string]: unknown;

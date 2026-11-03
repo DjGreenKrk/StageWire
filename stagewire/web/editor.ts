@@ -600,7 +600,7 @@ setTitle();
     }
   };
   input.addEventListener('input', render); render();
-  document.getElementById('cat-fit-cb')!.addEventListener('change', () => renderCatalog());
+  document.getElementById('cat-fit-cb')!.addEventListener('change', () => { renderCatalog(); if (cabApi?.active) cabApi.refresh(); });
   // upuszczenie pozycji z katalogu na rack albo szynę: nowa instancja od razu w wybranym miejscu
   for (const api of [() => rackApi, () => cabApi]) { setTimeout(function wire() { const c = api()?.canvas as HTMLCanvasElement | undefined; if (!c) { setTimeout(wire, 100); return; }
     c.addEventListener('dragover', (ev) => { if (ev.dataTransfer?.types.includes('application/x-sw-cat')) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'copy'; } });

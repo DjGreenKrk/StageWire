@@ -149,7 +149,7 @@ export const rackCmd = {
     return (d) => {
       const i = holder(d as Project, instanceId) as any; if (!i) throw new CommandError(`Brak instancji ${instanceId}`);
       const why = mountProblem(d as Project, instanceId, m); if (why) throw new CommandError(why);
-      if (i.din) { delete i.din; pruneTerminals(d, instanceId); } // w racku 19″ albo na szynie, nie jednocześnie
+      if (i.din || i.plate) { delete i.din; delete i.plate; pruneTerminals(d, instanceId); } // w racku 19″ albo na szynie/płycie, nie jednocześnie
       i.mount = { rackId: m.rackId, uStart: m.uStart, face: m.face, slot: m.slot };
     };
   },

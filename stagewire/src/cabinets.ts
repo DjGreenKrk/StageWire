@@ -16,7 +16,15 @@ export interface Terminal extends PortRef { group?: string }
 export interface Cabinet { name: string; widthMm: number; heightMm: number; depthMm?: number; rows: number; modules: number; notes?: string; terminals?: Terminal[]; asBlock?: boolean;
   /** Szafa jako moduł do racka 19″ (np. 3U z szyną DIN w środku): wysokość w U; pozycja w racku w `mount` (patrz racks.ts). */
   rackUnits?: { heightU: number }; mount?: { rackId: Id; uStart: number; face: 'front' | 'rear'; slot: 'full' | 'left' | 'center' | 'right' } }
-export interface DinMount { cabinetId: Id; row: number; at: number }
+export interface DinMount { cabinetId: Id; row: number; at: number; layer?: 'body' | 'busbar' }
+/** Montaż na płycie montażowej szafy (element bez DIN przykręcony do obudowy), mm od lewego górnego rogu płyty. */
+export interface PlateMount { cabinetId: Id; x: number; y: number }
+/** Warstwa montażu z definicji: `busbar` = grzebień/mostek leżący na zaciskach aparatów, reszta `body`. */
+export function layerOf(p: Project, instanceId: Id): 'body' | 'busbar' {
+  const i = p.equipment[instanceId]; return i && p.definitions[i.definitionId]?.revisions[String(i.definitionRevision)]?.placementLayer === 'busbar' ? 'busbar' : 'body';
+}
+/** Szafa, w której jest instancja: na szynie DIN albo na płycie. */
+export const cabinetOf = (p: Project, instanceId: Id): Id | undefined => { const i = p.equipment[instanceId]; return (i?.din as DinMount | undefined)?.cabinetId ?? (i?.plate as PlateMount | undefined)?.cabinetId; };
 
 export const MAX_ROWS = 12, MAX_MODULES = 72;
 
@@ -35,18 +43,18 @@ export function dinFit(p: Project, instanceId: Id): number | undefined {
   return typeof m === 'number' ? m : undefined;
 }
 
-export function cabinetContents(p: Project, cabinetId: Id): { id: Id; din: DinMount; modules: number }[] {
-  const out: { id: Id; din: DinMount; modules: number }[] = [];
+export function cabinetContents(p: Project, cabinetId: Id): { id: Id; din: DinMount; modules: number; layer: 'body' | 'busbar' }[] {
+  const out: { id: Id; din: DinMount; modules: number; layer: 'body' | 'busbar' }[] = [];
   for (const [id, i] of Object.entries(p.equipment)) {
     const m = i.din as DinMount | undefined;
     if (m?.cabinetId !== cabinetId) continue;
-    out.push({ id, din: m, modules: dinFit(p, id) ?? 1 });
+    out.push({ id, din: m, modules: dinFit(p, id) ?? 1, layer: m.layer ?? 'body' });
   }
   return out.sort((a, b) => a.din.row - b.din.row || a.din.at - b.din.at);
 }
 
 export const dinConflicts = (p: Project, m: DinMount, modules: number, ignore?: Id): Id[] =>
-  cabinetContents(p, m.cabinetId).filter((o) => o.id !== ignore && o.din.row === m.row && o.din.at < m.at + modules && m.at < o.din.at + o.modules).map((o) => o.id);
+  cabinetContents(p, m.cabinetId).filter((o) => o.id !== ignore && o.layer === (m.layer ?? 'body') && o.din.row === m.row && o.din.at < m.at + modules && m.at < o.din.at + o.modules).map((o) => o.id);
 
 export function dinProblem(p: Project, instanceId: Id, m: DinMount): string | undefined {
   const cab = p.cabinets?.[m.cabinetId] as Cabinet | undefined; if (!cab) return `Brak szafy ${m.cabinetId}`;
@@ -54,14 +62,14 @@ export function dinProblem(p: Project, instanceId: Id, m: DinMount): string | un
   if (!Number.isInteger(m.row) || m.row < 1 || m.row > cab.rows) return `Rząd poza zakresem 1–${cab.rows}`;
   if (!Number.isInteger(m.at) || m.at < 1) return 'Pozycja musi być liczbą całkowitą ≥ 1';
   if (m.at + mod - 1 > cab.modules) return `Urządzenie (${mod} mod.) nie mieści się w rzędzie ${cab.modules} mod. od pozycji ${m.at}`;
-  const c = dinConflicts(p, m, mod, instanceId);
+  const c = dinConflicts(p, { ...m, layer: layerOf(p, instanceId) }, mod, instanceId);
   if (c.length) return `Miejsce jest zajęte przez ${c.map((id) => p.equipment[id]?.name ?? id).join(', ')}`;
   return undefined;
 }
 
 export function firstFreeDin(p: Project, instanceId: Id, cabinetId: Id): DinMount | undefined {
   const cab = p.cabinets?.[cabinetId] as Cabinet | undefined, mod = dinFit(p, instanceId); if (!cab || mod === undefined) return undefined;
-  for (let row = 1; row <= cab.rows; row++) for (let at = 1; at + mod - 1 <= cab.modules; at++) { const m = { cabinetId, row, at }; if (!dinConflicts(p, m, mod, instanceId).length) return m; }
+  for (let row = 1; row <= cab.rows; row++) for (let at = 1; at + mod - 1 <= cab.modules; at++) { const m = { cabinetId, row, at }; if (!dinConflicts(p, { ...m, layer: layerOf(p, instanceId) }, mod, instanceId).length) return m; }
   return undefined;
 }
 
@@ -119,7 +127,7 @@ export const cabCmd = {
   removeCabinet(id: Id): Mutator {
     return (d) => {
       if (!d.cabinets?.[id]) throw new CommandError(`Brak szafy ${id}`);
-      for (const i of Object.values(d.equipment)) if ((i.din as DinMount | undefined)?.cabinetId === id) delete i.din;
+      for (const i of Object.values(d.equipment)) { if ((i.din as DinMount | undefined)?.cabinetId === id) delete i.din; if ((i.plate as PlateMount | undefined)?.cabinetId === id) delete i.plate; }
       for (const [k, pl] of Object.entries<any>(d.placements ?? {})) if (pl.targetKind === 'cabinet' && pl.targetId === id) delete d.placements![k];
       for (const v of Object.values<any>(d.views ?? {})) for (const [k, n] of Object.entries<any>(v.nodes ?? {})) if (n.instanceId === id) delete v.nodes[k];
       delete d.cabinets[id];
@@ -130,12 +138,23 @@ export const cabCmd = {
       const i = d.equipment[instanceId]; if (!i) throw new CommandError(`Brak instancji ${instanceId}`);
       const why = dinProblem(d as Project, instanceId, m); if (why) throw new CommandError(why);
       if (i.din && (i.din as DinMount).cabinetId !== m.cabinetId) pruneTerminals(d, instanceId);
-      delete i.mount; // osprzęt jest albo w racku 19″, albo na szynie
-      i.din = { cabinetId: m.cabinetId, row: m.row, at: m.at };
+      delete i.mount; delete i.plate; // osprzęt jest albo w racku 19″, albo na szynie, albo na płycie
+      i.din = { cabinetId: m.cabinetId, row: m.row, at: m.at, ...(layerOf(d as Project, instanceId) === 'busbar' ? { layer: 'busbar' as const } : {}) };
     };
   },
   unmount(instanceId: Id): Mutator {
-    return (d) => { const i = d.equipment[instanceId]; if (!i) throw new CommandError(`Brak instancji ${instanceId}`); delete i.din; pruneTerminals(d, instanceId); };
+    return (d) => { const i = d.equipment[instanceId]; if (!i) throw new CommandError(`Brak instancji ${instanceId}`); delete i.din; delete i.plate; pruneTerminals(d, instanceId); };
+  },
+  /** Montaż na płycie montażowej szafy (element bez DIN przykręcony do obudowy); zdejmuje z szyny i z racka. */
+  mountPlate(instanceId: Id, m: PlateMount): Mutator {
+    return (d) => {
+      const i = d.equipment[instanceId]; if (!i) throw new CommandError(`Brak instancji ${instanceId}`);
+      const cab = d.cabinets?.[m.cabinetId] as Cabinet | undefined; if (!cab) throw new CommandError(`Brak szafy ${m.cabinetId}`);
+      if (!Number.isFinite(m.x) || !Number.isFinite(m.y) || m.x < 0 || m.y < 0) throw new CommandError('Położenie na płycie: wartości dodatnie w mm od lewego górnego rogu');
+      const prev = cabinetOf(d as Project, instanceId); if (prev && prev !== m.cabinetId) pruneTerminals(d, instanceId);
+      delete i.din; delete i.mount;
+      i.plate = { cabinetId: m.cabinetId, x: Math.round(m.x), y: Math.round(m.y) };
+    };
   },
   /** Pokazuje szafę na schemacie blokowym jako jeden blok (tylko terminale) albo rozwija ją do osprzętu. */
   setBlock(cabinetId: Id, on: boolean): Mutator {
@@ -145,7 +164,7 @@ export const cabCmd = {
   setTerminal(cabinetId: Id, ref: PortRef, on: boolean, group?: string | null): Mutator {
     return (d) => {
       const c = d.cabinets?.[cabinetId] as Cabinet | undefined; if (!c) throw new CommandError(`Brak szafy ${cabinetId}`);
-      const i = d.equipment[ref.instanceId]; if (!i || (i.din as DinMount | undefined)?.cabinetId !== cabinetId) throw new CommandError('Terminalem może być port osprzętu zamontowanego w tej szafie');
+      const i = d.equipment[ref.instanceId]; if (!i || cabinetOf(d as Project, ref.instanceId) !== cabinetId) throw new CommandError('Terminalem może być port osprzętu zamontowanego w tej szafie');
       const rev = d.definitions[i.definitionId]?.revisions[String(i.definitionRevision)]; if (!rev?.ports[ref.portId]) throw new CommandError('Port nie istnieje');
       const old = (c.terminals ?? []).find((t) => t.instanceId === ref.instanceId && t.portId === ref.portId);
       const rest = (c.terminals ?? []).filter((t) => t !== old);
@@ -163,7 +182,7 @@ export function cabinetTotals(p: Project, cabinetId: Id): CabinetTotals {
   const cab = p.cabinets?.[cabinetId] as Cabinet | undefined, items = cabinetContents(p, cabinetId);
   let used = 0, w = 0, wu = 0, pw = 0, pu = 0;
   for (const o of items) {
-    used += o.modules; const i = p.equipment[o.id], r = p.definitions[i.definitionId]?.revisions[String(i.definitionRevision)];
+    if (o.layer === 'body') used += o.modules; const i = p.equipment[o.id], r = p.definitions[i.definitionId]?.revisions[String(i.definitionRevision)];
     if (typeof r?.weightKg === 'number') w += r.weightKg; else wu++;
     if (typeof r?.powerW === 'number') pw += r.powerW; else pu++;
   }
@@ -172,7 +191,7 @@ export function cabinetTotals(p: Project, cabinetId: Id): CabinetTotals {
 
 /** Połączenia, których oba końce są w danej szafie (okablowanie wewnętrzne) i te, które wychodzą poza nią. */
 export function cabinetWiring(p: Project, cabinetId: Id) {
-  const inside = (id: Id) => (p.equipment[id]?.din as DinMount | undefined)?.cabinetId === cabinetId;
+  const inside = (id: Id) => cabinetOf(p, id) === cabinetId;
   const internal: Id[] = [], external: Id[] = [];
   for (const [cid, c] of Object.entries(p.connections)) { const a = inside(c.from.instanceId), b = inside(c.to.instanceId); if (a && b) internal.push(cid); else if (a || b) external.push(cid); }
   return { internal, external };

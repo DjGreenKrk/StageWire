@@ -37,6 +37,8 @@ function checkInstance(p: Project, iid: string, v: string[]): void {
   if (inst.mount && !p.racks?.[inst.mount.rackId]) v.push(`instancja ${iid}: pozycja w nieistniejącym racku ${inst.mount.rackId}`);
   if (inst.din && !p.cabinets?.[inst.din.cabinetId]) v.push(`instancja ${iid}: pozycja w nieistniejącej szafie ${inst.din.cabinetId}`);
   if (inst.din && inst.mount) v.push(`instancja ${iid}: jednocześnie w racku i na szynie DIN`);
+  if (inst.plate && !p.cabinets?.[inst.plate.cabinetId]) v.push(`instancja ${iid}: płyta w nieistniejącej szafie ${inst.plate.cabinetId}`);
+  if (inst.plate && (inst.din || inst.mount)) v.push(`instancja ${iid}: jednocześnie na płycie i na szynie albo w racku`);
 }
 
 function checkConnection(p: Project, cid: string, v: string[]): void {

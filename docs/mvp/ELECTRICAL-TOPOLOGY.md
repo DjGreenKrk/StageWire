@@ -2,7 +2,7 @@
 
 [Wróć do indeksu](README.md) · [DECISIONS.md](DECISIONS.md) (ADR-064) · [DOMAIN-MODEL.md](DOMAIN-MODEL.md) · [DEVICE-DB.md](DEVICE-DB.md)
 
-**Status:** projekt (audyt, architektura, plan). Bez implementacji. Stan kodu: commit `faa2c2e`, 289 testów jednostkowych.
+**Status:** zaimplementowane etapy E0–E5 (MVP); E6–E8 poza zakresem. Dokument opisuje projekt, a sekcja „Stan implementacji” na końcu różnice. Pierwotny audyt dotyczy commita `faa2c2e`.
 **Znaczniki:** [FAKT] sprawdzone w kodzie lub pliku, [WNIOSEK] wynika z faktów, [HIPOTEZA] do potwierdzenia, [DECYZJA] rekomendacja do ADR-064. Dane przykładowe (rozstaw styków, kolejność torów) są **ilustracją mechanizmu, nie danymi producenta**.
 
 ## 0. Rekomendacja (skrót)
@@ -316,3 +316,23 @@ Poza zakresem MVP świadomie: obliczenia elektryczne, selektywność, dobór prz
 - **Round-trip nieznanych pól projektu** [FAKT, test `migrations.test.ts`]: nieznane pola w korzeniu projektu, w obiektach i w `ext` przeżywają zapis i odczyt.
 - **Domyślne ukrywanie na schemacie:** dotyczy nowych projektów; rozstrzygnięte w Q-30: tylko nowe projekty, starsze przez okno „Aktualizacja projektu” (ADR-065).
 - **Nazwy torów** jako napisy zamiast rejestru: do przeglądu po pierwszych pakietach spoza energetyki.
+
+## 9. Stan implementacji (2026-11-03)
+
+Zrobione: E0–E5. Testy: `test/electrical.test.ts` (22), `test/hidedin.test.ts`, `bench/test-electrical-ui.mjs`, `bench/test-hidedin-ui.mjs`.
+
+| Element | Stan |
+|---|---|
+| Typy, schematy projektu i pakietu, walidacja pakietów, przenoszenie pól przy eksporcie/imporcie i porównaniu wersji | zrobione (E1) |
+| `electricalNets` (`src/nets.ts`): przewody zasilania, `bridge`, włączone `jumper`, styki grzebieni | zrobione (E2) |
+| Reguły V-040 (zwarcie torów), V-041 (N–PE) | zrobione (E3) |
+| Warstwa `busbar`, styki z położenia (`src/busbar.ts`), V-046, V-047, V-050; rysowanie paska grzebienia w widoku szafy | zrobione (E4) |
+| `enclosures` w pakietach i w oknie „Nowa szafa”; `plate` (płyta montażowa), V-052; sekcja „Na płycie montażowej” w panelu szafy | zrobione (E5) |
+| Rozszerzone złącza: `std/din-comb-slot` (rejestry 1.2.0) | zrobione |
+
+Różnice względem projektu:
+
+- **V-042** (zwarcie niezależnych torów w jednym elemencie) obejmuje V-040 (ten sam węzeł z dwoma torami), więc nie ma osobnej reguły.
+- **V-043** (kolejność faz), **V-044** (przekrój przewodu względem `wires`), **V-048**, **V-049**, **V-051** nie są zaimplementowane. Pole `phaseOrder` i `wires` są zapisywane i zachowywane, ale na razie informacyjne (E6+).
+- **Płyta montażowa** nie ma rysunku na planszy szafy (jest lista w panelu i walidacja V-052); porty elementów na płycie nie są jeszcze punktami opinania w widoku szafy.
+- **Skracanie grzebieni**, symulacja stanów aparatów i obliczenia elektryczne: E6–E8, bez zmian.
