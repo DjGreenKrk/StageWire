@@ -1,2 +1,2 @@
 // Publiczne API biblioteki StageWire UI.
-export * from './components.tsx';
+export * from './components.js';

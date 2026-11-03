@@ -1,0 +1,31 @@
+{
+  "name": "@stagewire/ui",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Komponenty React StageWire UI (design system GreenCrew Tools): dialogi, pola, przyciski, karty.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "sideEffects": [
+    "./dist/styles.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "license": "SEE LICENSE IN ../../LICENSE"
+}

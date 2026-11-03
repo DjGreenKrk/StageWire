@@ -1,0 +1,5 @@
+:root{
+--dur-fast:120ms;
+--dur-base:180ms;
+--ease-standard:cubic-bezier(.2,0,0,1);
+}

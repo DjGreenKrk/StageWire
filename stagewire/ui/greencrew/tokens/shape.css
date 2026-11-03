@@ -1,0 +1,20 @@
+:root{
+/* Radii — branding/DESIGN_SYSTEM.md §8 */
+--radius-badge:6px;
+--radius-chip:8px;
+--radius-field:8px;
+--radius-button:10px;
+--radius-button-lg:12px;
+--radius-card:12px;
+--radius-dialog:16px;
+--radius-panel:16px;
+--radius-panel-lg:20px;
+--radius-fab:16px;
+--radius-floating:14px; /* floating selection bar */
+--border-width:1px;
+--shadow-dialog:0 8px 24px rgba(0,0,0,.6);
+--shadow-fab:0 4px 12px rgba(0,0,0,.5);
+--shadow-popover:0 12px 32px rgba(0,0,0,.6); /* toast, floating bar */
+--shadow-menu:0 16px 40px rgba(0,0,0,.6);
+--dashed-width:1.5px;
+}

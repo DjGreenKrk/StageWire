@@ -3,6 +3,10 @@ import { useEffect, useId, useRef, type ReactNode, type Ref, type ButtonHTMLAttr
 
 const cx = (...a: (string | false | undefined)[]) => a.filter(Boolean).join(' ');
 
+/** Powierzchnia aplikacji: ciemne tło, krój Roboto i kolor tekstu StageWire. Opakuj nią całe okna i ekrany, żeby tokeny i style komponentów działały. */
+export interface ThemeProps { children: ReactNode; className?: string; padded?: boolean }
+export function Theme({ children, className, padded = true }: ThemeProps) { return <div className={cx('sw-theme', padded && 'sw-theme-pad', className)}>{children}</div>; }
+
 /** Okno modalne: nagłówek z przyciskiem zamknięcia, przewijana treść i stopka z akcjami. Esc i klik w tło zamykają; fokus trafia do okna. */
 export interface DialogProps { id?: string; title: string; onClose(): void; footer?: ReactNode; children: ReactNode; width?: number }
 export function Dialog({ id, title, onClose, footer, children, width }: DialogProps) {

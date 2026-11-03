@@ -31,3 +31,11 @@ __pycache__/
 # wewnętrzne analizy konkurencji i audyty robocze (zob. docs/mvp/README.md)
 /docs/mvp/RESEARCH-SYNTHESIS.md
 /docs/mvp/STAGEWIRE-MVP-*.md
+
+# pakiet UI i synchronizacja z Claude Design
+/stagewire/ui/dist/
+/stagewire/ui/.ds-sync/
+/stagewire/ui/ds-bundle/
+/stagewire/ui/.design-sync/.cache/
+/stagewire/ui/.design-sync/learnings/
+/stagewire/ui/.design-sync/node_modules

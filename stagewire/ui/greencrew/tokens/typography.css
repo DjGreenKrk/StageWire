@@ -1,0 +1,25 @@
+:root{
+--font-sans:"Roboto",system-ui,-apple-system,"Segoe UI",sans-serif;
+--font-icon:"GC Material Symbols";
+--font-mono:ui-monospace,Consolas,"Courier New",monospace;
+/* Scale — branding/DESIGN_SYSTEM.md §7 (px ≈ dp) */
+--fs-screen-title:22px;
+--fs-screen-title-lg:24px;
+--fs-section-title:18px;
+--fs-section-title-lg:20px;
+--fs-card-title:16px;
+--fs-card-title-lg:18px;
+--fs-body:14px;
+--fs-body-lg:16px;
+--fs-helper:12px;
+--fs-helper-lg:14px;
+--fs-label:11px;
+--fs-label-lg:13px;
+--fs-data:32px;
+--fw-regular:400;
+--fw-bold:700;
+--lh-tight:1.2;
+--lh-body:1.45;
+--ls-label:.04em;
+--ls-overline:.08em; /* uppercase panel overlines (desktop) */
+}

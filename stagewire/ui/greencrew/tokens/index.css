@@ -1,0 +1,8 @@
+/* Wspólne tokeny GreenCrew Tools: jedno źródło dla wszystkich aplikacji (zob. development/UI_COMPONENTS.md). */
+@import url("fonts.css");
+@import url("colors.css");
+@import url("typography.css");
+@import url("shape.css");
+@import url("spacing.css");
+@import url("motion.css");
+@import url("controls.css");

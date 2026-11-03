@@ -1,0 +1,52 @@
+:root{
+/* Base palette — branding/DESIGN_SYSTEM.md §4 */
+--gc-black:#000000;
+--gc-gray-900:#0B0B0B;
+--gc-surface:#121212;
+--gc-surface-variant:#1E1E1E;
+--gc-border:#2A2A2A;
+--gc-border-hover:#3A3A3A;
+--gc-green:#00C853;
+--gc-green-light:#00E676;
+--gc-green-dark:#00B248;
+--gc-white:#FFFFFF;
+--gc-grey-300:#B0B0B0;
+--gc-grey-600:#666666;
+--gc-yellow:#FFD54F;
+--gc-red:#FF5252;
+--gc-blue:#64B5F6;
+/* Semantic aliases */
+--bg-app:var(--gc-black);
+--surface-0:var(--gc-gray-900); /* sidebar, inspector, inset boxes inside cards */
+--surface-1:var(--gc-surface);
+--surface-2:var(--gc-surface-variant);
+--surface-card:var(--gc-surface);
+--surface-raised:var(--gc-surface-variant);
+--border-1:var(--gc-border);
+--border-2:var(--gc-border-hover); /* hover border, floating layers */
+--primary:var(--gc-green);
+--primary-hover:var(--gc-green-light);
+--primary-pressed:var(--gc-green-dark);
+--on-primary:var(--gc-black);
+--primary-text:var(--gc-green-light); /* green text on dark: active nav, links, ok chips */
+--primary-tint-strong:rgba(0,200,83,.18);
+--primary-wash:rgba(0,200,83,.08);
+--primary-dropwash:rgba(0,200,83,.06);
+--text-primary:var(--gc-white);
+--text-secondary:var(--gc-grey-300);
+--text-disabled:var(--gc-grey-600);
+--status-success:var(--gc-green);
+--status-warning:var(--gc-yellow);
+--status-error:var(--gc-red);
+--status-info:var(--gc-blue);
+--on-status:var(--gc-black);
+/* Translucent tints for status containers (derived) */
+--success-tint:rgba(0,200,83,.12);
+--warning-tint:rgba(255,213,79,.12);
+--error-tint:rgba(255,82,82,.12);
+--info-tint:rgba(100,181,246,.12);
+--state-hover:rgba(255,255,255,.06);
+--state-pressed:rgba(255,255,255,.10);
+--scrim:rgba(0,0,0,.72);
+--overlay-chip:rgba(0,0,0,.8);
+}

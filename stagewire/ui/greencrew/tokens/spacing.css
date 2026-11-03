@@ -1,0 +1,22 @@
+:root{
+/* Spacing — branding/DESIGN_SYSTEM.md §9 */
+--space-1:4px;
+--space-2:8px;
+--space-3:12px;
+--space-4:16px;
+--space-5:20px;
+--space-6:24px;
+--space-8:32px;
+--pad-card:12px;
+--pad-card-lg:16px;
+--gap-section:16px;
+--gap-section-lg:24px;
+--margin-phone:16px;
+--margin-desktop:24px;
+--margin-desktop-lg:32px;
+--touch-min:44px;
+--touch-target:48px;
+--sidebar-w:232px; /* desktop sidebar */
+--bp-tablet:600px;
+--bp-desktop:1024px;
+}
