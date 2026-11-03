@@ -2,6 +2,16 @@
 
 # StageWire
 
+[![Status](https://img.shields.io/badge/status-wersja_robocza-orange)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.0.1-blue)](https://github.com/DjGreenKrk/StageWire/releases/tag/v0.0.1)
+[![Platform](https://img.shields.io/badge/platforma-Windows-0078D6?logo=windows&logoColor=white)](#pobieranie)
+[![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)](https://tauri.app)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](stagewire/package.json)
+[![Offline first](https://img.shields.io/badge/offline-first-00C853)](docs/mvp/PRODUCT-VISION.md)
+[![License](https://img.shields.io/badge/license-PolyForm_Shield_1.0.0-green)](LICENSE)
+[![Tests](https://github.com/DjGreenKrk/StageWire/actions/workflows/ci.yml/badge.svg)](https://github.com/DjGreenKrk/StageWire/actions/workflows/ci.yml)
+[![GreenCrew Tools](https://img.shields.io/badge/GreenCrew-Tools-00C853)](https://greencrew.pl)
+
 StageWire to darmowe narzędzie do technicznego projektowania wydarzeń: plan sali w skali, urządzenia z prawdziwymi portami, schemat blokowy, kable, racki i szafy oraz zestawienia do wydruku. To program do projektowania, nie wizualizator.
 
 Działa **offline-first**: nie wysyła żadnych danych, nie ma telemetrii ani kont. Projekty to pliki `.sw` na Twoim dysku. Aplikacja desktopowa na **Windows** (Tauri 2).
@@ -16,7 +26,8 @@ Działa **offline-first**: nie wysyła żadnych danych, nie ma telemetrii ani ko
 - **Urządzenia z rzeczywistymi portami** — katalog z opisami z dokumentacji producentów (pakiet startowy i zestaw Blackmagic Design), własne urządzenia, pakiety `.swpack.json`.
 - **Biblioteka z filtrami** — przeglądarka z filtrami kategorii, producenta, wejść i wyjść, wiarygodności danych i pakietu; kreator własnego urządzenia, eksport i import pojedynczych urządzeń.
 - **Schemat blokowy** — połączenia po portach, grupy w ramkach, automatyczne porządkowanie, kolory kabli według rodzaju sygnału.
-- **Racki i szafy** — widok z przodu, z tyłu i z góry, moduły 3U.
+- **Racki** — widok z przodu, z tyłu i z góry, moduły 3U.
+- **Szafy i rozdzielnice na szynę DIN** — gotowe obudowy (np. 2 × 12 i 3 × 18 modułów), osprzęt układany na szynach (1 moduł = 17,5 mm), przewody między portami, terminale szafy, bilans modułów, masy i poboru, PDF.
 - **Widok 3D** — podgląd sali, trasy kabli po bryłach.
 - **Kable** — trasy między salami, długości, lista kabli.
 - **Eksport** — PDF planu (z numeracją i spisem elementów), schematu, racków i szaf; wersja czarno-biała lub kolorowa z legendą kabli; lista kabli CSV. Nazwa pliku zawiera nazwę projektu i obiektu.
@@ -25,6 +36,10 @@ Działa **offline-first**: nie wysyła żadnych danych, nie ma telemetrii ani ko
 | Schemat | Rack | Biblioteka |
 |---|---|---|
 | ![Schemat z grupami](docs/media/sw-grupy-1-schemat.png) | ![Rack z przodu](docs/media/sw-rack-1-przod.png) | ![Przeglądarka biblioteki](docs/media/sw-biblioteka-1-przegladarka.png) |
+
+| Rozdzielnica na szynę DIN | Kreator urządzenia |
+|---|---|
+| ![Rozdzielnica 3 × 20 modułów](docs/media/sw-szafa-1-widok.png) | ![Kreator własnego urządzenia](docs/media/sw-biblioteka-2-kreator.png) |
 
 ## Pobieranie
 

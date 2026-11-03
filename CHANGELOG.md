@@ -11,7 +11,7 @@ Wszystkie istotne zmiany StageWire są dokumentowane w tym pliku. Format wzorowa
 - urządzenia z rzeczywistymi portami, pakiety `stagewire-pack/1`, walidacja pakietów,
 - przeglądarka biblioteki z filtrami (kategoria, producent, wejścia, wyjścia, wiarygodność, pakiet), kreator własnego urządzenia, eksport i import pojedynczych urządzeń,
 - schemat blokowy z grupami w ramkach, automatycznym porządkowaniem i kolorami kabli według sygnału,
-- racki i szafy (przód, tył, plan), widok 3D z trasami kabli, przejścia między salami,
+- racki oraz szafy i rozdzielnice na szynę DIN (rzędy szyn, moduły 17,5 mm, przewody, terminale, bilans modułów i poboru), widok 3D z trasami kabli, przejścia między salami,
 - eksport PDF planu (numeracja i spis elementów), schematu, racków i szaf; wariant kolorowy z legendą kabli; lista kabli,
 - menu ☰ (plik, eksporty, ustawienia, O programie), okno ustawień z własnymi kolorami kabli,
 - zapis atomowy, kopie robocze `.autosave`, migracje formatu,
