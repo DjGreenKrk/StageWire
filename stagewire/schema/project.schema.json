@@ -14,7 +14,8 @@
       "type": "object",
       "properties": {
         "defaultCableSlackMm": { "type": "number", "minimum": 0 },
-        "stockCableLengthsMm": { "type": "array", "items": { "type": "number", "exclusiveMinimum": 0 } }
+        "stockCableLengthsMm": { "type": "array", "items": { "type": "number", "exclusiveMinimum": 0 } },
+        "hideMountedDin": { "type": "boolean" }
       }
     },
     "registries": { "type": "object", "propertyNames": { "$ref": "#/$defs/registryKey" }, "additionalProperties": { "$ref": "#/$defs/registryEntry" } },

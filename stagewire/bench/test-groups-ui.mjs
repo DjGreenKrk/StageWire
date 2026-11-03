@@ -41,7 +41,7 @@ check('Ctrl+Z cofa porządkowanie', JSON.stringify(Object.values(st.views?.viw_m
 await page.click('#b-mode'); await page.waitForSelector('#plan', { state: 'visible' });
 check('na planie przyciski schematu są ukryte', !(await page.isVisible('#b-layout')));
 await page.click('#b-mode'); await page.click('#b-burger');
-check('menu ☰: Nowy / Otwórz / Zapisz / Zapisz jako / Lista kabli / Schemat PDF / O programie', (await page.$$eval('#filemenu button', (b) => b.filter((x) => x.offsetParent).map((x) => x.textContent).join('|'))) === 'Nowy projekt|Otwórz…|Zapisz|Zapisz jako…|Lista kabli|Schemat PDF…|Ustawienia…|O programie');
+check('menu ☰: Nowy / Otwórz / Zapisz / Zapisz jako / Lista kabli / Schemat PDF / O programie', (await page.$$eval('#filemenu button', (b) => b.filter((x) => x.offsetParent).map((x) => x.textContent).join('|'))) === 'Nowy projekt|Otwórz…|Zapisz|Zapisz jako…|Lista kabli|Schemat PDF…|Aktualizacja projektu…|Ustawienia…|O programie');
 await page.click('#b-about'); await page.waitForSelector('#aboutdialog'); { const t = await page.textContent('#aboutdialog'); check('„O programie”: wersja i licencja', t.includes('PolyForm Shield') && /Wersja \d+\.\d+\.\d+/.test(t)); } await page.click('#ab-close');
 console.log(`\ngroups: ${checks.filter((c) => c.ok).length}/${checks.length} kontroli`);
 await browser.close(); await server.close(); process.exit(checks.every((c) => c.ok) ? 0 : 1);

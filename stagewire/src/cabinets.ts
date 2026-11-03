@@ -78,6 +78,9 @@ export function pruneTerminals(d: { cabinets?: Record<string, any> }, instanceId
   for (const c of Object.values(d.cabinets ?? {})) if (c.terminals) { c.terminals = c.terminals.filter((t: PortRef) => t.instanceId !== instanceId); if (!c.terminals.length) delete c.terminals; }
 }
 
+/** Ustawienie projektu: osprzęt zamontowany w szafach nie jest pokazywany na schemacie blokowym. */
+export const setHideMountedDin = (on: boolean): Mutator => (d) => { d.settings ??= {} as Project['settings']; if (on) (d.settings as { hideMountedDin?: boolean }).hideMountedDin = true; else delete (d.settings as { hideMountedDin?: boolean }).hideMountedDin; };
+
 export const cabCmd = {
   addCabinet(id: Id, v: { name: string; widthMm: number; heightMm: number; depthMm?: number; rows: number; modules: number; notes?: string; rackUnits?: { heightU: number } }): Mutator {
     return (d) => {

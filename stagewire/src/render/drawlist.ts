@@ -147,6 +147,8 @@ export type PRef = { instanceId: string; portId: string };
 const isCabId = (id: string) => id.startsWith('cab_');
 /** Szafa pokazywana jako blok, w której stoi osprzęt (undefined = osprzęt widoczny normalnie). */
 export const blockCabOf = (p: Project, instanceId: string): string | undefined => { const c = (p.equipment[instanceId]?.din as any)?.cabinetId as string | undefined; return c && p.cabinets?.[c]?.asBlock ? c : undefined; };
+/** Osprzęt zamontowany w szafie bywa ukrywany na schemacie (ustawienie projektu `hideMountedDin`, ADR-064); niezamontowany zostaje widoczny, żeby było widać, co dodano. */
+export const hiddenOnDiagram = (p: Project, instanceId: string): boolean => !!(blockCabOf(p, instanceId) || ((p.settings as { hideMountedDin?: boolean } | undefined)?.hideMountedDin && (p.equipment[instanceId]?.din as any)?.cabinetId && p.cabinets?.[(p.equipment[instanceId].din as any).cabinetId]));
 /** Port bloku szafy → port rzeczywistego osprzętu (dla grupy terminali: pierwszy terminal grupy). Inne porty bez zmian. */
 export function innerRef(p: Project, r: PRef): PRef {
   if (!isCabId(r.instanceId)) return r;
@@ -156,7 +158,7 @@ export function innerRef(p: Project, r: PRef): PRef {
 /** Port osprzętu → port bloku szafy (tylko terminale); undefined, gdy port jest ukryty wewnątrz bloku. */
 export function outerRef(p: Project, r: PRef): PRef | undefined {
   if (isCabId(r.instanceId)) return r;
-  const c = blockCabOf(p, r.instanceId); if (!c) return r;
+  const c = blockCabOf(p, r.instanceId); if (!c) return hiddenOnDiagram(p, r.instanceId) ? undefined : r;
   const t = (p.cabinets![c].terminals as { instanceId: string; portId: string; group?: string }[] | undefined)?.find((x) => x.instanceId === r.instanceId && x.portId === r.portId);
   return t ? { instanceId: c, portId: t.group ? `grp|${t.group}` : `${r.instanceId}|${r.portId}` } : undefined;
 }
@@ -233,7 +235,7 @@ export function diagramDrawList(p: Project, v: DiagramView): DrawList {
   }
   for (const iid of Object.keys(v.nodes)) {
     const n = v.nodes[iid], cab = isCabId(iid) ? p.cabinets?.[iid] : undefined, inst = cab ? { name: `▦ ${cab.name}` } : p.equipment[iid];
-    if (!inst || (cab && !cab.asBlock) || (!cab && blockCabOf(p, iid))) continue;
+    if (!inst || (cab && !cab.asBlock) || (!cab && hiddenOnDiagram(p, iid))) continue;
     const [w, h] = nodeSize(p, iid);
     rects.push({ t: 'rect', id: iid, x: n.x + w / 2, y: n.y + h / 2, w, h, rot: 0, fill: C.surface, stroke: cab ? C.warn : C.border, lw: cab ? 2 : 1 });
     texts.push({ t: 'text', id: iid, x: n.x + 8, y: n.y + 17, s: fitText(inst.name, w - 16, 13), size: 13, color: C.text });

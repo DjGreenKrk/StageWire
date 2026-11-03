@@ -3,7 +3,7 @@ import type { Project, Id } from './types.ts';
 import type { Mutator } from './store.ts';
 import { CommandError } from './store.ts';
 import { effectivePosition } from './plan.ts';
-import { NODE_W, nodeSize, outerRef, blockCabOf, type DiagramView, type Prim } from './render/drawlist.ts';
+import { NODE_W, nodeSize, outerRef, blockCabOf, hiddenOnDiagram, type DiagramView, type Prim } from './render/drawlist.ts';
 
 export interface Group { name: string; members: Id[]; color?: string; /** utworzona automatycznie z sal; „Grupy wg sal” zastępuje takie grupy */ auto?: boolean }
 const HEX = /^#[0-9a-fA-F]{6}$/;
@@ -64,12 +64,14 @@ export const groupCmd = {
 
 /** Węzeł schematu reprezentujący urządzenie (urządzenie w szafie narysowanej jako blok jest częścią bloku szafy). */
 const nodeOf = (p: Project, id: Id): Id => blockCabOf(p, id) ?? id;
+/** Węzły widoczne na schemacie: bez osprzętu ukrytego (w bloku szafy albo ustawieniem `hideMountedDin`). */
+const visibleNode = (p: Project, n: Id) => !p.equipment[n] || !hiddenOnDiagram(p, n);
 
 /** Ramki grup pod węzłami: prostokąt obejmujący węzły członków z marginesem i nazwą u góry. Ramki są prymitywami pod kablami i urządzeniami. */
 export function groupFrames(p: Project, v: DiagramView): Prim[] {
   const out: Prim[] = [], PAD = 18, TOP = 22;
   groupsOf(p).forEach(([gid, g], gi) => {
-    const nodes = [...new Set(g.members.map((m) => nodeOf(p, m)))].filter((n) => v.nodes[n] && (p.equipment[n] || p.cabinets?.[n]));
+    const nodes = [...new Set(g.members.map((m) => nodeOf(p, m)))].filter((n) => v.nodes[n] && (p.equipment[n] || p.cabinets?.[n]) && visibleNode(p, n));
     if (!nodes.length) return;
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
     for (const n of nodes) { const q = v.nodes[n], [w, h] = nodeSize(p, n); x0 = Math.min(x0, q.x); y0 = Math.min(y0, q.y); x1 = Math.max(x1, q.x + w); y1 = Math.max(y1, q.y + h); }
@@ -85,7 +87,7 @@ export function groupFrames(p: Project, v: DiagramView): Prim[] {
  * Gdy są grupy, każda grupa dostaje własny pas (jeden pod drugim, kolumny wspólne), reszta urządzeń leży w pasie na dole; urządzenia bez połączeń na samym końcu.
  */
 export function autoLayout(p: Project): Record<Id, { x: number; y: number }> {
-  const nodes = [...Object.keys(p.equipment).filter((i) => !blockCabOf(p, i)), ...Object.entries(p.cabinets ?? {}).filter(([, c]: [string, any]) => c.asBlock).map(([k]) => k)];
+  const nodes = [...Object.keys(p.equipment).filter((i) => !hiddenOnDiagram(p, i)), ...Object.entries(p.cabinets ?? {}).filter(([, c]: [string, any]) => c.asBlock).map(([k]) => k)];
   const name = (n: Id) => ((p.equipment[n] ?? p.cabinets?.[n]) as any)?.name ?? n;
   const succ = new Map<Id, Set<Id>>(), pred = new Map<Id, Set<Id>>();
   for (const n of nodes) { succ.set(n, new Set()); pred.set(n, new Set()); }

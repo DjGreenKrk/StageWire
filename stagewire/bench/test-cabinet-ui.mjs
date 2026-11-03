@@ -75,7 +75,7 @@ const tx = await page.textContent('#cb-tot'); check('panel: 4 wewnętrzne, 0 wyc
 await clickAt(await C(1, 1)); await page.fill('#cabpanel [data-grp]', '230 V'); await page.press('#cabpanel [data-grp]', 'Enter');
 st = await state(); check('nazwa grupy terminala zapisana z panelu', (Object.values(st.cabs)[0].terminals ?? []).some((t) => t.group === '230 V'), Object.values(st.cabs)[0].terminals);
 check('lista podpowiedzi grup zawiera „230 V”', (await page.innerHTML('#cb-groups')).includes('230 V'));
-await clickAt([700, 40]); await page.keyboard.press('Escape');
+await clickAt([700, 600]); await page.keyboard.press('Escape');
 await page.screenshot({ path: path.join(out, 'sw-szafa-1-widok.png') });
 
 // zaznaczenie przewodu i usunięcie

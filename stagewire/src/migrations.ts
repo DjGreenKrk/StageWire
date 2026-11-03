@@ -68,7 +68,15 @@ export interface Upgrade {
   apply: Mutator;
 }
 /** Ulepszenia dostępne w tej wersji programu. Nowe projekty mają je oznaczone jako zastosowane; starsze: użytkownik decyduje. */
-export const UPGRADES: Upgrade[] = [];
+export const UPGRADES: Upgrade[] = [
+  {
+    id: 'hide-mounted-din',
+    title: 'Ukryj osprzęt z szaf na schemacie blokowym',
+    description: 'Aparaty zamontowane na szynach DIN przestają zaśmiecać schemat blokowy (szafa nadal może być pokazana jako jeden blok z terminalami). Połączenia zostają i są widoczne w widoku szafy oraz w zestawieniach. Włączasz i wyłączasz też przyciskiem „Osprzęt DIN” w pasku schematu.',
+    applies: (p) => !(p.settings as { hideMountedDin?: boolean }).hideMountedDin && Object.values(p.equipment).some((e) => (e as { din?: unknown }).din),
+    apply: (d) => { d.settings ??= {} as Project['settings']; (d.settings as { hideMountedDin?: boolean }).hideMountedDin = true; },
+  },
+];
 
 interface UpgradeState { applied?: string[]; dismissed?: string[] }
 const stateOf = (p: { ext?: Record<string, unknown> }): UpgradeState => ((p.ext?.upgrades ?? {}) as UpgradeState);

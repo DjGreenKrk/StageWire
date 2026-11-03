@@ -4,9 +4,10 @@ import { createLibBrowser } from './libBrowser.ts';
 import { settings, openSettings } from './settings.ts';
 import { openUpgradeDialog } from './upgradeUi.ts';
 import { UPGRADES, pendingUpgrades } from '../src/migrations.ts';
+import { setHideMountedDin } from '../src/cabinets.ts';
 import { exportName } from './exportName.ts';
 import { syntheticProject } from '../src/synthetic.ts';
-import { routeOrthogonal, diagramDrawList, gridLayout, portsOf, portAnchor, nodeSize, innerRef, outerRef, HEADER, PORT_H, NODE_W, C, signalColor, signalLegend, type DiagramView, type DrawList } from '../src/render/drawlist.ts';
+import { routeOrthogonal, diagramDrawList, gridLayout, portsOf, portAnchor, nodeSize, innerRef, outerRef, hiddenOnDiagram, HEADER, PORT_H, NODE_W, C, signalColor, signalLegend, type DiagramView, type DrawList } from '../src/render/drawlist.ts';
 import { Store } from '../src/store.ts';
 import { invoke } from '@tauri-apps/api/core';
 import { open as openDialog, save as saveDialog } from '@tauri-apps/plugin-dialog';
@@ -80,7 +81,7 @@ function ask(title: string, text: string, buttons: [string, string][]): Promise<
 }
 
 /** Pusty projekt: bez urządzeń, definicji i rejestrów (te dochodzą z katalogu przy pierwszym użyciu). */
-function emptyProject(): Project { const p = syntheticProject(0, 0, 1, true); p.definitions = {}; p.registries = {}; p.spaces = {}; p.name = 'Nowy projekt'; p.ext = { upgrades: { applied: UPGRADES.map((u) => u.id) } }; return p; }
+function emptyProject(): Project { const p = syntheticProject(0, 0, 1, true); p.definitions = {}; p.registries = {}; p.spaces = {}; p.name = 'Nowy projekt'; for (const u of UPGRADES) u.apply(p as any); p.ext = { upgrades: { applied: UPGRADES.map((u) => u.id) } }; return p; }
 let restored = false;
 /** Informacja po otwarciu pliku: migracja formatu albo plik z nowszą wersją drobną (pokazywana po starcie). */
 let openNote = '';
@@ -187,8 +188,9 @@ const rec = (k: string, v: number) => (M[k] ??= []).push(v);
 const toWorld = (sx: number, sy: number): [number, number] => [(sx - W / 2) / cam.zoom + cam.x, (sy - H / 2) / cam.zoom + cam.y];
 const toScreen = (wx: number, wy: number): [number, number] => [(wx - cam.x) * cam.zoom + W / 2, (wy - cam.y) * cam.zoom + H / 2];
 
+let dinLabelRef: (() => void) | undefined;
 function rebuild() {
-  const t = now();
+  const t = now(); dinLabelRef?.();
   syncLayout(store.state, view, () => gridLayout(store.state));
   { const base = diagramDrawList(store.state, view); dl = { ...base, prims: [...groupFrames(store.state, view), ...base.prims] }; }
   edgePrim = new Map(); edgeObj = new Map();
@@ -984,12 +986,15 @@ planApi = createPlan({ store, W, H, say, changed: () => revalidate(), select: (i
   };
   const groupUi = createGroupUi({ store, say, changed: () => { rebuild(); draw(); autosaver?.notify(); setTitle(); } });
   document.getElementById('b-groups')!.onclick = () => groupUi.open();
+  const bdin = document.getElementById('b-din') as HTMLButtonElement, dinLabel = () => { const hide = !!(store.state.settings as { hideMountedDin?: boolean }).hideMountedDin; bdin.textContent = hide ? 'Osprzęt DIN: ukryty' : 'Osprzęt DIN: widoczny'; bdin.style.borderColor = hide ? '#FFD54F' : ''; };
+  bdin.onclick = () => { const hide = !(store.state.settings as { hideMountedDin?: boolean }).hideMountedDin; store.dispatch(hide ? 'Ukryj osprzęt DIN na schemacie' : 'Pokaż osprzęt DIN na schemacie', setHideMountedDin(hide)); rebuild(); revalidate(); draw(); autosaver?.notify(); setTitle(); dinLabel(); say(hide ? 'Osprzęt zamontowany w szafach jest ukryty na schemacie' : 'Osprzęt z szaf jest widoczny na schemacie'); };
+  dinLabel(); dinLabelRef = dinLabel;
   document.getElementById('b-layout')!.onclick = () => {
     if (!Object.keys(store.state.equipment).length) { say('Brak urządzeń do ułożenia'); return; }
     store.dispatch('Uporządkuj schemat', setNodePositions(autoLayout(store.state)));
     rebuild(); autosaver?.notify(); setTitle();
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-    for (const [id, n] of Object.entries(view.nodes)) { if (!store.state.equipment[id] && !store.state.cabinets?.[id]) continue; const [w, h] = nodeSize(store.state, id); x0 = Math.min(x0, n.x); y0 = Math.min(y0, n.y); x1 = Math.max(x1, n.x + w); y1 = Math.max(y1, n.y + h); }
+    for (const [id, n] of Object.entries(view.nodes)) { if (!store.state.equipment[id] && !store.state.cabinets?.[id]) continue; if (store.state.equipment[id] && hiddenOnDiagram(store.state, id)) continue; const [w, h] = nodeSize(store.state, id); x0 = Math.min(x0, n.x); y0 = Math.min(y0, n.y); x1 = Math.max(x1, n.x + w); y1 = Math.max(y1, n.y + h); }
     if (isFinite(x0)) { cam.x = (x0 + x1) / 2; cam.y = (y0 + y1) / 2; cam.zoom = Math.min(1.2, Math.max(0.05, Math.min((W - 60) / (x1 - x0 + 120), (H - 140) / (y1 - y0 + 120)))); }
     draw(); say('Schemat uporządkowany od źródeł do odbiorników (Ctrl+Z cofa)');
   };

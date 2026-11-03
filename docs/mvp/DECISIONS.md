@@ -555,6 +555,8 @@ Kontekst: pierwsze testy właściciela na prawdziwym projekcie (`projekt2.sw`) w
 
 **Konsekwencje.** Zmiany addytywne; stare projekty i pakiety działają bez zmian. Wymagane potwierdzenie round-trip nieznanych pól projektu (Z8) w pierwszym etapie. Poza zakresem MVP: symulacja stanów, obciążenia, selektywność, przekroje, zwarcia, cięcie grzebieni na miarę.
 
+**Aktualizacja (2026-11-03): etap E0 zrobiony.** Ukrywanie realizuje ustawienie projektu `settings.hideMountedDin` (zamiast `views.*.filters`, bo wpływa też na układanie automatyczne, ramki grup, PDF schematu i dopasowanie widoku). Ukrywany jest osprzęt **zamontowany w szafie** (`din`); urządzenia niezamontowane zostają widoczne, żeby po dodaniu z katalogu na schemacie nie znikały. Połączenia ukrytego osprzętu nie są rysowane na schemacie (są w widoku szafy i zestawieniach); szafa pokazana jako blok działa jak dotąd. Nowy projekt ma ustawienie włączone, starszy dostaje ulepszenie `hide-mounted-din` w oknie „Aktualizacja projektu” (ADR-065). Filtr katalogu: w widoku szafy tylko osprzęt DIN, w widoku racka tylko urządzenia rackowe, z przełącznikiem „pokaż wszystko”.
+
 ## ADR-065: Wersjonowanie formatu, migracje i ulepszenia projektu do włączenia (2026-11-03)
 
 **Status:** przyjęta (implementacja: `src/migrations.ts`, okno „Aktualizacja projektu” w menu ☰). Rozstrzyga Q-30.

@@ -297,7 +297,7 @@ Etapy małe, każdy kończy się zielonymi testami. MVP = E0–E5. Późniejsze:
 
 | Etap | Zakres | Zależności | Kryteria akceptacji | Testy regresyjne |
 |---|---|---|---|---|
-| **E0 Filtry widoczności** | klasa montażu (`din`/`rack`/`free`); filtr na schemacie i w widoku szafy; zapis w widoku | brak | nowy projekt: osprzęt DIN poza schematem; przełącznik przywraca; stary projekt bez zmian | testy UI schematu i szafy, 289 jednostkowych |
+| **E0 Filtry widoczności** (**zrobione**: ukrywanie na schemacie, filtr katalogu w widokach szafy i racka) | ustawienie projektu `hideMountedDin` (ukrywa osprzęt zamontowany w szafie; niezamontowany zostaje widoczny), przycisk „Osprzęt DIN” w pasku schematu, ulepszenie `hide-mounted-din` dla starszych projektów (ADR-065); filtr katalogu wg widoku. Zapis jest ustawieniem projektu, nie widoku | brak | nowy projekt: osprzęt DIN poza schematem; przełącznik przywraca; stary projekt bez zmian | testy UI schematu i szafy, 289 jednostkowych |
 | **E1 Typy i schematy** | `terminal`, `internalLinks` (kinds, members), `din.layer`, `plate`, `enclosures`; walidacja pakietów; przejście round-trip | brak | pakiet z nowymi polami przechodzi walidację; starszy pakiet bez zmian; test round-trip projektu z nowymi polami | `validator-fresh`, testy pakietów |
 | **E2 Węzły** (`nets.ts`) | union-find z połączeń i `bridge`/`jumper`; `switched` nie scala | E1 | scenariusze 3, 5, 6, 7, 11, 12 | wydajność na dużym projekcie (budżet kilka ms) |
 | **E3 Walidacja torów** | V-040, V-041, V-042, V-044 | E2 | scenariusze 3–6 | istniejące V-002, V-028 bez zmian |
