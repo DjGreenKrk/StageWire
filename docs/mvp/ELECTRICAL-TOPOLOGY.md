@@ -187,7 +187,7 @@ Dane producenta dochodzą jako pola `fits`, `phaseOrder`, `wires`, więc reguły
 | Plan i trasy | bez zmian | n/d |
 | Widok szafy | warstwy, zęby nad zaciskami, płyta | rozszerzenie |
 | Undo/redo | nowe pola przez istniejące polecenia | bez zmian |
-| Zapis/odczyt, migracje | wymaga potwierdzenia, że nieznane pola projektu przechodzą round-trip (Z8) [HIPOTEZA]; sprawdzić w teście | do weryfikacji |
+| Zapis/odczyt, migracje | nieznane pola przechodzą round-trip (test); nowe funkcje podnoszą MINOR formatu i mają migrację (ADR-065) | zweryfikowane |
 
 ## 5. Przykładowe definicje (ilustracja mechanizmu) [HIPOTEZA]
 
@@ -313,6 +313,6 @@ Poza zakresem MVP świadomie: obliczenia elektryczne, selektywność, dobór prz
 
 - **Dane producenta:** rozstaw, tory zębów, zgodność `fits` i kolejność faz wymagają danych z kart katalogowych. Bez nich reguły geometryczne są tylko ostrzeżeniami. Biblioteka powinna oznaczać dane jako zweryfikowane lub nie (istniejące `source`).
 - **Model zacisku w aparatach:** jeden zacisk fizyczny z przewodem i grzebieniem to dwa porty o wspólnym `at`. Zwiększa to liczbę portów w pakietach o ok. 1/3; do oceny, czy w UI ukrywać port „(grzebień)” do czasu włączenia widoku szafy.
-- **Round-trip nieznanych pól projektu** [HIPOTEZA]: potwierdzić testem w E1, zanim pola zostaną użyte.
-- **Domyślne ukrywanie na schemacie:** dotyczy nowych projektów; zmiana zachowania istniejących wymagałaby decyzji właściciela (Q-30).
+- **Round-trip nieznanych pól projektu** [FAKT, test `migrations.test.ts`]: nieznane pola w korzeniu projektu, w obiektach i w `ext` przeżywają zapis i odczyt.
+- **Domyślne ukrywanie na schemacie:** dotyczy nowych projektów; rozstrzygnięte w Q-30: tylko nowe projekty, starsze przez okno „Aktualizacja projektu” (ADR-065).
 - **Nazwy torów** jako napisy zamiast rejestru: do przeglądu po pierwszych pakietach spoza energetyki.

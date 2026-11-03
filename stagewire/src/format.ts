@@ -2,6 +2,7 @@ import { zipSync, unzipSync, strToU8, strFromU8 } from 'fflate';
 import { sha256 } from '@noble/hashes/sha2.js';
 import validateSchema from './generated/projectValidator.js';
 import type { Project } from './types.ts';
+import { migrateProject, compareFormat, majorOf } from './migrations.ts';
 
 // Moduł działa w Node i w przeglądarce (bez node:*).
 const sha256Hex = (text: string) => Array.from(sha256(strToU8(text)), (b) => b.toString(16).padStart(2, '0')).join('');
@@ -59,19 +60,11 @@ export function packProject(p: Project, opts: { prune?: boolean } = {}): Uint8Ar
 }
 
 export type OpenResult =
-  | { status: 'ok'; project: Project; migratedFrom?: string }
+  | { status: 'ok'; project: Project; migratedFrom?: string; migrations?: string[]; /** plik z nowszą wersją drobną formatu: otwarty, nieznane pola zostają przy zapisie */ newerMinor?: string }
   | { status: 'newer-major'; manifest: Manifest }
   | { status: 'error'; errors: string[] };
 
-export function majorOf(version: string): number { return Number(version.split('.')[0]); }
-
-/** Migracje: czyste funkcje vN → vN+1, wołane łańcuchowo. v0 → v1: tablice → mapy, brak medium → physical. */
-export function migrate0to1(j: any): any {
-  const toMap = (arr: any[] | undefined) => Object.fromEntries((arr ?? []).map(({ id, ...rest }: any) => [id, rest]));
-  const connections = toMap(j.connections);
-  for (const c of Object.values<any>(connections)) { c.medium ??= 'physical'; c.cableId ??= null; }
-  return { ...j, formatVersion: '1.0.0-draft', equipment: toMap(j.equipment), connections, cables: toMap(j.cables) };
-}
+export { majorOf, migrate0to1 } from './migrations.ts';
 
 export function openProject(bytes: Uint8Array): OpenResult {
   let files: Record<string, Uint8Array>;
@@ -87,9 +80,9 @@ export function openProject(bytes: Uint8Array): OpenResult {
   if (sha256Hex(text) !== manifest.sha256) return { status: 'error', errors: ['Suma kontrolna project.json niezgodna z manifestem'] };
   let json: any;
   try { json = JSON.parse(text); } catch { return { status: 'error', errors: ['Uszkodzony project.json'] }; }
-  let migratedFrom: string | undefined;
-  if (majorOf(json.formatVersion) === 0) { migratedFrom = json.formatVersion; json = migrate0to1(json); }
+  const mig = migrateProject(json); json = mig.json;
+  const newerMinor = compareFormat(String(json.formatVersion), CURRENT_FORMAT) > 0 ? String(json.formatVersion) : undefined;
   const errs = schemaErrors(json);
-  if (errs.length) return { status: 'error', errors: errs };
-  return { status: 'ok', project: json as Project, migratedFrom };
+  if (errs.length) return { status: 'error', errors: newerMinor ? [`Plik z nowszej wersji formatu (${newerMinor}) ma strukturę, której ta wersja programu nie rozpoznaje.`, ...errs] : errs };
+  return { status: 'ok', project: json as Project, ...(mig.applied.length ? { migratedFrom: mig.from, migrations: mig.applied } : {}), ...(newerMinor ? { newerMinor } : {}) };
 }

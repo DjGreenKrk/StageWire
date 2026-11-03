@@ -554,3 +554,20 @@ Kontekst: pierwsze testy właściciela na prawdziwym projekcie (`projekt2.sw`) w
 **Alternatywy.** Zapisywana encja `nets` (odrzucona: niezmienniki do pilnowania, rozjazd po przesunięciu aparatu; możliwa później jako adnotacja); węzeł-pośrednik w `Connection` (odrzucone: zmienia wszystkie widoki); osobny silnik elektryczny (odrzucone: duplikuje model); spłaszczenie grzebienia 3P do jednego węzła (odrzucone: gubi tory); reguły zależne od producenta (odrzucone: mechanizm ma być uniwersalny).
 
 **Konsekwencje.** Zmiany addytywne; stare projekty i pakiety działają bez zmian. Wymagane potwierdzenie round-trip nieznanych pól projektu (Z8) w pierwszym etapie. Poza zakresem MVP: symulacja stanów, obciążenia, selektywność, przekroje, zwarcia, cięcie grzebieni na miarę.
+
+## ADR-065: Wersjonowanie formatu, migracje i ulepszenia projektu do włączenia (2026-11-03)
+
+**Status:** przyjęta (implementacja: `src/migrations.ts`, okno „Aktualizacja projektu” w menu ☰). Rozstrzyga Q-30.
+
+**Kontekst.** Dziś nie ma użytkowników poza testami, ale po wydaniu nikt nie może usłyszeć, że żeby użyć funkcji z wersji 3.0, musi zbudować projekt z wersji 2.0 od nowa. Jednocześnie część nowych funkcji zmienia wygląd lub zachowanie istniejących danych (np. domyślne ukrywanie osprzętu DIN na schemacie, ADR-064), więc nie powinny włączać się po cichu w starych projektach.
+
+**Decyzja.**
+1. **Reguły wersjonowania** (komentarz w `src/migrations.ts`): zmiany w obrębie MAJOR są addytywne; nowa funkcja podnosi MINOR i dopisuje migrację (zwykle uzupełnienie wartości domyślnych); zmiana łamiąca podnosi MAJOR i **musi** mieć migrację ze wszystkich wcześniejszych wersji.
+2. **Rejestr migracji** `MIGRATIONS`: czyste funkcje JSON → JSON, wołane łańcuchowo po `formatVersion` przy otwarciu pliku (`migrateProject`). Dopisuje się na końcu; istniejących nie zmienia się ani nie usuwa. Wynik otwarcia zawiera listę zastosowanych migracji; program informuje o tym po otwarciu, a poprzednia wersja pliku trafia do kopii zapasowej przy pierwszym zapisie (rotacja `.backups`).
+3. **Plik z nowszą wersją drobną** otwiera się (`newerMinor`), a nieznane dane (w korzeniu projektu, w obiektach i w `ext`) **przeżywają zapis** (test). Plik z nowszym MAJOR pozostaje tylko do odczytu metadanych.
+4. **Ulepszenia do włączenia** (`UPGRADES`): zmiany zachowania istniejących danych nie są migracjami formatu. Każde ma `id`, opis, warunek sensowności i polecenie (jedna transakcja, można cofnąć). Stan w `ext.upgrades {applied, dismissed}`. **Nowy projekt** ma wszystkie ulepszenia bieżącej wersji oznaczone jako zastosowane (rozstrzygnięcie Q-30: nowe zachowanie domyślnie tylko w projektach tworzonych od tej wersji); **starszy projekt** dostaje informację po otwarciu i decyduje w oknie „Aktualizacja projektu” (zastosuj / nie teraz).
+5. **Korpus zgodności:** wszystkie pliki z `fixtures/` (także z formatu 0.x) muszą otwierać się w bieżącej wersji, przechodzić schemat i walidację oraz dawać identyczny wynik po zapisie i ponownym odczycie. Nowa wersja formatu dodaje do korpusu plik w swojej wersji.
+
+**Alternatywy.** Brak migracji i prośba o odbudowę projektu (odrzucone: sprzeczne z zasadą „migracje zamiast resetu”); ciche stosowanie nowych zachowań po otwarciu (odrzucone: zmienia widok istniejącego projektu bez wiedzy użytkownika); jedna wielka funkcja „aktualizuj wszystko” (odrzucone: brak kontroli).
+
+**Konsekwencje.** Każda przyszła zmiana formatu ma miejsce na migrację i test. Pierwsze realne ulepszenie (ukrywanie osprzętu DIN na schemacie) dopisze się do `UPGRADES` razem z etapem E0 (ADR-064). Rejestr `UPGRADES` jest dziś pusty, więc okno pokazuje „Projekt jest aktualny”.

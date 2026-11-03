@@ -48,5 +48,10 @@ check('przeciągnięcie z katalogu na U7 montuje nowy switch na U7', st.length =
 await page.click('#b-rack'); await page.waitForTimeout(100);
 check('po powrocie do schematu przełącznik filtra znika, a lista pokazuje wszystko', !(await page.isVisible('#cat-fit')) && (await listText()).includes('Kamera SDI'));
 await page.click('#b-cab'); await page.click('#b-cab');
+// --- aktualizacja projektu (menu) ---
+await page.click('#b-burger'); await page.click('#b-upgrade'); await page.waitForSelector('#upgdialog');
+const ut = await page.textContent('#upgdialog');
+check('okno „Aktualizacja projektu”: pokazuje wersję formatu i że nowy projekt jest aktualny', ut.includes('Format pliku: 1.0.0-draft') && ut.includes('Projekt jest aktualny'), ut.slice(0, 120));
+await page.click('#up-close'); check('okno zamyka się', !(await page.$('#upgdialog')));
 console.log(`\ncatalogbuild: ${checks.filter((c) => c.ok).length}/${checks.length} kontroli`);
 await browser.close(); await server.close(); process.exit(checks.every((c) => c.ok) ? 0 : 1);

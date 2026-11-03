@@ -2,6 +2,8 @@
 import { openAbout } from './about.ts';
 import { createLibBrowser } from './libBrowser.ts';
 import { settings, openSettings } from './settings.ts';
+import { openUpgradeDialog } from './upgradeUi.ts';
+import { UPGRADES, pendingUpgrades } from '../src/migrations.ts';
 import { exportName } from './exportName.ts';
 import { syntheticProject } from '../src/synthetic.ts';
 import { routeOrthogonal, diagramDrawList, gridLayout, portsOf, portAnchor, nodeSize, innerRef, outerRef, HEADER, PORT_H, NODE_W, C, signalColor, signalLegend, type DiagramView, type DrawList } from '../src/render/drawlist.ts';
@@ -78,8 +80,10 @@ function ask(title: string, text: string, buttons: [string, string][]): Promise<
 }
 
 /** Pusty projekt: bez urządzeń, definicji i rejestrów (te dochodzą z katalogu przy pierwszym użyciu). */
-function emptyProject(): Project { const p = syntheticProject(0, 0, 1, true); p.definitions = {}; p.registries = {}; p.spaces = {}; p.name = 'Nowy projekt'; return p; }
+function emptyProject(): Project { const p = syntheticProject(0, 0, 1, true); p.definitions = {}; p.registries = {}; p.spaces = {}; p.name = 'Nowy projekt'; p.ext = { upgrades: { applied: UPGRADES.map((u) => u.id) } }; return p; }
 let restored = false;
+/** Informacja po otwarciu pliku: migracja formatu albo plik z nowszą wersją drobną (pokazywana po starcie). */
+let openNote = '';
 async function loadInitial(): Promise<Project> {
   if (isNew) return emptyProject();
   if (!projectPath || !inTauri) return syntheticProject(devices, Math.round(devices * 2.5), 1, true);
@@ -92,7 +96,11 @@ async function loadInitial(): Promise<Project> {
     if (c === 'restore') { restored = true; return rec.project; }
     if (c === 'discard') await io.remove('autosave');
   }
-  if (mr?.status === 'ok') return mr.project;
+  if (mr?.status === 'ok') {
+    if (mr.migrations?.length) openNote = `Projekt zaktualizowany z formatu ${mr.migratedFrom}; poprzednia wersja pliku zostaje w kopii zapasowej przy pierwszym zapisie.`;
+    else if (mr.newerMinor) openNote = `Plik z nowszej wersji formatu (${mr.newerMinor}): nieznane dane zostaną zachowane przy zapisie.`;
+    return mr.project;
+  }
   if (m) { // plik istnieje, ale nie da się go otworzyć: nie wolno go potem nadpisać „pustym” projektem
     const why = mr?.status === 'newer-major' ? 'Plik pochodzi z nowszej wersji programu.' : mr?.status === 'error' ? mr.errors.slice(0, 2).join('; ') : 'Nieznany błąd.';
     await ask('Nie można otworzyć pliku', `${why} Plik nie zostanie zmieniony. Otwieram pusty projekt (zapis poprosi o nową nazwę).`, [['ok', 'OK']]);
@@ -535,6 +543,8 @@ say(`Gotowe: ${Object.keys(store.state.equipment).length} urządzeń. Przeciągn
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !fm.hidden) setFm(false); });
 }
 document.getElementById('b-about')!.onclick = () => openAbout();
+document.getElementById('b-upgrade')!.onclick = () => openUpgradeDialog({ store, say, changed: () => { rebuild(); revalidate(); draw(); autosaver?.notify(); setTitle(); } });
+{ const n = pendingUpgrades(store.state).length; const msg = [openNote, n ? `Dostępne ulepszenia projektu: ${n} (Menu → Aktualizacja projektu…)` : ''].filter(Boolean).join(' · '); if (msg) setTimeout(() => say(msg), 300); }
 document.getElementById('b-settings')!.onclick = () => openSettings(() => { rebuild(); recolorEdges(); draw(); });
 document.getElementById('b-new')!.onclick = () => void newProject();
 document.getElementById('b-open')!.onclick = () => void openProjectDialog();
