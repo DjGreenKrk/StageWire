@@ -319,7 +319,7 @@ Brak `Placement` jest dozwolony (urządzenie wirtualne, „jeszcze nie rozstawio
 
 ### 5.10 Rack
 
-`id`, `name`, `units` (np. 42), `widthIn` (19), `depthMm`, `zoneId?`, `notes`. Rack ma `Placement` (stoi w sali). Zawartość racka to instancje z `mount.rackId`; w MVP nie mają własnych `Placement` (położenie wynika z racka). Przesunięcie racka nie wymaga aktualizacji zawartości, bo zawartość nie ma współrzędnych [W-10: odpowiednik propagacji inne narzędzia uzyskany strukturalnie].
+`id`, `name`, `units` (np. 42), `widthIn` (19), `depthMm`, `zoneId?`, `notes`. Rack ma `Placement` (stoi w sali). Zawartość racka to instancje z `mount.rackId`; w MVP nie mają własnych `Placement` (położenie wynika z racka). Przesunięcie racka nie wymaga aktualizacji zawartości, bo zawartość nie ma współrzędnych (propagacja zmian uzyskana strukturalnie).
 
 ### 5.11 Connection (połączenie logiczne)
 
