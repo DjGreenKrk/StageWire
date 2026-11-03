@@ -16,6 +16,7 @@ Wszystkie istotne zmiany StageWire są dokumentowane w tym pliku. Format wzorowa
 - menu ☰ (plik, eksporty, ustawienia, O programie), okno ustawień z własnymi kolorami kabli,
 - zapis atomowy, kopie robocze `.autosave`, migracje formatu,
 - instalator NSIS i wersja przenośna dla Windows (niepodpisane),
+- budowanie rozdzielnicy i racka wprost z katalogu po lewej: przeciąganie pozycji na wskazane miejsce szyny lub U, filtr „tylko pasujące do widoku” (DIN / rack), skrót G w widokach szafy i racka,
 - wbudowany pakiet 8 urządzeń Blackmagic Design (dane niezweryfikowane pomiarami),
 - logo StageWire w dokumentacji.
 

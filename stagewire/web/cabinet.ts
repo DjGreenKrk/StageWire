@@ -341,6 +341,17 @@ export function createCabinet(ctx: CabinetCtx) {
     hide() { active = false; drag = undefined; wireFrom = undefined; host.style.display = 'none'; },
     refresh,
     /** Dodanie z katalogu w widoku szafy: montaż w pierwszym wolnym miejscu (tylko osprzęt DIN). */
+    /** Upuszczenie pozycji z katalogu na szynę: mutator montujący nową instancję w komórce pod kursorem (gdy zajęta lub się nie mieści: w pierwszym wolnym miejscu). */
+    dropMount(clientX: number, clientY: number): ((id: string) => Mutator) | undefined {
+      if (!active || !cabId) return undefined; const r = cv.getBoundingClientRect(), c = cell(clientX - r.left, clientY - r.top); if (!c) return undefined;
+      const cid = cabId;
+      return (id) => (d) => {
+        if (dinFit(d as Project, id) === undefined) return;
+        const m: DinMount = { cabinetId: cid, row: c.row, at: c.at };
+        const ok = !dinProblem(d as Project, id, m) ? m : firstFreeDin(d as Project, id, cid); if (ok) cabCmd.mount(id, ok)(d);
+      };
+    },
+    canvas: cv,
     mountOnAdd(id: string): Mutator { return (d) => { if (!active || !cabId) return; const m = firstFreeDin(d as Project, id, cabId); if (m) cabCmd.mount(id, m)(d); }; },
     /** Do testów: środek bloku urządzenia, pozycja portu i środek komórki. */
     deviceCenter(id: string): [number, number] | undefined { const o = cabId ? cabinetContents(S(), cabId).find((x) => x.id === id) : undefined; if (!o) return undefined; const r = devRect(o); return [r.x + r.w / 2, r.y + r.h / 2]; },

@@ -12,7 +12,7 @@ const page = await (await browser.newContext({ viewport: { width: 1366, height: 
 page.on('pageerror', (e) => console.log('BŁĄD STRONY', String(e).slice(0, 200)));
 await page.goto('http://localhost:5194/editor.html?new=1'); await page.waitForFunction(() => window.__editor?.ready);
 const n = () => page.$$eval('#cat-list button[data-cat]', (b) => b.length);
-check('katalog pokazuje 14 urządzeń', (await n()) === 14);
+check('katalog pokazuje 22 urządzenia (14 ogólnych + 8 Blackmagic)', (await n()) === 22);
 await page.fill('#catalog input', 'oswietlenie'); check('wyszukiwanie bez polskich znaków: 2 wyniki', (await n()) === 2);
 await page.fill('#catalog input', 'sdi'); const sdi = await page.$$eval('#cat-list button[data-cat]', (b) => b.map((x) => x.dataset.cat));
 check('wyszukiwanie „sdi” zawiera kamerę i mikser', sdi.includes('camera_sdi') && sdi.includes('video_switcher'), sdi);

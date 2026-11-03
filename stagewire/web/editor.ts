@@ -553,21 +553,26 @@ setTitle();
   const onPlan = (id: string) => { const sid = planApi?.active ? planApi.spaceId() : undefined; if (!sid) return () => {}; const c = planApi!.center(); return planCmd.place(id, sid, c.x, c.y); };
   const spot = () => ({ x: Math.round(cam.x - NODE_W / 2), y: Math.round(cam.y - 40) });
   const place = () => { rebuild(); revalidate(); draw(); };
-  const addCatalog = (key: string, model: string) => {
+  const addCatalog = (key: string, model: string, mountAt?: (id: string) => (d: any) => void) => {
     const name = uniqueName(model, Object.values(store.state.equipment).map((e) => e.name)), id = newId('eqi');
-    { const a = addFromCatalog(key, name, id), b = setNodePositions({ [id]: spot() }), c = onPlan(id), r = rackApi?.active ? rackApi.mountOnAdd(id) : cabApi?.active ? cabApi.mountOnAdd(id) : () => {}; store.dispatch(`Dodaj ${name}`, (d) => { a(d); b(d); c(d); r(d); }); } place(); say(`Dodano ${name}`);
+    { const a = addFromCatalog(key, name, id), b = setNodePositions({ [id]: spot() }), c = onPlan(id), r = mountAt ? mountAt(id) : rackApi?.active ? rackApi.mountOnAdd(id) : cabApi?.active ? cabApi.mountOnAdd(id) : () => {}; store.dispatch(`Dodaj ${name}`, (d) => { a(d); b(d); c(d); r(d); }); } place(); say(`Dodano ${name}`);
   };
   const addProjectDef = (defId: string, model: string) => {
     const name = uniqueName(model, Object.values(store.state.equipment).map((e) => e.name)), id = newId('eqi');
     { const a = cmd.addInstance(defId, name, id), b = setNodePositions({ [id]: spot() }), c = onPlan(id); store.dispatch(`Dodaj ${name}`, (d) => { a(d); b(d); c(d); }); } place(); say(`Dodano ${name}`);
   };
+  /** Widok, w którym buduje się z katalogu: rack albo szafa. Filtr „tylko pasujące” (domyślnie włączony) ukrywa pozycje, które się tam nie zamontują. */
+  const viewKind = (): 'rack' | 'cab' | undefined => (rackApi?.active ? 'rack' : cabApi?.active ? 'cab' : undefined);
+  const fitsView = (dev: { rackUnits?: unknown; dinModules?: unknown }) => { const k = viewKind(); if (!k || !(document.getElementById('cat-fit-cb') as HTMLInputElement | null)?.checked) return true; return k === 'rack' ? !!dev.rackUnits : dev.dinModules !== undefined; };
   const row = (label: string, sub: string, attr: [string, string], onClick: () => void) => {
     const b = document.createElement('button'); b.dataset[attr[0]] = attr[1];
+    if (attr[0] === 'cat') { b.draggable = true; b.addEventListener('dragstart', (ev) => { ev.dataTransfer?.setData('application/x-sw-cat', attr[1] + '	' + label); ev.dataTransfer!.effectAllowed = 'copy'; }); }
     b.innerHTML = `<span>${label}</span><small>${sub}</small>`; b.onclick = onClick; list.appendChild(b);
   };
   const render = () => {
     list.innerHTML = '';
-    const found = searchCatalog(input.value);
+    const found = searchCatalog(input.value).filter((e) => fitsView(e.device));
+    const bf = document.getElementById('cat-fit'); if (bf) { bf.style.display = viewKind() ? 'block' : 'none'; (bf.querySelector('label') as HTMLElement).lastChild!.textContent = viewKind() === 'rack' ? ' Tylko do racka 19″' : ' Tylko na szynę DIN'; }
     const cats = [...new Set(found.map((e) => e.category))];
     for (const c of cats) {
       const h = document.createElement('h3'); h.textContent = c; list.appendChild(h);
@@ -583,6 +588,11 @@ setTitle();
     }
   };
   input.addEventListener('input', render); render();
+  document.getElementById('cat-fit-cb')!.addEventListener('change', () => renderCatalog());
+  // upuszczenie pozycji z katalogu na rack albo szynę: nowa instancja od razu w wybranym miejscu
+  for (const api of [() => rackApi, () => cabApi]) { setTimeout(function wire() { const c = api()?.canvas as HTMLCanvasElement | undefined; if (!c) { setTimeout(wire, 100); return; }
+    c.addEventListener('dragover', (ev) => { if (ev.dataTransfer?.types.includes('application/x-sw-cat')) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'copy'; } });
+    c.addEventListener('drop', (ev) => { const raw = ev.dataTransfer?.getData('application/x-sw-cat'); if (!raw) return; ev.preventDefault(); const [key, model] = raw.split('	'); const m = api()!.dropMount(ev.clientX, ev.clientY); addCatalog(key, model, m); }); }, 0); }
   /** Odświeża listę, gdy zmienił się zestaw definicji projektu lub pakietów; zachowuje przewinięcie. */
   let sig = '';
   renderCatalog = () => { const top = list.scrollTop; render(); list.scrollTop = top; };
@@ -590,7 +600,7 @@ setTitle();
   document.getElementById('b-library')!.onclick = () => library.openDialogUi();
   const libBrowser = createLibBrowser({ library: library as any, say, addToProject: (key, model) => addCatalog(key, model) });
   document.getElementById('b-browse')!.onclick = () => libBrowser.toggle();
-  window.addEventListener('keydown', (e) => { if ((e.key === 'g' || e.key === 'G') && !e.ctrlKey && !e.metaKey && !e.altKey && !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName) && !document.querySelector('.dlg') && !planApi?.active && !rackApi?.active && !cabApi?.active) { e.preventDefault(); libBrowser.toggle(); } });
+  window.addEventListener('keydown', (e) => { if ((e.key === 'g' || e.key === 'G') && !e.ctrlKey && !e.metaKey && !e.altKey && !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName) && !document.querySelector('.dlg') && !planApi?.active) { e.preventDefault(); libBrowser.toggle(); } });
   (window as any).__editor.libBrowser = libBrowser;
   input.addEventListener('keydown', (e) => e.stopPropagation()); // skróty edytora nie działają podczas pisania
 }
@@ -931,7 +941,7 @@ planApi = createPlan({ store, W, H, say, changed: () => revalidate(), select: (i
     if (v3Api!.active) { leave3d(); return; }
     v3Api!.show(); planApi!.suspend(true); b3.textContent = 'Widok 2D';
   };
-  const chrome = () => {
+  const chrome = () => { renderCatalog();
     if (!planApi!.active) leave3d();
     const on = planApi!.active || rackApi!.active || cabApi!.active;
     document.getElementById('help')!.style.display = on ? 'none' : '';

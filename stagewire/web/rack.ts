@@ -258,6 +258,18 @@ export function createRack(ctx: RackCtx) {
     refresh,
     /** Przy dodawaniu urządzenia z katalogu w widoku racka: montaż w pierwszym wolnym miejscu aktywnego racka (urządzenia nierackowe zostają poza rackiem). */
     mountOnAdd(id: string): Mutator { return (d) => { if (!active || !rackId) return; const m = firstFree(d as Project, id, rackId); if (m) rackCmd.mount(id, m)(d); }; },
+    /** Upuszczenie pozycji z katalogu na rack: mutator montujący nową instancję w komórce pod kursorem (gdy zajęta lub się nie mieści: w pierwszym wolnym miejscu). */
+    dropMount(clientX: number, clientY: number): ((id: string) => Mutator) | undefined {
+      if (!active || !rackId) return undefined; const r = cv.getBoundingClientRect(), c = cell(clientX - r.left, clientY - r.top); if (!c) return undefined;
+      const rid = rackId, fc = face;
+      return (id) => (d) => {
+        const fit = rackFit(d as Project, id); if (!fit) return;
+        const m: Mount = { rackId: rid, uStart: Math.max(1, c.u - fit.heightU + 1), face: fc, slot: slotAt(fit.widthFraction, c.frac) };
+        const ok = !mountProblem(d as Project, id, m) ? m : firstFree(d as Project, id, rid); if (ok) rackCmd.mount(id, ok)(d);
+      };
+    },
+    /** Element canvasu (do obsługi przeciągania z katalogu). */
+    canvas: cv,
     /** Do testów: środek komórki U (1 = dół) w współrzędnych strony; frac = położenie w poziomie 0–1. */
     pointOf(u: number, frac = 0.5): [number, number] { const gm = geo(); return [gm.inL + frac * RACK_W, yTop(u, gm) + gm.pxU / 2]; },
     select: (id: string | undefined) => { selected = id; refresh(); },
